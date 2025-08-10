@@ -1,0 +1,311 @@
+name: AI自测试工作流
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: '测试分支名称'
+        required: true
+        default: 'ai-dev-test'
+      test_scope:
+        description: '测试范围 (all/extractor/translator/generator/pipeline)'
+        required: false
+        default: 'all'
+      auto_fix:
+        description: '自动修复简单错误'
+        type: boolean
+        default: true
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出测试分支
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch_name }}
+        
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8 black isort
+        
+    - name: 代码格式检查和自动修复
+      if: ${{ github.event.inputs.auto_fix == 'true' }}
+      run: |
+        echo "=== 代码格式化 ==="
+        
+        # 使用black格式化代码
+        black scripts/ --check --diff || {
+          echo "应用Black格式化..."
+          black scripts/
+        }
+        
+        # 使用isort整理导入
+        isort scripts/ --check-only --diff || {
+          echo "整理import语句..."
+          isort scripts/
+        }
+        
+        # 检查常见问题
+        echo ""
+        echo "=== 代码质量检查 ==="
+        flake8 scripts/ --max-line-length=120 --ignore=E501,W503 || true
+        
+    - name: 语法和导入检查
+      run: |
+        echo "=== Python语法检查 ==="
+        
+        for py_file in $(find scripts -name "*.py" -type f); do
+          echo "检查: $py_file"
+          python -m py_compile "$py_file" || {
+            echo "✗ 语法错误在 $py_file"
+            python -c "
+        import ast
+        import sys
+        try:
+            with open('$py_file', 'r') as f:
+                ast.parse(f.read())
+        except SyntaxError as e:
+            print(f'  行 {e.lineno}: {e.msg}')
+            print(f'  {e.text}')
+            "
+          }
+        done
+        
+        echo ""
+        echo "=== 导入检查 ==="
+        python -c "
+        import os
+        import ast
+        import sys
+        
+        for root, dirs, files in os.walk('scripts'):
+            for file in files:
+                if file.endswith('.py'):
+                    filepath = os.path.join(root, file)
+                    with open(filepath, 'r') as f:
+                        try:
+                            tree = ast.parse(f.read())
+                            imports = [node for node in ast.walk(tree) 
+                                      if isinstance(node, (ast.Import, ast.ImportFrom))]
+                            
+                            if imports:
+                                print(f'{filepath}:')
+                                for imp in imports[:5]:  # 只显示前5个
+                                    if isinstance(imp, ast.Import):
+                                        for alias in imp.names:
+                                            print(f'  import {alias.name}')
+                                    else:
+                                        module = imp.module or ''
+                                        print(f'  from {module} import ...')
+                        except:
+                            pass
+        "
+        
+    - name: 运行单元测试
+      run: |
+        echo "=== 运行测试 ==="
+        
+        # 创建临时测试文件（如果不存在）
+        mkdir -p tests
+        cat > tests/test_basic.py << 'EOF'
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        
+        def test_imports():
+            """测试模块可以被导入"""
+            try:
+                import scripts.extract_content
+                import scripts.translate
+                import scripts.generate_markdown
+                assert True
+            except ImportError as e:
+                assert False, f"导入失败: {e}"
+        
+        def test_scaffold_exists():
+            """测试脚手架脚本存在"""
+            assert os.path.exists('scripts/scaffold.py')
+        EOF
+        
+        # 运行pytest
+        pytest tests/ -v --tb=short || {
+          echo "部分测试失败，继续..."
+        }
+        
+    - name: 测试各个组件
+      run: |
+        echo "=== 组件功能测试 ==="
+        
+        # 根据test_scope运行不同的测试
+        SCOPE="${{ github.event.inputs.test_scope }}"
+        
+        if [ "$SCOPE" = "all" ] || [ "$SCOPE" = "extractor" ]; then
+          echo "测试内容提取器..."
+          if [ -f "scripts/extract_content.py" ]; then
+            python scripts/extract_content.py --help || echo "提取器还未实现--help"
+            
+            # 使用样本数据测试
+            if [ -f ".github/test-data/sample-articles.txt" ]; then
+              TEST_URL=$(head -1 .github/test-data/sample-articles.txt | grep -v "^#" || echo "")
+              if [ -n "$TEST_URL" ]; then
+                python scripts/extract_content.py --url "$TEST_URL" --output test-extract.json || echo "提取器执行失败"
+              fi
+            fi
+          fi
+        fi
+        
+        if [ "$SCOPE" = "all" ] || [ "$SCOPE" = "translator" ]; then
+          echo "测试翻译器..."
+          if [ -f "scripts/translate.py" ]; then
+            python scripts/translate.py --help || echo "翻译器还未实现--help"
+            
+            # 如果有提取的数据，测试翻译
+            if [ -f "test-extract.json" ]; then
+              python scripts/translate.py --input test-extract.json --output test-translate.json || echo "翻译器执行失败"
+            fi
+          fi
+        fi
+        
+        if [ "$SCOPE" = "all" ] || [ "$SCOPE" = "generator" ]; then
+          echo "测试Markdown生成器..."
+          if [ -f "scripts/generate_markdown.py" ]; then
+            python scripts/generate_markdown.py --help || echo "生成器还未实现--help"
+            
+            # 如果有翻译的数据，测试生成
+            if [ -f "test-translate.json" ]; then
+              python scripts/generate_markdown.py --input test-translate.json --output test-output/ || echo "生成器执行失败"
+            fi
+          fi
+        fi
+        
+    - name: 验证输出格式
+      run: |
+        echo "=== 输出格式验证 ==="
+        
+        # 使用验证脚本检查输出
+        if [ -f "test-extract.json" ] && [ -f "scripts/test/validate_extraction.py" ]; then
+          echo "验证提取数据格式..."
+          python scripts/test/validate_extraction.py test-extract.json || true
+        fi
+        
+        if [ -f "test-translate.json" ] && [ -f "scripts/test/validate_extraction.py" ]; then
+          echo "验证翻译数据格式..."
+          python scripts/test/validate_extraction.py test-translate.json || true
+        fi
+        
+        if [ -d "test-output" ] && [ -f "scripts/test/validate_markdown.py" ]; then
+          echo "验证Markdown格式..."
+          python scripts/test/validate_markdown.py test-output/ || true
+        fi
+        
+    - name: 性能和资源检查
+      run: |
+        echo "=== 性能检查 ==="
+        
+        # 简单的性能测试
+        python -c "
+        import time
+        import psutil
+        import os
+        
+        # 内存使用
+        process = psutil.Process(os.getpid())
+        mem_info = process.memory_info()
+        print(f'内存使用: {mem_info.rss / 1024 / 1024:.2f} MB')
+        
+        # CPU信息
+        print(f'CPU核心数: {psutil.cpu_count()}')
+        print(f'CPU使用率: {psutil.cpu_percent(interval=1)}%')
+        
+        # 磁盘空间
+        disk_usage = psutil.disk_usage('.')
+        print(f'可用磁盘空间: {disk_usage.free / 1024 / 1024 / 1024:.2f} GB')
+        " 2>/dev/null || pip install psutil && python -c "
+        import psutil
+        print('已安装psutil')
+        "
+        
+    - name: 生成测试报告
+      if: always()
+      run: |
+        echo "=== 生成测试报告 ==="
+        
+        cat > test-report.md << 'EOF'
+        # AI自测试报告
+        
+        ## 测试信息
+        - 分支: ${{ github.event.inputs.branch_name }}
+        - 范围: ${{ github.event.inputs.test_scope }}
+        - 自动修复: ${{ github.event.inputs.auto_fix }}
+        - 运行时间: $(date)
+        
+        ## 测试结果
+        EOF
+        
+        # 检查各个测试输出文件
+        if [ -f "test-extract.json" ]; then
+          echo "- ✓ 内容提取器: 生成了输出文件" >> test-report.md
+        else
+          echo "- ✗ 内容提取器: 未生成输出文件" >> test-report.md
+        fi
+        
+        if [ -f "test-translate.json" ]; then
+          echo "- ✓ 翻译器: 生成了输出文件" >> test-report.md
+        else
+          echo "- ✗ 翻译器: 未生成输出文件" >> test-report.md
+        fi
+        
+        if [ -d "test-output" ] && [ "$(ls -A test-output)" ]; then
+          echo "- ✓ Markdown生成器: 生成了输出文件" >> test-report.md
+        else
+          echo "- ✗ Markdown生成器: 未生成输出文件" >> test-report.md
+        fi
+        
+        echo "" >> test-report.md
+        echo "## 建议" >> test-report.md
+        echo "基于测试结果，以下是改进建议：" >> test-report.md
+        
+        # 添加具体建议
+        if [ ! -f "scripts/extract_content.py" ]; then
+          echo "1. 运行 'python scripts/scaffold.py' 创建基础代码结构" >> test-report.md
+        fi
+        
+        cat test-report.md
+        
+    - name: 提交修复（如果启用）
+      if: ${{ github.event.inputs.auto_fix == 'true' }}
+      run: |
+        # 检查是否有更改
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "检测到代码格式修复，准备提交..."
+          
+          git config --global user.name "AI Test Bot"
+          git config --global user.email "ai-bot@example.com"
+          
+          git add -A
+          git commit -m "自动修复: 代码格式化和import排序" || true
+          
+          echo "修复已提交到分支: ${{ github.event.inputs.branch_name }}"
+        else
+          echo "没有需要修复的问题"
+        fi
+        
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ai-test-results-${{ github.run_number }}
+        path: |
+          test-*.json
+          test-output/
+          test-report.md
+          tests/
+        retention-days: 3

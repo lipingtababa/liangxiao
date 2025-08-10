@@ -1,0 +1,20 @@
+# 翻译和内容处理依赖
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+googletrans==4.0.0rc1
+markdown>=3.4.0
+python-frontmatter>=1.0.0
+
+# 图片处理
+Pillow>=10.0.0
+
+# HTML解析和处理
+lxml>=4.9.0
+html2text>=2020.1.16
+
+# 实用工具
+python-dotenv>=1.0.0
+python-slugify>=8.0.0
+
+# 日期处理
+python-dateutil>=2.8.0

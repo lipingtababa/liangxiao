@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Markdown Frontmatter Schema",
+  "description": "Schema for validating YAML frontmatter in generated markdown files",
+  "type": "object",
+  "required": [
+    "title",
+    "date", 
+    "author",
+    "description"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Article title"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Publication date in YYYY-MM-DD format"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Article author"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Article description for SEO"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 50
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "description": "Article tags"
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "description": "Article category"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100,
+      "description": "URL-friendly slug"
+    },
+    "original_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://mp\\.weixin\\.qq\\.com/s/",
+      "description": "Original WeChat article URL"
+    },
+    "original_author": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Original Chinese author name"
+    },
+    "reading_time": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60,
+      "description": "Estimated reading time in minutes"
+    },
+    "word_count": {
+      "type": "integer",
+      "minimum": 10,
+      "description": "Article word count"
+    },
+    "translated": {
+      "type": "boolean",
+      "description": "Whether this article is translated"
+    },
+    "translation_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Translation timestamp"
+    },
+    "featured_image": {
+      "type": "string",
+      "pattern": "^images/[a-zA-Z0-9._-]+\\.(jpg|jpeg|png|webp)$",
+      "description": "Featured image path"
+    },
+    "draft": {
+      "type": "boolean",
+      "description": "Whether this is a draft"
+    },
+    "published": {
+      "type": "boolean",
+      "description": "Publication status"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "zh", "sv"],
+      "description": "Content language"
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "SEO title"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "SEO meta description"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10,
+          "description": "SEO keywords"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

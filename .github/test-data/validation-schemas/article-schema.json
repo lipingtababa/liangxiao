@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WeChat Article Data Schema",
+  "description": "Schema for validating extracted WeChat article data",
+  "type": "object",
+  "required": [
+    "title",
+    "author", 
+    "publish_date",
+    "original_url",
+    "content"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Article title"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Article author"
+    },
+    "publish_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Publication date in YYYY-MM-DD format"
+    },
+    "original_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://mp\\.weixin\\.qq\\.com/s/",
+      "description": "Original WeChat article URL"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Article description or summary"
+    },
+    "content": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "html": {
+          "type": "string",
+          "description": "HTML formatted content"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Plain text content"
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["src", "local_filename"],
+        "properties": {
+          "src": {
+            "type": "string",
+            "format": "uri",
+            "description": "Original image URL"
+          },
+          "alt": {
+            "type": "string",
+            "description": "Image alt text"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Image caption"
+          },
+          "local_filename": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9._-]+\\.(jpg|jpeg|png|webp)$",
+            "description": "Local filename for downloaded image"
+          },
+          "local_path": {
+            "type": "string",
+            "description": "Local file path"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 50
+      },
+      "maxItems": 10,
+      "description": "Article tags"
+    },
+    "category": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "Article category"
+    },
+    "word_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Word count"
+    },
+    "reading_time": {
+      "type": "integer", 
+      "minimum": 1,
+      "description": "Estimated reading time in minutes"
+    },
+    "extraction_metadata": {
+      "type": "object",
+      "properties": {
+        "extracted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Extraction timestamp"
+        },
+        "extractor_version": {
+          "type": "string",
+          "description": "Extractor version"
+        },
+        "content_length": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Original content length"
+        },
+        "image_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of images found"
+        }
+      }
+    },
+    "translation_metadata": {
+      "type": "object",
+      "properties": {
+        "translated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Translation timestamp"
+        },
+        "translator_version": {
+          "type": "string",
+          "description": "Translator version"
+        },
+        "translation_service": {
+          "type": "string",
+          "enum": ["google_translate", "deepl", "custom"],
+          "description": "Translation service used"
+        },
+        "source_language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$",
+          "description": "Source language code"
+        },
+        "target_language": {
+          "type": "string", 
+          "pattern": "^[a-z]{2}$",
+          "description": "Target language code"
+        },
+        "confidence_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Translation confidence score"
+        }
+      }
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100,
+      "description": "URL-friendly slug"
+    },
+    "seo_title": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "SEO optimized title"
+    },
+    "seo_description": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "SEO meta description"
+    }
+  }
+}

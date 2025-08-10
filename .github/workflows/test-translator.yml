@@ -1,0 +1,115 @@
+name: 测试翻译引擎
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_text:
+        description: '要测试的中文文本'
+        required: false
+        default: '这是一个测试文本'
+      target_language:
+        description: '目标语言'
+        required: false
+        default: 'en'
+      debug_mode:
+        description: '启用调试模式'
+        type: boolean
+        default: true
+
+jobs:
+  test-translator:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        pip install -r requirements.txt
+        
+    - name: 准备测试数据
+      run: |
+        echo "准备翻译测试数据..."
+        mkdir -p test-output
+        
+        # 创建测试文件
+        cat > test-input.txt << 'EOF'
+        ${{ github.event.inputs.test_text || '这是一个测试文本。我们需要测试翻译功能是否正常工作。' }}
+        EOF
+        
+    - name: 运行翻译引擎测试
+      env:
+        # AI开发者需要配置这些secrets
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      run: |
+        echo "开始测试翻译引擎..."
+        
+        # 显示输入文本
+        echo "输入文本:"
+        cat test-input.txt
+        echo ""
+        
+        # 这里AI开发者需要实现实际的翻译脚本
+        # python scripts/translate.py --input test-input.txt --output test-output/translated.txt --lang ${{ github.event.inputs.target_language }}
+        
+        echo "翻译测试完成"
+        
+    - name: 验证翻译结果
+      run: |
+        echo "验证翻译结果..."
+        
+        # 检查输出文件
+        if [ -f "test-output/translated.txt" ]; then
+          echo "翻译输出:"
+          cat test-output/translated.txt
+        else
+          echo "警告: 翻译输出文件不存在"
+        fi
+        
+        # 运行验证脚本
+        # python scripts/test/validate_translation.py test-output/translated.txt
+        
+    - name: 质量检查
+      run: |
+        echo "执行翻译质量检查..."
+        
+        # 检查翻译长度合理性
+        INPUT_LENGTH=$(wc -c < test-input.txt)
+        if [ -f "test-output/translated.txt" ]; then
+          OUTPUT_LENGTH=$(wc -c < test-output/translated.txt)
+          echo "输入长度: $INPUT_LENGTH 字符"
+          echo "输出长度: $OUTPUT_LENGTH 字符"
+          
+          # 简单的长度检查（翻译结果不应该为空或过短）
+          if [ $OUTPUT_LENGTH -lt 5 ]; then
+            echo "错误: 翻译结果太短"
+            exit 1
+          fi
+        fi
+        
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: translator-test-results
+        path: |
+          test-input.txt
+          test-output/
+          *.log
+        retention-days: 7
+        
+    - name: 输出测试摘要
+      if: always()
+      run: |
+        echo "## 翻译引擎测试摘要" >> $GITHUB_STEP_SUMMARY
+        echo "- 测试文本: ${{ github.event.inputs.test_text || '默认测试文本' }}" >> $GITHUB_STEP_SUMMARY  
+        echo "- 目标语言: ${{ github.event.inputs.target_language }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,181 @@
+name: 测试Markdown生成器
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_title:
+        description: '测试文章标题'
+        required: false
+        default: '测试文章标题'
+      test_content:
+        description: '测试文章内容'
+        required: false
+        default: ''
+      debug_mode:
+        description: '启用调试模式'
+        type: boolean
+        default: true
+
+jobs:
+  test-markdown-generator:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        pip install -r requirements.txt
+        
+    - name: 准备测试数据
+      run: |
+        echo "准备Markdown生成测试数据..."
+        mkdir -p test-output
+        mkdir -p test-input
+        
+        # 创建测试用的文章数据
+        cat > test-input/article-data.json << 'EOF'
+        {
+          "title": "${{ github.event.inputs.test_title || '测试文章标题' }}",
+          "content": "${{ github.event.inputs.test_content || '这是测试文章的内容。包含多个段落和格式。' }}",
+          "author": "瑞典马工",
+          "publish_date": "2024-01-15",
+          "original_url": "https://mp.weixin.qq.com/s/test123",
+          "images": [
+            {
+              "src": "https://example.com/image1.jpg",
+              "alt": "测试图片1",
+              "local_path": "images/test-image1.jpg"
+            }
+          ],
+          "tags": ["测试", "样例"],
+          "category": "技术"
+        }
+        EOF
+        
+    - name: 运行Markdown生成器测试
+      run: |
+        echo "开始测试Markdown生成器..."
+        
+        # 显示输入数据
+        echo "输入数据:"
+        cat test-input/article-data.json
+        echo ""
+        
+        # 这里AI开发者需要实现实际的Markdown生成脚本
+        # python scripts/generate_markdown.py --input test-input/article-data.json --output test-output/
+        
+        echo "Markdown生成测试完成"
+        
+    - name: 验证生成的Markdown
+      run: |
+        echo "验证生成的Markdown文件..."
+        
+        # 检查输出目录
+        if [ -d "test-output" ]; then
+          echo "输出文件:"
+          ls -la test-output/
+          
+          # 检查Markdown文件
+          for md_file in test-output/*.md; do
+            if [ -f "$md_file" ]; then
+              echo "=== $md_file 内容 ==="
+              head -20 "$md_file"
+              echo ""
+            fi
+          done
+        else
+          echo "错误: 输出目录不存在"
+          exit 1
+        fi
+        
+    - name: YAML Frontmatter验证
+      run: |
+        echo "验证YAML frontmatter..."
+        
+        # 检查每个markdown文件的frontmatter
+        for md_file in test-output/*.md; do
+          if [ -f "$md_file" ]; then
+            echo "检查 $md_file 的frontmatter..."
+            
+            # 提取frontmatter（假设在前面几行）
+            head -15 "$md_file" | grep -E "^(title:|date:|author:|tags:|category:)" || echo "警告: 某些frontmatter字段可能缺失"
+            
+            # 检查是否有三个连字符分隔符
+            if head -1 "$md_file" | grep -q "^---$"; then
+              echo "✓ frontmatter格式正确"
+            else
+              echo "✗ frontmatter格式错误"
+              exit 1
+            fi
+          fi
+        done
+        
+    - name: 内容格式验证
+      run: |
+        echo "验证Markdown内容格式..."
+        
+        # 运行自定义验证脚本
+        # python scripts/test/validate_markdown.py test-output/
+        
+        # 基本格式检查
+        for md_file in test-output/*.md; do
+          if [ -f "$md_file" ]; then
+            echo "检查 $md_file 的内容格式..."
+            
+            # 检查是否包含标题
+            if grep -q "^# " "$md_file"; then
+              echo "✓ 包含主标题"
+            else
+              echo "✗ 缺少主标题"
+            fi
+            
+            # 检查图片引用格式
+            if grep -q "!\[.*\](.*)" "$md_file"; then
+              echo "✓ 包含图片引用"
+            fi
+            
+            # 检查文件大小
+            SIZE=$(wc -c < "$md_file")
+            echo "文件大小: $SIZE 字节"
+            
+            if [ $SIZE -lt 50 ]; then
+              echo "警告: 文件内容太短"
+            fi
+          fi
+        done
+        
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: markdown-generator-test-results
+        path: |
+          test-input/
+          test-output/
+          *.log
+        retention-days: 7
+        
+    - name: 输出测试摘要
+      if: always()
+      run: |
+        echo "## Markdown生成器测试摘要" >> $GITHUB_STEP_SUMMARY
+        echo "- 测试标题: ${{ github.event.inputs.test_title || '默认测试标题' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        
+        # 添加生成的文件列表
+        if [ -d "test-output" ]; then
+          echo "- 生成的文件:" >> $GITHUB_STEP_SUMMARY
+          for file in test-output/*; do
+            if [ -f "$file" ]; then
+              echo "  - $(basename "$file")" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+        fi

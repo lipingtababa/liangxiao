@@ -1,0 +1,24 @@
+{
+  "name": "magong-blog",
+  "version": "1.0.0",
+  "description": "Swedish Ma Gong - Translated articles for international audience",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "translate": "python scripts/translate.py"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remark": "^15.0.0",
+    "remark-html": "^16.0.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0"
+  }
+}

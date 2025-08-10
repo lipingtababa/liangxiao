@@ -1,0 +1,35 @@
+{
+  "title": "测试文章标题 - 瑞典的技术工作经验分享",
+  "author": "瑞典马工",
+  "publish_date": "2024-01-15",
+  "original_url": "https://mp.weixin.qq.com/s/test123",
+  "description": "这是一篇测试用的微信文章样本，用于测试内容提取功能",
+  "content": {
+    "html": "<h2>第一部分：技术环境介绍</h2><p>在瑞典的技术公司工作有很多有趣的经历。这里的工作文化注重平衡，技术栈也比较现代。</p><p>主要使用的技术包括：</p><ul><li>Python 和 Django</li><li>JavaScript 和 React</li><li>Docker 和 Kubernetes</li></ul><h2>第二部分：工作生活平衡</h2><p>瑞典非常注重工作生活平衡，这对程序员来说是很大的优势。</p>",
+    "text": "第一部分：技术环境介绍\n在瑞典的技术公司工作有很多有趣的经历。这里的工作文化注重平衡，技术栈也比较现代。\n\n主要使用的技术包括：\n- Python 和 Django\n- JavaScript 和 React\n- Docker 和 Kubernetes\n\n第二部分：工作生活平衡\n瑞典非常注重工作生活平衡，这对程序员来说是很大的优势。"
+  },
+  "images": [
+    {
+      "src": "https://mmbiz.qpic.cn/mmbiz_jpg/test-image-1/0?wx_fmt=jpeg",
+      "alt": "瑞典办公环境",
+      "caption": "图：典型的瑞典科技公司办公环境",
+      "local_filename": "sweden-office-environment.jpg"
+    },
+    {
+      "src": "https://mmbiz.qpic.cn/mmbiz_png/test-image-2/0?wx_fmt=png",
+      "alt": "斯德哥尔摩技术meetup", 
+      "caption": "图：斯德哥尔摩技术meetup现场",
+      "local_filename": "stockholm-tech-meetup.png"
+    }
+  ],
+  "tags": ["技术", "瑞典", "工作经验", "程序员"],
+  "category": "技术分享",
+  "word_count": 245,
+  "reading_time": 2,
+  "extraction_metadata": {
+    "extracted_at": "2024-01-15T10:30:00Z",
+    "extractor_version": "1.0.0",
+    "content_length": 1250,
+    "image_count": 2
+  }
+}
