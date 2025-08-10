@@ -77,6 +77,9 @@ else:
     - name: 测试翻译器
       id: test_translator
       continue-on-error: true
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+        DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
       run: |
         echo "=== 测试翻译器 ==="
         

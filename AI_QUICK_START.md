@@ -121,6 +121,11 @@ command: "find . -name '*.py'"
 python_test: "import requests; print('requests OK')"
 ```
 
+### 问题4: 翻译API不工作
+检查API密钥是否正确配置：
+- 在GitHub Secrets中应该有 `GOOGLE_GEMINI_API_KEY`
+- 使用环境变量: `os.environ.get('GOOGLE_API_KEY')`
+
 ### 问题3: 脚本不执行
 ```bash
 # 检查权限和语法

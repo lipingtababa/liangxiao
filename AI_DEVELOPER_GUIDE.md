@@ -196,10 +196,12 @@ A: 运行 `ai-self-test.yml` 并启用 `auto_fix`
 A: 永远不要在日志中打印secrets，使用环境变量：
 ```python
 import os
-api_key = os.environ.get('GOOGLE_API_KEY', '')
+api_key = os.environ.get('GOOGLE_API_KEY', '')  # 映射到 GOOGLE_GEMINI_API_KEY
 if not api_key:
     raise ValueError("API密钥未配置")
 ```
+
+**重要**: GitHub Secrets中的密钥名为 `GOOGLE_GEMINI_API_KEY`，但在代码中使用 `GOOGLE_API_KEY` 环境变量。
 
 ### 10. 提交规范
 
