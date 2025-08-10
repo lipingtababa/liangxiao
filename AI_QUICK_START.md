@@ -125,6 +125,7 @@ python_test: "import requests; print('requests OK')"
 检查API密钥是否正确配置：
 - 在GitHub Secrets中应该有 `GOOGLE_GEMINI_API_KEY`
 - 使用环境变量: `os.environ.get('GOOGLE_API_KEY')`
+- 只使用Google翻译，保持简单
 
 ### 问题3: 脚本不执行
 ```bash

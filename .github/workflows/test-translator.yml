@@ -45,9 +45,8 @@ jobs:
         
     - name: 运行翻译引擎测试
       env:
-        # AI开发者需要配置这些secrets
+        # AI开发者需要配置这个secret
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
-        DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
       run: |
         echo "开始测试翻译引擎..."
         

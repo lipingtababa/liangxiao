@@ -9,7 +9,6 @@ GitHub Secrets中的密钥名称和代码中使用的环境变量名称**不同*
 | GitHub Secret 名称 | 代码中的环境变量 | 用途 |
 |-------------------|------------------|------|
 | `GOOGLE_GEMINI_API_KEY` | `GOOGLE_API_KEY` | Google翻译服务 |
-| `DEEPL_API_KEY` | `DEEPL_API_KEY` | DeepL翻译服务 |
 
 ### **在代码中正确使用:**
 
@@ -18,7 +17,6 @@ import os
 
 # 正确的用法
 google_api_key = os.environ.get('GOOGLE_API_KEY', '')  # 会自动映射到 GOOGLE_GEMINI_API_KEY
-deepl_api_key = os.environ.get('DEEPL_API_KEY', '')
 
 # 错误的用法 - 不要这样做
 # wrong_key = os.environ.get('GOOGLE_GEMINI_API_KEY', '')  # 这样取不到值
@@ -31,7 +29,6 @@ deepl_api_key = os.environ.get('DEEPL_API_KEY', '')
 ```yaml
 env:
   GOOGLE_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
-  DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
 ```
 
 ## 📋 **API密钥检查清单**
