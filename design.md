@@ -1,201 +1,200 @@
-# System Design Document: WeChat Article Translation & Publishing System
+# 系统设计文档：微信文章翻译发布系统
 
-## Architecture Overview
+## 架构概览
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  WeChat Article │────>│ Translation      │────>│  magong.se      │
-│      URLs       │     │    Pipeline      │     │   (Vercel)      │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-        │                       │                         │
+│  微信文章URLs   │────>│   翻译流水线     │────>│  magong.se      │
+└─────────────────┘     └──────────────────┘     │   (Vercel)      │
+        │                       │                 └─────────────────┘
         │                       ▼                         │
         │               ┌──────────────────┐             │
-        └──────────────>│  Local Storage   │<────────────┘
-                        │  - Articles      │
-                        │  - Images        │
+        └──────────────>│   本地存储       │<────────────┘
+                        │  - 文章          │
+                        │  - 图片          │
                         └──────────────────┘
 ```
 
-## System Components
+## 系统组件
 
-### 1. Translation Pipeline (`scripts/translate.py`)
+### 1. 翻译流水线 (`scripts/translate.py`)
 
-#### Purpose
-Main script that orchestrates the entire translation and publishing process.
+#### 目的
+主脚本，协调整个翻译和发布流程。
 
-#### Design Decisions
-- **Single Entry Point**: One script handles the entire workflow for simplicity
-- **Modular Functions**: Separate functions for extraction, translation, and publishing
-- **Error Recovery**: Each step can fail independently without breaking the entire pipeline
-- **Idempotency**: Running the same URL twice won't create duplicates
+#### 设计决策
+- **单一入口**：一个脚本处理整个工作流程，保持简单
+- **模块化函数**：提取、翻译、发布功能分离
+- **错误恢复**：每个步骤独立失败，不影响整个流程
+- **幂等性**：重复运行同一URL不会创建重复内容
 
-#### Core Modules
+#### 核心模块
 
 ```python
-# Module structure
+# 模块结构
 translate.py
-├── ArticleExtractor     # Fetches and parses WeChat articles
-├── ContentTranslator    # Handles translation logic
-├── ImageProcessor       # Downloads and optimizes images
-├── MarkdownGenerator    # Creates markdown files
-└── GitPublisher        # Commits and pushes to GitHub
+├── ArticleExtractor     # 获取和解析微信文章
+├── ContentTranslator    # 处理翻译逻辑
+├── ImageProcessor       # 下载和优化图片
+├── MarkdownGenerator    # 创建markdown文件
+└── GitPublisher        # 提交并推送到GitHub
 ```
 
-#### Data Flow
+#### 数据流
 
 ```
-URL Input → Fetch HTML → Extract Content → Translate Text → Process Images 
-    → Generate Markdown → Save Locally → Git Commit → Push to GitHub
+URL输入 → 获取HTML → 提取内容 → 翻译文本 → 处理图片 
+    → 生成Markdown → 本地保存 → Git提交 → 推送到GitHub
 ```
 
-### 2. Blog Application (Next.js)
+### 2. 博客应用 (Next.js)
 
-#### Technology Choice: Next.js
-- **Static Site Generation (SSG)**: Pre-builds pages for optimal performance
-- **Markdown Support**: Native support for markdown content
-- **Image Optimization**: Built-in image optimization
-- **Vercel Integration**: Seamless deployment with Vercel
+#### 技术选择：Next.js
+- **静态站点生成 (SSG)**：预构建页面，性能最优
+- **Markdown支持**：原生支持markdown内容
+- **图片优化**：内置图片优化功能
+- **Vercel集成**：与Vercel无缝部署
 
-#### Directory Structure
+#### 目录结构
 
 ```
 liangxiao/
 ├── pages/
-│   ├── index.js           # Homepage with article list
+│   ├── index.js           # 首页，文章列表
 │   ├── posts/
-│   │   └── [slug].js      # Dynamic article pages
-│   └── _app.js            # App wrapper with global styles
-├── posts/                 # Markdown articles (data)
-│   ├── 2025-01-15-article-title.md
+│   │   └── [slug].js      # 动态文章页面
+│   └── _app.js            # 应用包装器，全局样式
+├── posts/                 # Markdown文章（数据）
+│   ├── 2025-01-15-文章标题.md
 │   └── ...
 ├── public/
-│   ├── images/           # Article images
-│   │   └── [hash]/       # Organized by article
+│   ├── images/           # 文章图片
+│   │   └── [hash]/       # 按文章组织
 │   └── favicon.ico
 ├── lib/
-│   └── posts.js          # Post data fetching utilities
+│   └── posts.js          # 文章数据获取工具
 ├── styles/
-│   └── globals.css       # Global styles
+│   └── globals.css       # 全局样式
 └── scripts/
-    └── translate.py      # Translation pipeline
+    └── translate.py      # 翻译流水线
 ```
 
-#### Page Components
+#### 页面组件
 
-1. **Homepage (`pages/index.js`)**
-   - Lists all articles in reverse chronological order
-   - Shows title, excerpt, date, and original title
-   - Responsive grid layout
+1. **首页 (`pages/index.js`)**
+   - 按时间倒序列出所有文章
+   - 显示标题、摘要、日期和原始标题
+   - 响应式网格布局
 
-2. **Article Page (`pages/posts/[slug].js`)**
-   - Renders markdown content as HTML
-   - Shows metadata (date, original link, reading time)
-   - Responsive typography optimized for reading
+2. **文章页面 (`pages/posts/[slug].js`)**
+   - 将markdown渲染为HTML
+   - 显示元数据（日期、原文链接、阅读时间）
+   - 为阅读优化的响应式排版
 
-3. **Layout Components**
-   - Header with site title and navigation
-   - Footer with attribution and links
-   - Sidebar for future enhancements
+3. **布局组件**
+   - 带有站点标题和导航的页头
+   - 带有署名和链接的页脚
+   - 为未来增强预留的侧边栏
 
-### 3. Data Models
+### 3. 数据模型
 
-#### Article Metadata (Frontmatter)
+#### 文章元数据 (Frontmatter)
 
 ```yaml
 ---
-title: "English Title Here"
-originalTitle: "中文标题"
+title: "英文标题"
+originalTitle: "中文原标题"
 date: "2025-01-15"
 author: "瑞典马工"
-excerpt: "Brief description of the article"
+excerpt: "文章简要描述"
 originalUrl: "https://mp.weixin.qq.com/s/xxxxx"
 images: 
   - "/images/article-hash/image1.jpg"
   - "/images/article-hash/image2.jpg"
-tags: ["sweden", "technology", "culture"]
+tags: ["瑞典", "技术", "文化"]
 readingTime: 5
 ---
 ```
 
-#### File Naming Convention
+#### 文件命名规范
 
 ```
-Format: YYYY-MM-DD-slug-from-title.md
-Example: 2025-01-15-swedish-tech-innovation.md
+格式: YYYY-MM-DD-标题-slug.md
+示例: 2025-01-15-swedish-tech-innovation.md
 ```
 
-### 4. Translation Strategy
+### 4. 翻译策略
 
-#### Translation Service: Google Translate API
+#### 翻译服务：Google Translate API
 
 ```python
 class ContentTranslator:
     def translate(self, text, source='zh-CN', target='en'):
-        # Chunk text if > 5000 characters
-        # Preserve formatting markers
-        # Apply glossary replacements
-        # Return translated text
+        # 如果文本超过5000字符则分块
+        # 保留格式标记
+        # 应用词汇表替换
+        # 返回翻译后的文本
 ```
 
-#### Content Adaptation Rules
+#### 内容适配规则
 
-1. **Cultural Context**
+1. **文化背景**
    ```
-   Original: "春节期间" 
-   Direct: "During Spring Festival"
-   Adapted: "During Spring Festival (Chinese New Year)"
-   ```
-
-2. **Measurements**
-   ```
-   Original: "100公里"
-   Adapted: "100 kilometers (62 miles)"
+   原文: "春节期间" 
+   直译: "During Spring Festival"
+   适配: "During Spring Festival (Chinese New Year)"
    ```
 
-3. **Proper Nouns**
-   - Keep original Chinese names with pinyin
-   - Add explanations for institutions/places
+2. **度量单位**
+   ```
+   原文: "100公里"
+   适配: "100 kilometers (62 miles)"
+   ```
 
-#### Translation Glossary
+3. **专有名词**
+   - 保留原始中文名称并加拼音
+   - 为机构/地点添加解释
+
+#### 翻译词汇表
 
 ```python
 GLOSSARY = {
     "瑞典马工": "Swedish Ma Gong",
     "斯德哥尔摩": "Stockholm",
     "微信": "WeChat",
-    # Add more terms as needed
+    # 根据需要添加更多术语
 }
 ```
 
-### 5. Image Processing
+### 5. 图片处理
 
-#### Image Pipeline
+#### 图片流水线
 
 ```python
 class ImageProcessor:
     def process(self, image_url, article_hash):
-        # Download image from WeChat CDN
-        # Generate unique filename
-        # Optimize for web (compress, resize)
-        # Save to public/images/[article_hash]/
-        # Return local path
+        # 从微信CDN下载图片
+        # 生成唯一文件名
+        # 为网页优化（压缩、调整大小）
+        # 保存到 public/images/[article_hash]/
+        # 返回本地路径
 ```
 
-#### Image Optimization
-- Max width: 1200px
-- Format: WebP with JPEG fallback
-- Compression: 85% quality
-- Lazy loading enabled
+#### 图片优化
+- 最大宽度：1200px
+- 格式：WebP，JPEG作为备用
+- 压缩：85%质量
+- 启用延迟加载
 
-### 6. Deployment Architecture
+### 6. 部署架构
 
-#### GitHub Repository
+#### GitHub仓库
 ```
-Repository: lipingtababa/liangxiao
-Branch: main (production)
+仓库: lipingtababa/liangxiao
+分支: main (生产环境)
 ```
 
-#### Vercel Configuration
+#### Vercel配置
 
 ```json
 {
@@ -207,34 +206,34 @@ Branch: main (production)
 }
 ```
 
-#### Deployment Flow
-1. Developer runs `python scripts/translate.py [URL]`
-2. Script generates markdown and images
-3. Git commit and push to main branch
-4. Vercel detects push and triggers build
-5. Site updates at magong.se
+#### 部署流程
+1. 开发者运行 `python scripts/translate.py [URL]`
+2. 脚本生成markdown和图片
+3. Git提交并推送到main分支
+4. Vercel检测到推送并触发构建
+5. 网站在magong.se更新
 
-### 7. Error Handling
+### 7. 错误处理
 
-#### Error Categories
+#### 错误类别
 
-1. **Extraction Errors**
-   - Invalid URL
-   - Network timeout
-   - Content parsing failure
-   - **Recovery**: Log error, skip article
+1. **提取错误**
+   - 无效的URL
+   - 网络超时
+   - 内容解析失败
+   - **恢复**：记录错误，跳过文章
 
-2. **Translation Errors**
-   - API rate limit
-   - Service unavailable
-   - **Recovery**: Retry with exponential backoff
+2. **翻译错误**
+   - API速率限制
+   - 服务不可用
+   - **恢复**：指数退避重试
 
-3. **Publishing Errors**
-   - Git conflicts
-   - Build failures
-   - **Recovery**: Manual intervention required
+3. **发布错误**
+   - Git冲突
+   - 构建失败
+   - **恢复**：需要人工干预
 
-#### Logging Strategy
+#### 日志策略
 
 ```python
 import logging
@@ -249,112 +248,112 @@ logging.basicConfig(
 )
 ```
 
-## Security Considerations
+## 安全考虑
 
-1. **API Keys**
-   - Store in environment variables
-   - Never commit to repository
-   - Use `.env.local` for local development
+1. **API密钥**
+   - 存储在环境变量中
+   - 永不提交到仓库
+   - 本地开发使用`.env.local`
 
-2. **Content Sanitization**
-   - Sanitize HTML to prevent XSS
-   - Validate image URLs
-   - Escape special characters
+2. **内容净化**
+   - 净化HTML以防止XSS
+   - 验证图片URL
+   - 转义特殊字符
 
-3. **Rate Limiting**
-   - Implement delays between API calls
-   - Cache translations locally
-   - Monitor API usage
+3. **速率限制**
+   - 在API调用之间实施延迟
+   - 本地缓存翻译
+   - 监控API使用情况
 
-## Performance Optimization
+## 性能优化
 
-1. **Static Generation**
-   - Pre-build all pages at build time
-   - Incremental Static Regeneration for updates
+1. **静态生成**
+   - 构建时预构建所有页面
+   - 增量静态重新生成用于更新
 
-2. **Image Optimization**
-   - Lazy loading
-   - Modern formats (WebP)
-   - Responsive images
+2. **图片优化**
+   - 延迟加载
+   - 现代格式（WebP）
+   - 响应式图片
 
-3. **Caching**
-   - CDN caching via Vercel
-   - Browser caching headers
-   - Local translation cache
+3. **缓存**
+   - 通过Vercel的CDN缓存
+   - 浏览器缓存头
+   - 本地翻译缓存
 
-## Testing Strategy
+## 测试策略
 
-1. **Unit Tests**
-   - Translation functions
-   - Markdown generation
-   - Image processing
+1. **单元测试**
+   - 翻译函数
+   - Markdown生成
+   - 图片处理
 
-2. **Integration Tests**
-   - Full pipeline test
-   - Deployment verification
+2. **集成测试**
+   - 完整流水线测试
+   - 部署验证
 
-3. **Manual Testing**
-   - Visual review of translated articles
-   - Mobile responsiveness
-   - Cross-browser compatibility
+3. **人工测试**
+   - 翻译文章的视觉审查
+   - 移动端响应性
+   - 跨浏览器兼容性
 
-## Monitoring & Maintenance
+## 监控和维护
 
-1. **Monitoring**
-   - Vercel analytics
-   - Build status notifications
-   - Error logging
+1. **监控**
+   - Vercel分析
+   - 构建状态通知
+   - 错误日志
 
-2. **Maintenance Tasks**
-   - Update dependencies monthly
-   - Review translation quality
-   - Clean up old images
-   - Backup articles
+2. **维护任务**
+   - 每月更新依赖
+   - 审查翻译质量
+   - 清理旧图片
+   - 备份文章
 
-## Development Workflow
+## 开发工作流程
 
-1. **Adding New Article**
+1. **添加新文章**
    ```bash
-   # 1. Get article URL
-   # 2. Run translation script
+   # 1. 获取文章URL
+   # 2. 运行翻译脚本
    python scripts/translate.py "https://mp.weixin.qq.com/s/xxxxx"
    
-   # 3. Review generated markdown
-   cat posts/2025-01-15-article-title.md
+   # 3. 审查生成的markdown
+   cat posts/2025-01-15-文章标题.md
    
-   # 4. Make manual adjustments if needed
+   # 4. 如需要进行手动调整
    
-   # 5. Commit and deploy
+   # 5. 提交并部署
    git add .
-   git commit -m "Add article: [title]"
+   git commit -m "添加文章: [标题]"
    git push
    ```
 
-2. **Local Development**
+2. **本地开发**
    ```bash
-   # Install dependencies
+   # 安装依赖
    npm install
    
-   # Run development server
+   # 运行开发服务器
    npm run dev
    
-   # View at http://localhost:3000
+   # 在 http://localhost:3000 查看
    ```
 
-## Future Enhancements
+## 未来增强
 
-### Phase 2
-- Implement RSS feed
-- Add search functionality
-- Create category pages
-- Implement related articles
+### 第二阶段
+- 实现RSS订阅
+- 添加搜索功能
+- 创建分类页面
+- 实现相关文章
 
-### Phase 3
-- Add commenting system
-- Implement newsletter
-- Create admin dashboard
-- Add analytics
+### 第三阶段
+- 添加评论系统
+- 实现通讯订阅
+- 创建管理仪表板
+- 添加分析功能
 
-## Conclusion
+## 结论
 
-This design provides a simple, maintainable solution for translating and publishing WeChat articles. The manual process ensures quality control while the automated publishing reduces repetitive work. The system is designed to be extended as needs grow.
+这个设计提供了一个简单、可维护的解决方案来翻译和发布微信文章。手动流程确保质量控制，而自动化发布减少了重复工作。系统设计为随着需求增长而扩展。

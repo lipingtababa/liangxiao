@@ -1,155 +1,155 @@
-# WeChat Article Translator & Publisher
+# 微信文章翻译发布系统
 
-An automated tool that monitors the WeChat official account "瑞典马工" (Swedish Ma Gong), translates articles to English, and publishes them to magong.se via Vercel.
+一个自动化工具，用于监控微信公众号"瑞典马工"，将文章翻译成英文并发布到 magong.se（通过 Vercel）。
 
-## Overview
+## 项目概述
 
-This project bridges the gap between Chinese WeChat content and international audiences by providing high-quality English translations of articles from "瑞典马工".
+本项目通过提供"瑞典马工"文章的高质量英文翻译，在中文微信内容和国际读者之间架起桥梁。
 
-### Target Audience
-- International readers interested in Swedish-Chinese perspectives
-- English-speaking professionals and academics
-- People interested in cross-cultural content about Sweden
+### 目标受众
+- 对瑞典-中国视角感兴趣的国际读者
+- 英语专业人士和学者
+- 对瑞典跨文化内容感兴趣的人
 
-### Key Features
-- Manual article URL input with batch processing support
-- Automatic content extraction from WeChat articles
-- Chinese to English translation with cultural adaptation
-- Publishing to magong.se through Vercel
-- Image downloading and optimization
-- Mobile-responsive blog design
+### 核心功能
+- 手动输入文章URL，支持批量处理
+- 自动从微信文章中提取内容
+- 中英翻译，并进行文化适配
+- 通过 Vercel 发布到 magong.se
+- 图片下载和优化
+- 移动端响应式博客设计
 
-## Requirements
+## 需求说明
 
-### Functional Requirements
+### 功能需求
 
-#### 1. Article Input
-- **Manual URL Input**: User provides WeChat article URLs manually
-- **Batch Processing**: Support for processing multiple URLs at once
-- **Article Metadata**: Extract title, author, date, and original URL
+#### 1. 文章输入
+- **手动URL输入**：用户手动提供微信文章URL
+- **批量处理**：支持一次处理多个URL
+- **文章元数据**：提取标题、作者、日期和原始URL
 
-#### 2. Content Extraction
-- **Text Extraction**: Extract main article text from WeChat HTML
-- **Image Handling**: Download and store all images from articles
-- **Format Preservation**: Maintain paragraph structure, headings, lists
-- **Special Elements**: Preserve quotes, code blocks, tables if present
+#### 2. 内容提取
+- **文本提取**：从微信HTML中提取文章主体文本
+- **图片处理**：下载并存储文章中的所有图片
+- **格式保留**：保持段落结构、标题、列表
+- **特殊元素**：保留引用、代码块、表格（如果存在）
 
-#### 3. Translation
-- **Language**: Chinese (Simplified/Traditional) → English
-- **Quality**: Use reliable translation service (Google Translate API)
-- **Adaptation**: Adjust content for international audience:
-  - Add context for China-specific references
-  - Explain cultural nuances
-  - Localize idioms and expressions
-- **Glossary**: Maintain consistent translation for:
+#### 3. 翻译
+- **语言**：中文（简体/繁体）→ 英文
+- **质量**：使用可靠的翻译服务（Google Translate API）
+- **适配**：为国际受众调整内容：
+  - 为中国特定内容添加背景说明
+  - 解释文化细节
+  - 本地化习语和表达
+- **词汇表**：保持一致的翻译：
   - "瑞典马工" → "Swedish Ma Gong"
-  - Technical terms
-  - Proper nouns
+  - 技术术语
+  - 专有名词
 
-#### 4. Publishing
-- **Platform**: Deploy to magong.se via Vercel
-- **Format**: Markdown files with frontmatter
-- **URL Structure**: `/posts/[date]-[slug]`
-- **Images**: Hosted in `/public/images/`
-- **Attribution**: Always include link to original article
+#### 4. 发布
+- **平台**：通过 Vercel 部署到 magong.se
+- **格式**：带有 frontmatter 的 Markdown 文件
+- **URL结构**：`/posts/[日期]-[标题]`
+- **图片**：托管在 `/public/images/`
+- **署名**：始终包含原文链接
 
-#### 5. Blog Features
-- **Homepage**: List all articles chronologically
-- **Article Page**: Display individual articles with:
-  - Title (English and original Chinese)
-  - Publication date
-  - Reading time estimate
-  - Original article link
-  - Translated content
-- **Mobile Responsive**: Work on all devices
-- **SEO Friendly**: Meta tags, structured data
+#### 5. 博客功能
+- **首页**：按时间顺序列出所有文章
+- **文章页面**：显示单篇文章，包含：
+  - 标题（英文和中文原文）
+  - 发布日期
+  - 预计阅读时间
+  - 原文链接
+  - 翻译内容
+- **移动端响应式**：适配所有设备
+- **SEO友好**：元标签、结构化数据
 
-### Non-Functional Requirements
+### 非功能需求
 
-#### Performance
-- Page load time < 3 seconds
-- Image optimization for web
-- Static site generation for fast delivery
+#### 性能
+- 页面加载时间 < 3秒
+- 图片针对网页优化
+- 静态站点生成，快速交付
 
-#### Usability
-- Clean, readable typography
-- Simple navigation
-- Accessible design (WCAG 2.1 AA compliance)
+#### 可用性
+- 清晰、易读的排版
+- 简单的导航
+- 无障碍设计（WCAG 2.1 AA合规）
 
-#### Reliability
-- Graceful handling of translation failures
-- Image fallbacks if download fails
-- Error logging and reporting
+#### 可靠性
+- 优雅处理翻译失败
+- 图片下载失败时的备用方案
+- 错误日志和报告
 
-## The Challenge
+## 挑战
 
-WeChat is notoriously closed to external access, making it difficult to:
-- Programmatically follow official accounts
-- Retrieve article lists and content
-- Extract images and media from articles
-- Maintain formatting during extraction
+微信是出了名的封闭系统，这使得以下操作变得困难：
+- 程序化关注公众号
+- 获取文章列表和内容
+- 提取图片和媒体文件
+- 提取时保持格式
 
-## Solution Approach
+## 解决方案
 
-### Extraction Method: Manual Feed with Semi-Automation
-- Manually copy article URLs
-- Automate extraction, translation, and publishing
-- Most reliable approach given WeChat's restrictions
+### 提取方法：手动输入 + 半自动化
+- 手动复制文章URL
+- 自动化提取、翻译和发布
+- 考虑到微信的限制，这是最可靠的方法
 
-### Translation Pipeline
+### 翻译流程
 
 ```
-WeChat Article → Content Extraction → Translation API → Format Preservation → Vercel Publish
+微信文章 → 内容提取 → 翻译API → 格式保留 → Vercel发布
 ```
 
-- **Content Extraction**: Parse HTML, extract text and images
-- **Translation**: Use Google Translate API for Chinese→English
-- **Format Preservation**: Maintain article structure, headings, and image placement
-- **Image Handling**: Download and re-host images on Vercel CDN
+- **内容提取**：解析HTML，提取文本和图片
+- **翻译**：使用Google Translate API进行中英翻译
+- **格式保留**：保持文章结构、标题和图片位置
+- **图片处理**：下载并在Vercel CDN上重新托管图片
 
-## Technical Architecture
+## 技术架构
 
 ```
 liangxiao/
 ├── scripts/
-│   └── translate.py           # Main translation script
-├── posts/                     # Markdown articles
-│   └── YYYY-MM-DD-title.md
+│   └── translate.py           # 主翻译脚本
+├── posts/                     # Markdown文章
+│   └── YYYY-MM-DD-标题.md
 ├── public/
-│   └── images/               # Article images
+│   └── images/               # 文章图片
 ├── pages/
-│   ├── index.js              # Homepage
+│   ├── index.js              # 首页
 │   └── posts/
-│       └── [slug].js         # Article pages
+│       └── [slug].js         # 文章页面
 ├── lib/
-│   └── posts.js              # Post utilities
-├── package.json              # Node dependencies
-├── requirements.txt          # Python dependencies
-└── design.md                 # Detailed design doc
+│   └── posts.js              # 文章工具函数
+├── package.json              # Node依赖
+├── requirements.txt          # Python依赖
+└── design.md                 # 详细设计文档
 ```
 
-## Installation
+## 安装说明
 
 ```bash
-# Clone repository
+# 克隆仓库
 git clone https://github.com/lipingtababa/liangxiao
 cd liangxiao
 
-# Install Python dependencies
+# 安装Python依赖
 pip install -r requirements.txt
 
-# Install Node dependencies
+# 安装Node依赖
 npm install
 
-# Configure environment
+# 配置环境
 cp .env.example .env
-# Edit .env with your API keys
+# 编辑.env文件，添加你的API密钥
 ```
 
-## Configuration
+## 配置
 
 ```python
-# config.py example
+# config.py 示例
 WECHAT_ACCOUNT = "瑞典马工"
 TARGET_LANGUAGE = "en"
 VERCEL_TOKEN = "your-vercel-token"
@@ -157,126 +157,126 @@ VERCEL_PROJECT = "magong-se"
 TRANSLATION_API = "google"
 ```
 
-## Usage
+## 使用方法
 
-### Translate Single Article
+### 翻译单篇文章
 ```bash
 python scripts/translate.py "https://mp.weixin.qq.com/s/xxxxx"
 ```
 
-### Batch Process Articles
+### 批量处理文章
 ```bash
 python scripts/translate.py --batch articles.txt
 ```
 
-### Local Development
+### 本地开发
 ```bash
-# Run development server
+# 运行开发服务器
 npm run dev
-# View at http://localhost:3000
+# 在 http://localhost:3000 查看
 ```
 
-### Deploy to Vercel
+### 部署到Vercel
 ```bash
-# Commit changes
+# 提交更改
 git add .
-git commit -m "Add new article"
+git commit -m "添加新文章"
 git push
 
-# Vercel auto-deploys from GitHub
+# Vercel从GitHub自动部署
 ```
 
-## Technical Stack
+## 技术栈
 
-### Frontend
-- **Framework**: Next.js 14
-- **Language**: JavaScript/React
-- **Styling**: CSS-in-JS
-- **Markdown**: gray-matter, remark
+### 前端
+- **框架**：Next.js 14
+- **语言**：JavaScript/React
+- **样式**：CSS-in-JS
+- **Markdown**：gray-matter, remark
 
-### Backend/Scripts
-- **Language**: Python 3.9+
-- **Translation**: googletrans
-- **Web Scraping**: beautifulsoup4, requests
-- **Image Processing**: Pillow
+### 后端/脚本
+- **语言**：Python 3.9+
+- **翻译**：googletrans
+- **网页抓取**：beautifulsoup4, requests
+- **图片处理**：Pillow
 
-### Infrastructure
-- **Repository**: GitHub (lipingtababa/liangxiao)
-- **Hosting**: Vercel
-- **Domain**: magong.se
+### 基础设施
+- **代码仓库**：GitHub (lipingtababa/liangxiao)
+- **托管**：Vercel
+- **域名**：magong.se
 
-## Constraints
+## 限制条件
 
-### Legal
-- Respect copyright - always attribute original source
-- Include disclaimer about translation
-- Follow WeChat's terms of service
+### 法律
+- 尊重版权 - 始终注明原始来源
+- 包含翻译免责声明
+- 遵守微信服务条款
 
-### Technical
-- WeChat's closed ecosystem (no official API access)
-- Google Translate API limits
-- Vercel's build time limits
+### 技术
+- 微信的封闭生态系统（无官方API访问）
+- Google Translate API限制
+- Vercel构建时间限制
 
-### Resource
-- Single developer
-- No budget for paid translation APIs initially
-- Manual article selection process
+### 资源
+- 单人开发
+- 初期没有付费翻译API预算
+- 手动文章选择流程
 
-## Success Criteria
+## 成功标准
 
-1. **Functional Success**
-   - Successfully translate and publish articles
-   - Preserve article formatting and images
-   - Maintain readable, accurate translations
+1. **功能成功**
+   - 成功翻译和发布文章
+   - 保留文章格式和图片
+   - 保持可读、准确的翻译
 
-2. **User Experience**
-   - Articles are easy to find and read
-   - Site loads quickly
-   - Mobile-friendly design
+2. **用户体验**
+   - 文章易于查找和阅读
+   - 网站加载快速
+   - 移动端友好设计
 
-3. **Operational Success**
-   - Simple workflow for adding new articles
-   - Minimal manual intervention required
-   - Easy to maintain and update
+3. **运营成功**
+   - 添加新文章的简单工作流程
+   - 最少的人工干预
+   - 易于维护和更新
 
-## Implementation Roadmap
+## 实施路线图
 
-### Phase 1: MVP (Current)
-- [x] Requirements and design documentation
-- [ ] Basic translation script
-- [ ] Next.js blog setup
-- [ ] Manual article processing
-- [ ] Vercel deployment
+### 第一阶段：MVP（当前）
+- [x] 需求和设计文档
+- [ ] 基础翻译脚本
+- [ ] Next.js博客设置
+- [ ] 手动文章处理
+- [ ] Vercel部署
 
-### Phase 2: Enhancement
-- [ ] Batch processing
-- [ ] Image optimization
-- [ ] Translation quality improvements
-- [ ] Error handling and logging
+### 第二阶段：增强
+- [ ] 批量处理
+- [ ] 图片优化
+- [ ] 翻译质量改进
+- [ ] 错误处理和日志
 
-### Phase 3: Advanced Features
-- [ ] RSS feed generation
-- [ ] Email newsletter
-- [ ] Search functionality
-- [ ] Categories and tags
-- [ ] Analytics dashboard
+### 第三阶段：高级功能
+- [ ] RSS订阅生成
+- [ ] 邮件通讯
+- [ ] 搜索功能
+- [ ] 分类和标签
+- [ ] 分析仪表板
 
-## Contributing
+## 贡献
 
-This project needs help with:
-- Improving WeChat article extraction methods
-- Enhancing translation quality
-- Adding more publishing platforms
-- Creating better monitoring solutions
+本项目需要以下方面的帮助：
+- 改进微信文章提取方法
+- 提高翻译质量
+- 添加更多发布平台
+- 创建更好的监控解决方案
 
-## License
+## 许可证
 
-MIT License - See LICENSE file for details
+MIT许可证 - 详见LICENSE文件
 
-## Contact
+## 联系方式
 
-For questions about this project or the translated content, visit [magong.se](https://magong.se)
+有关本项目或翻译内容的问题，请访问 [magong.se](https://magong.se)
 
 ---
 
-**Note**: This tool is designed specifically for translating "瑞典马工" content with proper attribution. It should not be used to scrape or republish content without permission.
+**注意**：此工具专门用于翻译"瑞典马工"的内容并注明出处。未经许可，不应用于抓取或重新发布内容。
