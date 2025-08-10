@@ -1,0 +1,67 @@
+name: AI环境调试器
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: '要执行的shell命令'
+        required: false
+        default: 'pwd && ls -la'
+      python_test:
+        description: '要测试的Python代码（一行）'
+        required: false
+        default: 'print("Hello from GitHub Actions")'
+      check_file:
+        description: '要检查的文件路径'
+        required: false
+        default: ''
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 显示环境信息
+      run: |
+        echo "=== 环境信息 ==="
+        echo "当前目录: $(pwd)"
+        echo "Python版本: $(python3 --version)"
+        echo "可用内存: $(free -h | grep Mem)"
+        echo "CPU信息: $(nproc) cores"
+        echo ""
+        echo "=== 项目结构 ==="
+        find . -type f -name "*.py" | head -20
+        echo ""
+        echo "=== 环境变量 ==="
+        echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+        echo "GITHUB_SHA: $GITHUB_SHA"
+        echo "RUNNER_OS: $RUNNER_OS"
+        
+    - name: 执行自定义命令
+      if: ${{ github.event.inputs.command != '' }}
+      run: |
+        echo "=== 执行命令: ${{ github.event.inputs.command }} ==="
+        ${{ github.event.inputs.command }}
+        
+    - name: 测试Python代码
+      if: ${{ github.event.inputs.python_test != '' }}
+      run: |
+        echo "=== 测试Python代码 ==="
+        python3 -c "${{ github.event.inputs.python_test }}"
+        
+    - name: 检查文件
+      if: ${{ github.event.inputs.check_file != '' }}
+      run: |
+        FILE="${{ github.event.inputs.check_file }}"
+        echo "=== 检查文件: $FILE ==="
+        if [ -f "$FILE" ]; then
+          echo "文件存在，内容预览："
+          head -50 "$FILE"
+        else
+          echo "文件不存在"
+          echo "类似文件："
+          find . -name "*$(basename "$FILE")*" | head -10
+        fi

@@ -1,0 +1,243 @@
+name: 验证AI实现
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/*.py'
+      
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        pip install requests beautifulsoup4 googletrans==4.0.0-rc1
+        
+    - name: 测试内容提取器
+      id: test_extractor
+      run: |
+        echo "=== 测试内容提取器 ==="
+        
+        # 查找提取器脚本
+        EXTRACTOR=""
+        for script in scripts/extract_content.py scripts/extract_content_starter.py; do
+          if [ -f "$script" ]; then
+            EXTRACTOR="$script"
+            break
+          fi
+        done
+        
+        if [ -z "$EXTRACTOR" ]; then
+          echo "❌ 找不到提取器脚本"
+          exit 1
+        fi
+        
+        echo "使用脚本: $EXTRACTOR"
+        
+        # 使用mock数据测试
+        python "$EXTRACTOR" --mock --output test_extract.json
+        
+        # 验证输出
+        if [ -f "test_extract.json" ]; then
+          echo "✓ 生成了输出文件"
+          
+          # 检查必需字段
+          python -c "
+import json
+with open('test_extract.json') as f:
+    data = json.load(f)
+    
+required = ['title', 'author', 'content']
+missing = [f for f in required if not data.get(f)]
+
+if missing:
+    print(f'❌ 缺少字段: {missing}')
+    exit(1)
+else:
+    print('✓ 所有必需字段存在')
+    print(f'  标题: {data.get(\"title\", \"\")}')
+    print(f'  作者: {data.get(\"author\", \"\")}')
+    print(f'  内容长度: {len(data.get(\"content\", {}).get(\"text\", \"\"))} 字符')
+          "
+        else
+          echo "❌ 没有生成输出文件"
+          exit 1
+        fi
+        
+    - name: 测试翻译器
+      id: test_translator
+      continue-on-error: true
+      run: |
+        echo "=== 测试翻译器 ==="
+        
+        # 查找翻译器脚本
+        TRANSLATOR=""
+        for script in scripts/translate.py scripts/translate_content.py; do
+          if [ -f "$script" ]; then
+            TRANSLATOR="$script"
+            break
+          fi
+        done
+        
+        if [ -z "$TRANSLATOR" ]; then
+          echo "⚠ 翻译器脚本未实现"
+        else
+          echo "使用脚本: $TRANSLATOR"
+          
+          # 测试翻译
+          if [ -f "test_extract.json" ]; then
+            python "$TRANSLATOR" --input test_extract.json --output test_translate.json || {
+              echo "⚠ 翻译器执行失败（可能是API密钥问题）"
+            }
+            
+            if [ -f "test_translate.json" ]; then
+              echo "✓ 翻译器生成了输出"
+            fi
+          fi
+        fi
+        
+    - name: 测试Markdown生成器
+      id: test_generator
+      continue-on-error: true
+      run: |
+        echo "=== 测试Markdown生成器 ==="
+        
+        # 查找生成器脚本
+        GENERATOR=""
+        for script in scripts/generate_markdown.py scripts/markdown_generator.py; do
+          if [ -f "$script" ]; then
+            GENERATOR="$script"
+            break
+          fi
+        done
+        
+        if [ -z "$GENERATOR" ]; then
+          echo "⚠ Markdown生成器未实现"
+        else
+          echo "使用脚本: $GENERATOR"
+          
+          # 使用提取的数据生成Markdown
+          INPUT_FILE="test_translate.json"
+          if [ ! -f "$INPUT_FILE" ]; then
+            INPUT_FILE="test_extract.json"
+          fi
+          
+          if [ -f "$INPUT_FILE" ]; then
+            mkdir -p test_output
+            python "$GENERATOR" --input "$INPUT_FILE" --output test_output/ || {
+              echo "⚠ 生成器执行失败"
+            }
+            
+            # 检查输出
+            if ls test_output/*.md 1> /dev/null 2>&1; then
+              echo "✓ 生成了Markdown文件"
+              echo "文件列表:"
+              ls -la test_output/*.md
+            fi
+          fi
+        fi
+        
+    - name: 综合评分
+      if: always()
+      run: |
+        echo "=== AI实现评分 ==="
+        
+        SCORE=0
+        MAX_SCORE=100
+        
+        # 内容提取器 (40分)
+        if [ -f "test_extract.json" ]; then
+          python -c "
+import json
+score = 0
+with open('test_extract.json') as f:
+    data = json.load(f)
+    if data.get('title'): score += 15
+    if data.get('author'): score += 10
+    if data.get('content', {}).get('text'): score += 10
+    if data.get('images'): score += 5
+print(score)
+          " > extractor_score.txt
+          EXTRACTOR_SCORE=$(cat extractor_score.txt)
+          SCORE=$((SCORE + EXTRACTOR_SCORE))
+          echo "内容提取器: ${EXTRACTOR_SCORE}/40 分"
+        else
+          echo "内容提取器: 0/40 分"
+        fi
+        
+        # 翻译器 (30分)
+        if [ -f "test_translate.json" ]; then
+          SCORE=$((SCORE + 30))
+          echo "翻译器: 30/30 分"
+        else
+          echo "翻译器: 0/30 分（未实现或API密钥缺失）"
+        fi
+        
+        # Markdown生成器 (30分)
+        if ls test_output/*.md 1> /dev/null 2>&1; then
+          SCORE=$((SCORE + 30))
+          echo "Markdown生成器: 30/30 分"
+        else
+          echo "Markdown生成器: 0/30 分"
+        fi
+        
+        echo ""
+        echo "总分: ${SCORE}/${MAX_SCORE}"
+        
+        # 评级
+        if [ $SCORE -ge 90 ]; then
+          echo "评级: 🌟 优秀 - 实现完整且正确"
+        elif [ $SCORE -ge 70 ]; then
+          echo "评级: ✅ 良好 - 主要功能已实现"
+        elif [ $SCORE -ge 40 ]; then
+          echo "评级: 📝 及格 - 基础功能可用"
+        else
+          echo "评级: ⚠️ 需要改进 - 请继续完成实现"
+        fi
+        
+        # GitHub Actions 摘要
+        echo "## AI实现验证结果" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 得分: ${SCORE}/${MAX_SCORE}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| 组件 | 状态 | 得分 |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|------|------|" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f "test_extract.json" ]; then
+          echo "| 内容提取器 | ✅ 已实现 | ${EXTRACTOR_SCORE}/40 |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| 内容提取器 | ❌ 未完成 | 0/40 |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "test_translate.json" ]; then
+          echo "| 翻译器 | ✅ 已实现 | 30/30 |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| 翻译器 | ⚠️ 未实现 | 0/30 |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if ls test_output/*.md 1> /dev/null 2>&1; then
+          echo "| Markdown生成器 | ✅ 已实现 | 30/30 |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Markdown生成器 | ⚠️ 未实现 | 0/30 |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ai-validation-results
+        path: |
+          test_*.json
+          test_output/
+          *_score.txt
+        retention-days: 7

@@ -1,0 +1,346 @@
+name: AI开发会话
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: '当前任务（extractor/translator/generator/test/debug）'
+        required: true
+        default: 'extractor'
+      action:
+        description: '动作（create/test/fix/validate）'
+        required: true
+        default: 'test'
+
+jobs:
+  dev-session:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        pip install requests beautifulsoup4 googletrans==4.0.0-rc1 lxml
+        
+    - name: 显示开发状态
+      run: |
+        echo "=== AI开发会话 ==="
+        echo "任务: ${{ github.event.inputs.task }}"
+        echo "动作: ${{ github.event.inputs.action }}"
+        echo "时间: $(date)"
+        echo ""
+        
+        echo "=== 当前项目状态 ==="
+        echo "Python脚本:"
+        ls -la scripts/*.py 2>/dev/null || echo "  (暂无Python脚本)"
+        echo ""
+        
+        echo "测试数据:"
+        ls -la .github/test-data/ | grep -v "^d"
+        echo ""
+        
+    - name: 执行内容提取器任务
+      if: ${{ github.event.inputs.task == 'extractor' }}
+      run: |
+        echo "=== 内容提取器任务 ==="
+        
+        case "${{ github.event.inputs.action }}" in
+          "create")
+            echo "创建内容提取器..."
+            if [ ! -f "scripts/extract_content.py" ]; then
+              if [ -f "scripts/extract_content_starter.py" ]; then
+                cp scripts/extract_content_starter.py scripts/extract_content.py
+                echo "✓ 已从starter模板创建extract_content.py"
+              else
+                echo "❌ 找不到starter模板"
+                exit 1
+              fi
+            else
+              echo "extract_content.py 已存在"
+            fi
+            ;;
+            
+          "test")
+            echo "测试内容提取器..."
+            if [ -f "scripts/extract_content.py" ]; then
+              python scripts/extract_content.py --mock --output test_extract.json
+              
+              if [ -f "test_extract.json" ]; then
+                echo "✓ 测试成功，生成了输出文件"
+                echo "内容预览:"
+                head -20 test_extract.json
+              else
+                echo "❌ 测试失败，未生成输出文件"
+                exit 1
+              fi
+            else
+              echo "❌ extract_content.py 不存在，请先创建"
+              exit 1
+            fi
+            ;;
+            
+          "validate")
+            echo "验证内容提取器..."
+            if [ -f "test_extract.json" ]; then
+              python scripts/test/validate_extraction.py test_extract.json
+            else
+              echo "❌ 没有找到测试输出，请先运行测试"
+              exit 1
+            fi
+            ;;
+            
+          *)
+            echo "未知动作: ${{ github.event.inputs.action }}"
+            ;;
+        esac
+        
+    - name: 执行翻译器任务
+      if: ${{ github.event.inputs.task == 'translator' }}
+      run: |
+        echo "=== 翻译器任务 ==="
+        
+        case "${{ github.event.inputs.action }}" in
+          "create")
+            echo "创建翻译器模板..."
+            cat > scripts/translate.py << 'EOF'
+#!/usr/bin/env python3
+"""
+简单的翻译器实现
+"""
+import json
+import sys
+from pathlib import Path
+
+def translate_text(text, target_lang='en'):
+    """简单的翻译函数 - AI开发者需要完善"""
+    # TODO: 集成真实的翻译API
+    # 现在只是一个占位符实现
+    if not text:
+        return text
+    
+    # 简单的词汇替换示例
+    replacements = {
+        '程序员': 'programmer',
+        '瑞典': 'Sweden',
+        '工作': 'work',
+        '生活': 'life',
+        '技术': 'technology'
+    }
+    
+    result = text
+    for zh, en in replacements.items():
+        result = result.replace(zh, en)
+    
+    return result
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='翻译文章内容')
+    parser.add_argument('--input', required=True, help='输入JSON文件')
+    parser.add_argument('--output', required=True, help='输出文件')
+    
+    args = parser.parse_args()
+    
+    # 读取输入
+    with open(args.input, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    # 翻译
+    if isinstance(data, list):
+        for item in data:
+            item['title'] = translate_text(item.get('title', ''))
+            if 'content' in item and 'text' in item['content']:
+                item['content']['text'] = translate_text(item['content']['text'])
+    else:
+        data['title'] = translate_text(data.get('title', ''))
+        if 'content' in data and 'text' in data['content']:
+            data['content']['text'] = translate_text(data['content']['text'])
+    
+    # 保存结果
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+    with open(args.output, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    
+    print(f"翻译完成: {args.output}")
+
+if __name__ == '__main__':
+    main()
+EOF
+            chmod +x scripts/translate.py
+            echo "✓ 创建了基础翻译器"
+            ;;
+            
+          "test")
+            echo "测试翻译器..."
+            if [ -f "scripts/translate.py" ] && [ -f "test_extract.json" ]; then
+              python scripts/translate.py --input test_extract.json --output test_translate.json
+              
+              if [ -f "test_translate.json" ]; then
+                echo "✓ 翻译测试成功"
+                echo "翻译结果预览:"
+                head -20 test_translate.json
+              else
+                echo "❌ 翻译失败"
+                exit 1
+              fi
+            else
+              echo "❌ 缺少必要文件（translate.py 或 test_extract.json）"
+              exit 1
+            fi
+            ;;
+        esac
+        
+    - name: 执行生成器任务
+      if: ${{ github.event.inputs.task == 'generator' }}
+      run: |
+        echo "=== Markdown生成器任务 ==="
+        
+        case "${{ github.event.inputs.action }}" in
+          "create")
+            echo "创建Markdown生成器..."
+            cat > scripts/generate_markdown.py << 'EOF'
+#!/usr/bin/env python3
+"""
+Markdown生成器
+"""
+import json
+import sys
+from pathlib import Path
+
+def generate_markdown(data):
+    """生成Markdown内容"""
+    title = data.get('title', 'Untitled')
+    author = data.get('author', 'Unknown')
+    date = data.get('publish_date', '2024-01-01')
+    content_text = data.get('content', {}).get('text', '')
+    
+    # 生成frontmatter
+    frontmatter = f"""---
+title: "{title}"
+date: "{date}"
+author: "{author}"
+tags: ["translation", "sweden", "tech"]
+---
+
+"""
+    
+    # 添加内容
+    markdown_content = frontmatter + content_text
+    
+    return markdown_content
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='生成Markdown文件')
+    parser.add_argument('--input', required=True, help='输入JSON文件')
+    parser.add_argument('--output', required=True, help='输出目录')
+    
+    args = parser.parse_args()
+    
+    # 读取数据
+    with open(args.input, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    # 生成Markdown
+    markdown_content = generate_markdown(data)
+    
+    # 保存文件
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 生成文件名
+    title = data.get('title', 'article')
+    filename = title.lower().replace(' ', '-').replace('/', '-')[:50] + '.md'
+    
+    output_file = output_dir / filename
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(markdown_content)
+    
+    print(f"Markdown生成完成: {output_file}")
+
+if __name__ == '__main__':
+    main()
+EOF
+            chmod +x scripts/generate_markdown.py
+            echo "✓ 创建了Markdown生成器"
+            ;;
+            
+          "test")
+            echo "测试Markdown生成器..."
+            INPUT_FILE="test_translate.json"
+            if [ ! -f "$INPUT_FILE" ]; then
+              INPUT_FILE="test_extract.json"
+            fi
+            
+            if [ -f "scripts/generate_markdown.py" ] && [ -f "$INPUT_FILE" ]; then
+              mkdir -p test_output
+              python scripts/generate_markdown.py --input "$INPUT_FILE" --output test_output/
+              
+              if ls test_output/*.md 1> /dev/null 2>&1; then
+                echo "✓ Markdown生成成功"
+                echo "生成的文件:"
+                ls -la test_output/*.md
+                echo ""
+                echo "内容预览:"
+                head -20 test_output/*.md | head -20
+              else
+                echo "❌ Markdown生成失败"
+                exit 1
+              fi
+            else
+              echo "❌ 缺少必要文件"
+              exit 1
+            fi
+            ;;
+        esac
+        
+    - name: 综合测试
+      if: ${{ github.event.inputs.task == 'test' }}
+      run: |
+        echo "=== 综合测试 ==="
+        
+        # 按顺序测试所有组件
+        if [ -f "scripts/extract_content.py" ]; then
+          echo "1. 测试内容提取器..."
+          python scripts/extract_content.py --mock --output test_extract.json
+        fi
+        
+        if [ -f "scripts/translate.py" ] && [ -f "test_extract.json" ]; then
+          echo "2. 测试翻译器..."
+          python scripts/translate.py --input test_extract.json --output test_translate.json
+        fi
+        
+        if [ -f "scripts/generate_markdown.py" ]; then
+          echo "3. 测试Markdown生成器..."
+          INPUT="test_translate.json"
+          if [ ! -f "$INPUT" ]; then INPUT="test_extract.json"; fi
+          
+          if [ -f "$INPUT" ]; then
+            mkdir -p test_output
+            python scripts/generate_markdown.py --input "$INPUT" --output test_output/
+          fi
+        fi
+        
+        echo ""
+        echo "=== 测试结果 ==="
+        [ -f "test_extract.json" ] && echo "✓ 内容提取: 成功" || echo "❌ 内容提取: 失败"
+        [ -f "test_translate.json" ] && echo "✓ 翻译: 成功" || echo "❌ 翻译: 失败"
+        [ -d "test_output" ] && [ "$(ls -A test_output)" ] && echo "✓ Markdown生成: 成功" || echo "❌ Markdown生成: 失败"
+        
+    - name: 上传开发会话结果
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ai-dev-session-${{ github.run_number }}
+        path: |
+          test_*.json
+          test_output/
+          scripts/*.py
+        retention-days: 3
