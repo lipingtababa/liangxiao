@@ -85,7 +85,7 @@ jobs:
         
     - name: 步骤2 - 翻译测试
       env:
-        GOOGLE_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+        GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
         DEBUG_MODE: ${{ github.event.inputs.debug_mode }}
       run: |
         echo "=== 步骤2: 内容翻译 ==="
