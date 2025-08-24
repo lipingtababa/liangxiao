@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Main AI Coding Agent webhook server
+  agent:
+    build:
+      context: ./services/agent
+      dockerfile: Dockerfile
+    container_name: ai-coding-agent
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/workspace/data
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=gpt-4-turbo-preview
+      - STORAGE_PATH=/workspace/data
+      - MAX_RETRIES=3
+      - TIMEOUT=300000
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    networks:
+      - ai-agent-network
+
+  # GitHub issue poller
+  poller:
+    build:
+      context: ./services/poller
+      dockerfile: Dockerfile
+    container_name: github-issue-poller
+    environment:
+      - NODE_ENV=production
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+      - GITHUB_OWNER=lipingtababa
+      - GITHUB_REPO=liangxiao
+      - WEBHOOK_URL=http://agent:3000/webhook
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - POLL_INTERVAL=30000
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    networks:
+      - ai-agent-network
+    depends_on:
+      - agent
+
+networks:
+  ai-agent-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
