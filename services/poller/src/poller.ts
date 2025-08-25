@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import axios from 'axios';
-import { logger } from './logger';
+import { logger } from '../shared/logger';
 
 interface PollerConfig {
   githubToken: string;
@@ -30,7 +30,10 @@ export class GitHubPoller {
     logger.info(`🔄 Starting GitHub poller for ${this.config.owner}/${this.config.repo}`);
     logger.info(`📡 Polling every ${this.config.pollInterval / 1000}s`);
     
-    this.poll();
+    // Start polling (don't await to not block)
+    this.poll().catch(error => {
+      logger.error('💥 Polling loop crashed:', error);
+    });
   }
 
   stop() {
@@ -41,7 +44,9 @@ export class GitHubPoller {
   private async poll() {
     while (this.isRunning) {
       try {
+        logger.info('🔄 Starting polling cycle...');
         await this.checkForNewIssues();
+        logger.info(`⏰ Waiting ${this.config.pollInterval / 1000}s until next check...`);
       } catch (error) {
         logger.error('❌ Polling error:', error);
       }
@@ -52,31 +57,31 @@ export class GitHubPoller {
 
   private async checkForNewIssues() {
     try {
+      logger.info('🔍 Checking for assigned issues...');
       const { data: issues } = await this.octokit.issues.listForRepo({
         owner: this.config.owner,
         repo: this.config.repo,
         state: 'open',
         sort: 'created',
-        direction: 'desc',
-        since: this.lastChecked.toISOString()
+        direction: 'desc'
       });
 
-      const newIssues = issues.filter(issue => 
+      const assignedIssues = issues.filter(issue => 
         !issue.pull_request && // Exclude PRs
-        new Date(issue.created_at) > this.lastChecked
+        issue.assignee?.login === 'lipingtababa' // Only issues assigned to Ma Chi
       );
 
-      if (newIssues.length > 0) {
-        logger.info(`🆕 Found ${newIssues.length} new issue(s)`);
+      if (assignedIssues.length > 0) {
+        logger.info(`🔍 Found ${assignedIssues.length} issue(s) assigned to Ma Chi (lipingtababa)`);
         
-        for (const issue of newIssues) {
+        for (const issue of assignedIssues) {
           await this.triggerWebhook(issue);
         }
       }
 
       this.lastChecked = new Date();
     } catch (error) {
-      logger.error('Failed to check for new issues:', error);
+      logger.error('Failed to check for assigned issues:', error);
     }
   }
 

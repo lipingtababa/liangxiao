@@ -1,6 +1,6 @@
 import { GitHubPoller } from './poller';
 import { config } from './config';
-import { logger } from '../../../shared/logger';
+import { logger } from '../shared/logger';
 
 // Validate required config
 if (!config.githubToken || !config.webhookSecret) {
@@ -10,6 +10,7 @@ if (!config.githubToken || !config.webhookSecret) {
 
 logger.info('🚀 Starting GitHub Issue Poller Service');
 logger.info(`📋 Repository: ${config.owner}/${config.repo}`);
+logger.info(`👤 Filtering: Only issues assigned to Ma Chi (lipingtababa)`);
 logger.info(`🎯 Webhook URL: ${config.webhookUrl}`);
 
 const poller = new GitHubPoller(config);
