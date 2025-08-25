@@ -1,7 +1,7 @@
 import express from 'express';
 import { webhookHandler } from './webhook';
 import { config } from './config';
-import { logger } from './logger';
+import { logger } from '../shared/logger';
 
 const app = express();
 

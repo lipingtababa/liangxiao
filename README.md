@@ -46,7 +46,7 @@ cp .env.mvp .env
 ```
 
 Required variables:
-- `GITHUB_TOKEN` - Personal access token with repo scope
+- `GITHUB_PERSONAL_ACCESS_TOKEN` - Personal access token with repo scope
 - `GITHUB_WEBHOOK_SECRET` - Random secret string
 - `GITHUB_OWNER` - Your GitHub username  
 - `GITHUB_REPO` - Repository name

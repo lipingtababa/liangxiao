@@ -1,0 +1,31 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Install nodemon globally for hot reloading
+RUN npm install -g nodemon tsx
+
+# Copy source code (will be overridden by volume mounts in development)
+COPY . .
+
+# Build initial version
+RUN npm run build
+
+# Create data directory
+RUN mkdir -p /workspace/data && \
+    chown -R node:node /workspace/data
+
+# Switch to non-root user
+USER node
+
+# Expose port
+EXPOSE 3000
+
+# Development command with nodemon for hot reloading
+CMD ["nodemon", "--watch", "src", "--watch", "shared", "--ext", "ts", "--exec", "tsx src/index.ts"]

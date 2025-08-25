@@ -1,8 +1,8 @@
-import { IssueEvent } from './types';
+import { IssueEvent } from '../shared/types';
 import { CodingAgent } from './agent';
 import { GitHubManager } from './github';
 import { StateManager, IssueState } from './state';
-import { logger } from './logger';
+import { logger } from '../shared/logger';
 
 const agent = new CodingAgent();
 const github = new GitHubManager();

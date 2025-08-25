@@ -44,7 +44,7 @@ This will configure all required secrets using GitHub CLI:
 - `DO_PAT_TOKEN` - DigitalOcean PAT token  
 - `DO_SSH_PRIVATE_KEY` - SSH private key for droplet access
 - `DROPLET_IP` - Your droplet IP address
-- `GITHUB_TOKEN` - GitHub PAT with repo scope
+- `GITHUB_PERSONAL_ACCESS_TOKEN` - GitHub PAT with repo scope
 - `GITHUB_WEBHOOK_SECRET` - Webhook verification secret
 - `GITHUB_OWNER` - Your GitHub username
 - `GITHUB_REPO` - Repository name  

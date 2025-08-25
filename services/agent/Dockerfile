@@ -2,20 +2,20 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy shared utilities
-COPY ../../shared ./shared
-
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev for building)
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Build the project
 RUN npm run build
+
+# Remove dev dependencies
+RUN npm prune --omit=dev
 
 # Create data directory
 RUN mkdir -p /workspace/data && \

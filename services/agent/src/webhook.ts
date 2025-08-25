@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import * as crypto from 'crypto';
 import { config } from './config';
-import { logger } from './logger';
+import { logger } from '../shared/logger';
 import { processIssue } from './processor';
-import { IssueEvent } from './types';
+import { IssueEvent } from '../shared/types';
 
 export async function webhookHandler(req: Request, res: Response): Promise<void> {
   try {

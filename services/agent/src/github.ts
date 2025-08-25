@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { config } from './config';
-import { logger } from './logger';
-import { AgentResponse, IssueEvent } from './types';
+import { logger } from '../shared/logger';
+import { AgentResponse, IssueEvent } from '../shared/types';
 
 const octokit = new Octokit({
   auth: config.github.token,

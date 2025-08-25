@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { config } from './config';
-import { logger } from './logger';
-import { IssueEvent, AgentResponse } from './types';
+import { logger } from '../shared/logger';
+import { IssueEvent, AgentResponse } from '../shared/types';
 
 const openai = new OpenAI({
   apiKey: config.openai.apiKey,
@@ -15,6 +15,8 @@ export class CodingAgent {
 2. The files that need to be created or modified
 3. The actual code implementation
 4. Any tests that should be included
+
+
 
 Respond in JSON format with this structure:
 {
@@ -35,7 +37,10 @@ Respond in JSON format with this structure:
   ],
   "prTitle": "Title for the pull request",
   "prDescription": "Description for the pull request"
-}`;
+
+  You should write code that are needed. Don't overthink it.
+  
+  `;
 
       const userPrompt = `
 Repository: ${issue.repository.full_name}

@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { config } from './config';
-import { logger } from './logger';
+import { logger } from '../shared/logger';
 
 export enum IssueState {
   TODO = 'TODO',

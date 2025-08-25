@@ -5,15 +5,17 @@ services:
   agent:
     build:
       context: ./services/agent
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: ai-coding-agent
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - ./data:/workspace/data
       - ./logs:/app/logs
+      - ./services/agent/src:/app/src
+      - ./shared:/app/shared
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3000
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
       - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
@@ -31,10 +33,13 @@ services:
   poller:
     build:
       context: ./services/poller
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: github-issue-poller
+    volumes:
+      - ./services/poller/src:/app/src
+      - ./shared:/app/shared
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
       - GITHUB_OWNER=lipingtababa
       - GITHUB_REPO=liangxiao
