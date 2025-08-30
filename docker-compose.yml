@@ -1,62 +1,96 @@
 version: '3.8'
 
 services:
-  # Main AI Coding Agent webhook server
-  agent:
+  orchestrator:
     build:
-      context: ./services/agent
-      dockerfile: Dockerfile.dev
-    container_name: ai-coding-agent
+      context: .
+      target: development
+    container_name: orchestrator-dev
     ports:
-      - "3001:3000"
+      - "8000:8000"
+      - "5678:5678"  # debugpy port
     volumes:
-      - ./data:/workspace/data
-      - ./logs:/app/logs
-      - ./services/agent/src:/app/src
-      - ./shared:/app/shared
+      - .:/app
+      - /app/.venv  # Exclude virtual environment
+      - orchestrator-data:/app/data
+      - orchestrator-logs:/app/logs
     environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
-      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_MODEL=gpt-4-turbo-preview
-      - STORAGE_PATH=/workspace/data
-      - MAX_RETRIES=3
-      - TIMEOUT=300000
-      - LOG_LEVEL=info
-    restart: unless-stopped
-    networks:
-      - ai-agent-network
-
-  # GitHub issue poller
-  poller:
-    build:
-      context: ./services/poller
-      dockerfile: Dockerfile.dev
-    container_name: github-issue-poller
-    volumes:
-      - ./services/poller/src:/app/src
-      - ./shared:/app/shared
-    environment:
-      - NODE_ENV=development
-      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
-      - GITHUB_OWNER=lipingtababa
-      - GITHUB_REPO=liangxiao
-      - WEBHOOK_URL=http://agent:3000/webhook
-      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
-      - POLL_INTERVAL=30000
-      - LOG_LEVEL=info
-    restart: unless-stopped
-    networks:
-      - ai-agent-network
+      - PYTHONPATH=/app
+      - LOG_LEVEL=DEBUG
+      - ENVIRONMENT=development
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
-      - agent
+      - redis
+      - postgres
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
 
-networks:
-  ai-agent-network:
-    driver: bridge
+  redis:
+    image: redis:7-alpine
+    container_name: orchestrator-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: orchestrator-postgres
+    environment:
+      POSTGRES_DB: orchestrator
+      POSTGRES_USER: orchestrator
+      POSTGRES_PASSWORD: orchestrator_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Optional: Database admin interface
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: orchestrator-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@orchestrator.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
+    profiles: ["admin"]  # Only start when explicitly requested
 
 volumes:
-  data:
-  logs:
+  redis-data:
+  postgres-data:
+  pgadmin-data:
+  orchestrator-data:
+  orchestrator-logs:
+
+networks:
+  orchestrator-network:
+    driver: bridge

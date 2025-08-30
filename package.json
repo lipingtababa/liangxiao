@@ -1,31 +1,22 @@
 {
   "name": "synthetic-coding-team",
   "version": "0.1.0",
-  "description": "AI coding agent system with GitHub webhook processing",
+  "description": "AI multi-agent coding system with Python/LangChain orchestrator",
   "private": true,
-  "workspaces": [
-    "services/agent",
-    "services/poller"
-  ],
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
-  },
   "scripts": {
-    "dev:agent": "cd services/agent && npm run dev",
-    "dev:poller": "cd services/poller && npm run dev",
-    "build": "npm run build --workspaces",
-    "install:all": "npm install --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
+    "dev": "python main.py",
     "docker:up": "docker-compose up --build",
-    "docker:down": "docker-compose down"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3"
+    "docker:down": "docker-compose down",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:logs": "docker-compose logs -f orchestrator",
+    "setup": "pip install -r requirements.txt",
+    "test": "pytest",
+    "test:verbose": "pytest -v"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/synthetic-coding-team.git"
+    "url": "private"
   },
   "keywords": [
     "ai",
@@ -33,8 +24,10 @@
     "coding",
     "automation",
     "github",
-    "typescript"
+    "python",
+    "langchain",
+    "langgraph"
   ],
   "author": "AI Team Leader",
-  "license": "MIT"
+  "private": true
 }

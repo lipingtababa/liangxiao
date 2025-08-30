@@ -1,155 +1,282 @@
-# 🤖 AI Coding Agent - MVP
+# 🤖 Synthetic Coding Team
 
-A lightweight AI agent that automatically processes GitHub issues and creates pull requests with code solutions.
+An AI-powered multi-agent system that automatically processes GitHub issues and creates high-quality code solutions through intelligent task decomposition and specialized agent collaboration.
 
-## ✨ What It Does
+## 🎯 Overview
 
-1. **Receives GitHub Issue** → Webhook catches new issues
-2. **AI Analyzes** → GPT-4 understands requirements and generates solution  
-3. **Creates Code** → Implements the solution with tests
-4. **Opens PR** → Automatically creates pull request
-5. **Updates Issue** → Posts progress comments
+The Synthetic Coding Team replaces traditional single-agent approaches with a sophisticated multi-agent architecture where specialized AI agents work together to deliver production-ready code:
+
+- **Project Manager Agent**: Analyzes issues and creates task breakdowns
+- **Developer + Navigator Pairs**: Implements solutions with quality oversight  
+- **Analyst Agent**: Performs requirements analysis and documentation
+- **Tester Agent**: Generates and validates comprehensive tests
 
 ## 🏗️ Architecture
 
+### Multi-Agent System (Python/LangChain)
 ```
-GitHub Issue → Webhook → Agent → GPT-4 → Code Generation → GitHub PR
+GitHub Issue → Project Manager → Task Breakdown
+                    ↓
+            Specialized Agent Pairs
+            (Developer + Navigator)
+                    ↓
+            Quality Gates & Review → GitHub PR
 ```
-
-**Simple, focused, reliable.**
 
 ## 📁 Project Structure
 
 ```
-src/
-├── index.ts       # Express server
-├── webhook.ts     # GitHub webhook handler  
-├── agent.ts       # GPT-4 coding agent
-├── processor.ts   # Issue processing logic
-├── github.ts      # GitHub API operations
-├── state.ts       # Simple JSON state tracking
-├── config.ts      # Configuration
-├── logger.ts      # Winston logging
-├── types.ts       # TypeScript interfaces
-└── test-local.ts  # Local testing utility
+├── agents/             # AI agents (Developer, Navigator, Analyst, Tester)
+├── workflows/          # LangGraph workflow orchestration
+├── api/               # FastAPI endpoints and webhooks
+├── core/              # Core utilities and workspace manager
+├── models/            # Data models and schemas
+├── tests/             # Comprehensive test suite
+├── docs/              # Implementation roadmap & user stories
+├── workspaces/        # Repository clones and artifacts (gitignored)
+├── data/              # Application state
+├── logs/              # Application logs
+└── main.py           # FastAPI application entry point
 ```
-
-**Only 10 files. ~600 lines of code total.**
 
 ## 🚀 Quick Start
 
-### 1. Setup Environment
+### Prerequisites
+- Python 3.11+
+- Docker and Docker Compose  
+- GitHub Personal Access Token with repo permissions
+- OpenAI API Key
+- (Optional) LangChain API Key for tracing
+
+### 1. Environment Setup
 
 ```bash
-cp .env.mvp .env
+# Clone the repository
+git clone <your-repo-url>
+cd synthetic-coding-team
+
+# Copy environment template
+cp .env.example .env
+
 # Edit .env with your credentials
 ```
 
-Required variables:
-- `GITHUB_PERSONAL_ACCESS_TOKEN` - Personal access token with repo scope
-- `GITHUB_WEBHOOK_SECRET` - Random secret string
-- `GITHUB_OWNER` - Your GitHub username  
-- `GITHUB_REPO` - Repository name
-- `OPENAI_API_KEY` - OpenAI API key
-
-### 2. Install & Run
-
+Required environment variables:
 ```bash
-npm install
-npm run dev
+OPENAI_API_KEY=your_openai_key_here
+GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token
+GITHUB_WEBHOOK_SECRET=your_webhook_secret
+GITHUB_OWNER=your_username
+GITHUB_REPO=your_repository_name
 ```
 
-### 3. Setup GitHub Webhook
+### 2. Installation & Development
 
-Add webhook in your repo settings:
-- URL: `https://your-domain.com/webhook`
-- Content: `application/json`  
-- Secret: Same as `GITHUB_WEBHOOK_SECRET`
-- Events: `Issues`
-
-## 🧪 Test Locally
-
+#### Docker Compose (Recommended)
 ```bash
-# Test the agent without GitHub
-npm run test:local
+# Start the orchestrator service
+docker-compose up --build
 
-# Or start server and create a test issue
-npm run dev
-# Then create an issue in your GitHub repo
+# View logs  
+docker-compose logs -f orchestrator
 ```
 
-## 📦 Deploy to Production
-
+#### Manual Setup
 ```bash
-# Automated GitHub Actions deployment
-# See: DEPLOY.md
+# Install Python dependencies
+pip install -r requirements.txt
 
-# 1. Setup droplet once
-# 2. Configure GitHub secrets  
-# 3. Push to deploy
-git push origin main
+# Start the orchestrator
+python main.py     # FastAPI server on port 8000
 ```
 
-Cost: **$6/month** for DigitalOcean droplet
+### 3. GitHub Webhook Configuration
 
-## 🎯 What It Can Handle
+Add a webhook to your GitHub repository:
+- **URL**: `https://your-domain.com/api/webhook` 
+- **Content Type**: `application/json`
+- **Secret**: Same as `GITHUB_WEBHOOK_SECRET` in your .env
+- **Events**: Select "Issues" and "Pull requests"
 
-The agent can solve:
-- ✅ Create new functions/utilities  
-- ✅ Add simple features
-- ✅ Generate basic tests
-- ✅ Create new files
-- ✅ Simple bug fixes
+## 🧪 Testing
+
+### Local Testing
+```bash
+# Run orchestrator tests
+pytest
+
+# Test individual agents
+python demo_task_pair.py
+python demo_navigator.py
+
+# Check service health
+curl http://localhost:8000/health
+```
+
+### Create Test Issues
+1. Start the services: `docker-compose up`
+2. Create an issue in your configured GitHub repository
+3. Watch the logs to see the agent process the issue
+4. Check for the created pull request
 
 ## 🔧 How It Works
 
-1. **Webhook** receives GitHub issue events
-2. **Agent** parses issue and calls GPT-4
-3. **GPT-4** generates code solution with tests
-4. **GitHub Manager** creates branch and PR
-5. **State Manager** tracks progress in JSON files
+### Multi-Agent Workflow (Python/LangChain)
+1. **Issue Analysis**: Project Manager breaks down requirements into tasks
+2. **Task Assignment**: Specialized agent pairs handle implementation
+3. **Quality Assurance**: Navigator agents review and iterate on solutions
+4. **Integration Testing**: Tester agents validate solutions comprehensively
+5. **PR Generation**: High-quality code with tests and documentation
 
-## 📊 Dependencies
+### Workspace Organization
+```
+workspaces/
+├── {repo_name}/
+│   ├── {issue_id}/              # GitHub issue # or Jira ticket (SOT-123)
+│   │   ├── {repo_name}/         # Cloned repository
+│   │   └── .SyntheticCodingTeam/ # SCT metadata and artifacts
+│   │       ├── artifacts/       # Generated code
+│   │       ├── iterations/      # Review iterations
+│   │       ├── logs/           # Process logs
+│   │       ├── issue.json      # Issue details
+│   │       └── workflow.json   # Workflow state
+```
 
-- **Express** - Web server
-- **@octokit/rest** - GitHub API
-- **OpenAI** - GPT-4 integration  
-- **Winston** - Logging
-- **dotenv** - Environment config
+## 📊 Services
 
-That's it. No complex frameworks or libraries.
+### Orchestrator Service (Port 8000)
+- **Purpose**: Multi-agent LangChain/LangGraph system for intelligent code generation
+- **Technology**: Python, FastAPI, LangChain, LangGraph, OpenAI
+- **Key Components**: 
+  - `agents/` - Specialized AI agents (Developer, Navigator, Analyst, Tester)
+  - `workflows/` - LangGraph workflow orchestration
+  - `api/` - FastAPI webhooks and health endpoints
+  - Built-in GitHub issue polling and webhook handling
 
-## 🧱 State Management
+## 🎯 Capabilities
 
-Simple JSON files store issue state:
-```json
-{
-  "issueNumber": 42,
-  "state": "DONE", 
-  "prNumber": 15,
-  "attempts": 1,
-  "startedAt": "2024-01-01T00:00:00Z",
-  "completedAt": "2024-01-01T00:05:00Z"
-}
+### Multi-Agent System Handles:
+- ✅ Complex multi-file refactoring
+- ✅ Intelligent task decomposition  
+- ✅ Quality-assured code generation
+- ✅ Comprehensive test suites
+- ✅ Documentation generation
+- ✅ Architecture improvements
+- ✅ Code review and iteration cycles
+- ✅ Multi-agent collaboration patterns
+
+## 📈 Monitoring & Debugging
+
+### Logs
+```bash
+# View real-time logs
+docker-compose logs -f orchestrator
+
+# Log files (if volume mounted)
+tail -f logs/orchestrator.log
+```
+
+### State Management
+Issue processing state is stored using LangGraph checkpointing:
+- **Workflow State**: SQLite database with persistent checkpoints
+- **Artifacts**: Organized in workspace directories
+
+### Health Checks
+```bash
+# Check orchestrator service
+curl http://localhost:8000/health
+
+# Check webhook endpoint  
+curl -X POST http://localhost:8000/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"action":"ping"}'
 ```
 
 ## 🚨 Troubleshooting
 
-- **Agent timeouts**: Check OpenAI API rate limits
-- **PR not created**: Verify GitHub token has repo permissions  
-- **Webhook not working**: Check webhook URL and secret
-- **Build fails**: Ensure Node 18+ and all env vars set
+### Common Issues
 
-## 📈 Scaling
+**Webhook Not Receiving Events**
+- Verify webhook URL is accessible from internet
+- Check `GITHUB_WEBHOOK_SECRET` matches GitHub configuration
+- Ensure firewall/NAT allows incoming connections
 
-When you outgrow the MVP:
-1. Add specialized agents (Analyst, Test, Review)
-2. Implement LangGraph state machine
-3. Add technical debt tracking
-4. Create human approval workflows
+**Agent Timeouts**  
+- Check OpenAI API rate limits
+- Increase timeout settings in configuration
+- Monitor retry settings
 
-But start simple. This MVP handles most use cases.
+**PR Creation Fails**
+- Verify GitHub token has repository write permissions
+- Check token hasn't expired
+- Ensure repository exists and is accessible
+
+**Build Failures**
+- Confirm Python version ≥3.11
+- Run `pytest` to identify issues
+- Check all environment variables are set
+- Ensure all dependencies in requirements.txt are installed
+
+### Debug Mode
+```bash
+# Enable verbose logging
+DEBUG=true docker-compose up
+
+# Run orchestrator with debug
+DEBUG=true python main.py
+```
+
+## 🛣️ Roadmap
+
+### Phase 1: Multi-Agent Foundation ✅
+- [x] Python/LangChain/LangGraph architecture
+- [x] Basic agent implementations (Developer, Navigator)  
+- [x] GitHub integration with polling and webhooks
+- [x] FastAPI service with health monitoring
+- [x] Workspace organization system
+
+### Phase 2: Advanced Agents 🚧
+See detailed roadmap in `docs/stories/overview.md`:
+- [x] Navigator quality assurance system
+- [x] Developer agent pairs  
+- [ ] Analyst agent for requirements analysis
+- [ ] Tester agent for comprehensive validation
+- [ ] Project Manager orchestration
+
+### Phase 3: Production & Scale
+- Performance optimization
+- Advanced monitoring and observability
+- Production deployment automation
+
+## 🤝 Contributing
+
+### Development Workflow
+1. Read the relevant story in `docs/stories/`
+2. Follow the dependency chain outlined in the overview
+3. Implement changes incrementally
+4. Test thoroughly before marking complete
+5. Update documentation as needed
+
+### Quality Standards
+- All code must pass Python type checking and tests
+- New features require comprehensive test coverage
+- Follow existing code patterns and conventions  
+- Document any architectural decisions
+- Use pre-commit hooks for code quality
+
+## 📝 License
+
+**Commercial Software** - All rights reserved. This software is proprietary and confidential.
+
+See [COPYRIGHT.md](COPYRIGHT.md) for complete license terms and restrictions.
+
+## 🔗 Resources
+
+- [Implementation Documentation](docs/implementation/)
+- [System Architecture](docs/architecture/multi-agent-system.md)
+- [Implementation Stories](docs/stories/overview.md)  
+- [Deployment Guide](DEPLOY.md)
 
 ---
 
-**Built for simplicity. Extended when needed.** 🎯
+**Built for intelligence. Designed for quality. Engineered for scale.** 🎯

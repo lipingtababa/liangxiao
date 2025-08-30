@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # AI Coding Team Orchestrator - Development Mode with Hot Reload
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: ai-coding-orchestrator-dev
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # For debugpy debugging
+    volumes:
+      # Mount entire source code for hot reload
+      - .:/app:cached
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # Exclude cache directories
+      - /app/__pycache__
+      - /app/.pytest_cache
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - PORT=8000
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      # Read from .env file in container
+    env_file:
+      - ./.env
+    # Development command with hot reload
+    command: >
+      sh -c "
+        echo '🚀 Starting AI Coding Team Orchestrator in Development Mode' &&
+        echo '📁 Source code mounted from: /app' &&
+        echo '🔄 Hot reload enabled' &&
+        echo '🐛 Debug port: 5678' &&
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+      "
+    restart: unless-stopped
+    networks:
+      - ai-agent-network
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  ai-agent-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
