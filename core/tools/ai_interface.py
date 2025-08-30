@@ -199,7 +199,7 @@ class ClaudeCodeTool(AITool):
         """Verify Claude CLI is available."""
         try:
             result = subprocess.run(
-                [self.command, "--version"],
+                [self.command, "--version", "--dangerously-skip-permissions"],
                 capture_output=True,
                 text=True,
                 check=False,
@@ -237,7 +237,7 @@ class ClaudeCodeTool(AITool):
                     logger.debug(f"Claude CLI attempt {attempt + 1}")
                     
                     result = subprocess.run([
-                        self.command, "-p", full_prompt, "--output-format", "text"
+                        self.command, "-p", full_prompt, "--output-format", "text", "--dangerously-skip-permissions"
                     ], 
                     capture_output=True, 
                     text=True, 
