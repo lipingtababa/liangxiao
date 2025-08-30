@@ -278,6 +278,46 @@ class Workspace:
             with open(workflow_file, 'r') as f:
                 return json.load(f)
         return None
+    
+    def get_git_status(self) -> Optional[Dict[str, Any]]:
+        """
+        Get Git status of the repository in workspace.
+        
+        Returns:
+            Git status information if repository exists
+        """
+        if not self.repo_exists:
+            return None
+            
+        try:
+            import subprocess
+            
+            # Get current branch
+            branch_result = subprocess.run([
+                "git", "branch", "--show-current"
+            ], capture_output=True, text=True, cwd=self.repo_path, check=False)
+            
+            # Get status
+            status_result = subprocess.run([
+                "git", "status", "--porcelain"
+            ], capture_output=True, text=True, cwd=self.repo_path, check=False)
+            
+            # Get last commit
+            log_result = subprocess.run([
+                "git", "log", "-1", "--oneline"
+            ], capture_output=True, text=True, cwd=self.repo_path, check=False)
+            
+            return {
+                "current_branch": branch_result.stdout.strip() if branch_result.returncode == 0 else "unknown",
+                "has_changes": bool(status_result.stdout.strip()) if status_result.returncode == 0 else False,
+                "changed_files": status_result.stdout.strip().split('\n') if status_result.stdout.strip() else [],
+                "last_commit": log_result.stdout.strip() if log_result.returncode == 0 else "No commits",
+                "repo_path": str(self.repo_path)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting Git status: {e}")
+            return None
 
 
 def create_workspace_manager(workspace_root: Optional[str] = None) -> WorkspaceManager:

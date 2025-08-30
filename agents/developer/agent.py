@@ -13,10 +13,8 @@ from typing import Dict, Any, List, Optional, Tuple, Union
 from datetime import datetime
 from pathlib import Path
 
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
-from langchain_core.exceptions import OutputParserException
+from core.tools.ai_interface import AITool
+from core.tools.factory import create_ai_tool
 from pydantic import ValidationError
 
 from .models import (
@@ -59,37 +57,28 @@ class DeveloperAgent:
     
     def __init__(
         self,
+        agent_type: str = "developer",
         github_service: Optional[GitHubService] = None,
-        llm: Optional[ChatOpenAI] = None,
-        model: str = "gpt-4-turbo-preview",
-        temperature: float = 0.3,
-        max_tokens: int = 4000,
+        ai_tool: Optional[AITool] = None,
         timeout_seconds: int = 300,
         max_artifacts_per_solution: int = 10
     ):
         """Initialize the Developer Agent.
         
         Args:
+            agent_type: Type of agent for tool selection (default: developer)
             github_service: GitHub service for repository operations
-            llm: Pre-configured LLM instance (optional)
-            model: LLM model to use for code generation
-            temperature: Sampling temperature for code generation
-            max_tokens: Maximum tokens per generation
+            ai_tool: Pre-configured AI tool instance (optional)
             timeout_seconds: Timeout for implementation operations
             max_artifacts_per_solution: Maximum artifacts per solution
         """
+        self.agent_type = agent_type
         self.github_service = github_service
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
         self.timeout_seconds = timeout_seconds
         self.max_artifacts_per_solution = max_artifacts_per_solution
         
-        # Initialize LLM with appropriate settings for code generation
-        self.llm = llm or self._create_llm()
-        
-        # Initialize output parser for structured code solutions
-        self.parser = PydanticOutputParser(pydantic_object=CodeSolution)
+        # Initialize AI tool (Claude Code or OpenAI based on config)
+        self.ai_tool = ai_tool or create_ai_tool(agent_type)
         
         # Language-specific configurations
         self.language_configs = self._initialize_language_configs()
@@ -98,23 +87,9 @@ class DeveloperAgent:
         self.total_implementations = 0
         self.total_artifacts_created = 0
         self.total_files_read = 0
-        self.total_tokens_used = 0
         self.disaster_prevention_triggers = 0
         
-        logger.info(f"Developer Agent initialized with {model}, temp={temperature}")
-    
-    def _create_llm(self) -> ChatOpenAI:
-        """Create and configure the LLM instance for code generation.
-        
-        Returns:
-            Configured ChatOpenAI instance optimized for code generation
-        """
-        return ChatOpenAI(
-            model=self.model,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            request_timeout=60.0  # Reasonable timeout for API calls
-        )
+        logger.info(f"Developer Agent initialized with {self.ai_tool.tool_type} tool")
     
     def _initialize_language_configs(self) -> Dict[str, Dict[str, Any]]:
         """Initialize language-specific configurations.
@@ -485,17 +460,26 @@ class DeveloperAgent:
                 "max_artifacts": self.max_artifacts_per_solution
             }
             
-            # Generate solution
-            formatted_prompt = prompt.format_messages(**formatted_inputs)
-            response = await self.llm.ainvoke(formatted_prompt)
+            # Generate solution using unified AI tool interface
+            full_prompt = self._format_unified_prompt(formatted_inputs)
             
-            # Track token usage
-            if hasattr(response, 'usage_metadata'):
-                self.total_tokens_used += response.usage_metadata.get('total_tokens', 0)
+            context = {
+                "timeout": self.timeout_seconds,
+                "files": existing_code_context,
+                "language": formatted_inputs.get("project_language"),
+                "frameworks": formatted_inputs.get("frameworks_used")
+            }
+            
+            response_content = await self.ai_tool.execute(
+                prompt=full_prompt,
+                context=context,
+                system_prompt="You are an expert software developer focused on code generation and disaster prevention."
+            )
             
             # Parse structured output
             try:
-                solution = self.parser.parse(response.content)
+                # For now, create a simple parser - can be enhanced later
+                solution = self._parse_ai_response(response_content, dev_context)
             except (OutputParserException, ValidationError) as e:
                 logger.warning(f"Failed to parse structured solution, creating fallback: {e}")
                 solution = self._create_fallback_solution(dev_context, response.content)
@@ -551,7 +535,7 @@ class DeveloperAgent:
         logger.info(f"Read {files_read} files for code generation context")
         return "\n".join(code_context_parts) if code_context_parts else "No existing code context available"
     
-    def _create_code_generation_prompt(self) -> ChatPromptTemplate:
+    def _create_code_generation_prompt(self) -> str:
         """Create the comprehensive code generation prompt.
         
         Returns:
@@ -1108,6 +1092,54 @@ Follow {language} conventions for:
         
         return list(set(checks))  # Remove duplicates
     
+    def _format_unified_prompt(self, inputs: Dict[str, Any]) -> str:
+        """Format prompt for unified AI tool interface."""
+        parts = [
+            f"Task: {inputs.get('task_description', '')}",
+            f"Type: {inputs.get('task_type', 'implementation')}",
+        ]
+        
+        if inputs.get('requirements'):
+            parts.append(f"Requirements: {inputs['requirements']}")
+        
+        if inputs.get('existing_files'):
+            parts.append(f"Existing Files: {inputs['existing_files']}")
+        
+        if inputs.get('previous_feedback'):
+            parts.append(f"Previous Feedback: {inputs['previous_feedback']}")
+        
+        parts.append(f"Language: {inputs.get('project_language', 'python')}")
+        parts.append(f"Max Artifacts: {inputs.get('max_artifacts', 5)}")
+        
+        return "\n\n".join(parts)
+    
+    def _parse_ai_response(self, response: str, dev_context) -> CodeSolution:
+        """Parse AI response into CodeSolution (simplified for now)."""
+        # Create a basic solution from the response
+        # This can be enhanced later with proper parsing
+        artifact = CodeArtifact(
+            type=ArtifactType.CODE,
+            path="src/generated.py",
+            content=response[:2000],  # Limit content
+            language=ProgrammingLanguage.PYTHON,
+            description="Generated from AI response",
+            modification_type=ModificationType.CREATE,
+            safety_checks=["basic_validation"],
+            disaster_prevention_notes=["Generated via unified AI interface"]
+        )
+        
+        return CodeSolution(
+            solution_id=f"unified-{dev_context.task.get('id', 'unknown')}",
+            description="Code generated via unified AI interface",
+            requirements_addressed=[],
+            primary_language=ProgrammingLanguage.PYTHON,
+            artifacts=[artifact],
+            test_strategy="Manual testing required",
+            disaster_prevention_measures=["Unified AI tool interface"],
+            rollback_plan="Remove generated files",
+            estimated_complexity="medium"
+        )
+    
     def _get_files_read(self) -> List[str]:
         """Get list of files read from repository (placeholder).
         
@@ -1227,6 +1259,100 @@ Follow {language} conventions for:
     def __str__(self) -> str:
         """String representation of the Developer Agent."""
         return f"DeveloperAgent({self.model}, implementations={self.total_implementations})"
+    
+    async def execute_git_workflow(self, task: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Execute development task using Git-based workflow in workspace.
+        
+        This method works directly in the cloned repository with proper Git operations:
+        1. Setup Git workspace (clone + feature branch)
+        2. Read existing files for context
+        3. Generate and write code directly to files
+        4. Prepare for Git commit and review
+        
+        Args:
+            task: Task definition
+            context: Execution context including issue data
+            
+        Returns:
+            Result with Git operations summary
+        """
+        start_time = datetime.now()
+        task_id = task.get('id', 'unknown')
+        issue_id = context.get("issue", {}).get("number", task_id)
+        
+        logger.info(f"Developer executing Git workflow for task: {task_id}")
+        
+        try:
+            # 1. Setup Git workspace
+            if self.github_service:
+                workspace_success = self.github_service.setup_git_workspace(
+                    issue_id=issue_id,
+                    issue_data=context.get("issue")
+                )
+                if not workspace_success:
+                    raise GitHubIntegrationError("Failed to setup Git workspace")
+            
+            # 2. Build development context
+            dev_context = await self._prepare_developer_context(task, context)
+            
+            # 3. Read existing files from workspace
+            existing_files = {}
+            if self.github_service and self.github_service.get_current_workspace():
+                for file_path in dev_context.existing_files:
+                    content = self.github_service.read_file_from_workspace(file_path)
+                    if content:
+                        existing_files[file_path] = content
+                        logger.debug(f"Read existing file: {file_path}")
+            
+            # 4. Generate code solution
+            solution = await self._generate_code_solution(dev_context)
+            
+            # 5. Write files directly to workspace
+            files_modified = []
+            for artifact in solution.artifacts:
+                if self.github_service:
+                    success = self.github_service.write_file_to_workspace(
+                        artifact.path,
+                        artifact.content
+                    )
+                    if success:
+                        files_modified.append(artifact.path)
+                        logger.info(f"Modified file: {artifact.path}")
+            
+            # 6. Calculate execution time
+            execution_time = (datetime.now() - start_time).total_seconds()
+            
+            # 7. Return Git-aware result
+            result = {
+                "success": True,
+                "git_workflow": True,
+                "files_modified": files_modified,
+                "workspace_path": str(self.github_service.get_current_workspace().repo_path) if self.github_service else None,
+                "feature_branch": self.github_service.get_current_workspace().load_workflow_state().get("feature_branch") if self.github_service else None,
+                "solution_summary": solution.summary,
+                "execution_time": execution_time,
+                "ready_for_commit": len(files_modified) > 0,
+                "ready_for_review": True,
+                "quality_notes": [
+                    f"Modified {len(files_modified)} files in Git workspace",
+                    "Changes ready for Git commit and Navigator review",
+                    "Working in proper feature branch for safe development"
+                ]
+            }
+            
+            logger.info(f"Git workflow completed: {len(files_modified)} files modified in {execution_time:.2f}s")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Git workflow failed for task {task_id}: {e}")
+            return {
+                "success": False,
+                "git_workflow": True,
+                "error": str(e),
+                "files_modified": [],
+                "quality_notes": [f"Git workflow failed: {e}"]
+            }
 
 
 def create_developer_agent(**kwargs) -> DeveloperAgent:

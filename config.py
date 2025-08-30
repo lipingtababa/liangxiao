@@ -2,7 +2,7 @@
 
 from pydantic_settings import BaseSettings
 from pydantic import Field
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class Settings(BaseSettings):
@@ -40,5 +40,25 @@ class Settings(BaseSettings):
     workspace_root: str = "workspaces"
     workspace_cleanup_days: int = 30  # Clean up workspaces older than 30 days
     max_concurrent_workspaces: int = 10  # Limit concurrent workspaces
+    
+    # AI Tool Configuration
+    agent_tools: Dict[str, str] = {
+        "developer": "claude",
+        "navigator": "claude", 
+        "analyst": "claude"
+    }
+    
+    # OpenAI Settings
+    openai_settings: Dict[str, Any] = {
+        "model": "gpt-5",
+        "temperature": 0.2
+    }
+    
+    # Claude Settings  
+    claude_settings: Dict[str, Any] = {
+        "command": "claude",
+        "default_timeout": 120,
+        "max_retries": 2
+    }
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}

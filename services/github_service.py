@@ -189,6 +189,255 @@ class GitHubService:
         """Get the current workspace if set."""
         return self.current_workspace
     
+    def setup_git_workspace(self, issue_id: Union[str, int], issue_data: Optional[Dict[str, Any]] = None, base_branch: str = "main") -> bool:
+        """
+        Complete Git workspace setup: clone repo + create feature branch.
+        
+        Args:
+            issue_id: Issue ID (GitHub number or Jira ticket)
+            issue_data: Optional issue metadata
+            base_branch: Base branch to create from
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Clone repository to workspace
+            clone_success = self.clone_to_workspace(issue_id, issue_data)
+            if not clone_success:
+                return False
+            
+            # Create feature branch
+            branch_success = self.create_feature_branch(issue_id, base_branch)
+            if not branch_success:
+                logger.warning("Failed to create feature branch, using default branch")
+            
+            logger.info(f"Git workspace ready for development: {self.current_workspace.repo_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error setting up Git workspace: {e}")
+            return False
+    
+    def create_feature_branch(self, issue_id: Union[str, int], base_branch: str = "main") -> bool:
+        """
+        Create a feature branch for the issue in the current workspace.
+        
+        Args:
+            issue_id: Issue ID (GitHub number or Jira ticket)
+            base_branch: Base branch to create from (default: main)
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.current_workspace or not self.current_workspace.repo_exists:
+            logger.error("No workspace or repository available for branch creation")
+            return False
+            
+        try:
+            # Generate branch name
+            issue_str = str(issue_id)
+            if issue_str.isdigit():
+                branch_name = f"feature/issue-{issue_str}"
+            else:
+                # For Jira tickets like SOT-123
+                branch_name = f"feature/{issue_str.lower()}"
+            
+            repo_path = self.current_workspace.repo_path
+            logger.info(f"Creating feature branch '{branch_name}' from '{base_branch}' in {repo_path}")
+            
+            # Fetch latest changes
+            result = subprocess.run([
+                "git", "fetch", "origin"
+            ], capture_output=True, text=True, cwd=repo_path, check=False)
+            
+            if result.returncode != 0:
+                logger.warning(f"Git fetch warning: {result.stderr}")
+            
+            # Create and checkout new branch
+            result = subprocess.run([
+                "git", "checkout", "-b", branch_name, f"origin/{base_branch}"
+            ], capture_output=True, text=True, cwd=repo_path, check=False)
+            
+            if result.returncode == 0:
+                logger.info(f"Feature branch '{branch_name}' created successfully")
+                # Store branch name in workspace metadata
+                if self.current_workspace:
+                    workspace_data = self.current_workspace.load_workflow_state() or {}
+                    workspace_data.update({
+                        "feature_branch": branch_name,
+                        "base_branch": base_branch,
+                        "branch_created_at": datetime.now().isoformat()
+                    })
+                    self.current_workspace.save_workflow_state(workspace_data)
+                return True
+            else:
+                logger.error(f"Failed to create feature branch: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error creating feature branch: {e}")
+            return False
+    
+    def commit_changes(self, message: str, files: Optional[List[str]] = None) -> bool:
+        """
+        Commit changes in the current workspace repository.
+        
+        Args:
+            message: Commit message
+            files: Optional list of specific files to commit (default: all changes)
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.current_workspace or not self.current_workspace.repo_exists:
+            logger.error("No workspace or repository available for committing")
+            return False
+            
+        try:
+            repo_path = self.current_workspace.repo_path
+            
+            # Add files to staging
+            if files:
+                for file_path in files:
+                    result = subprocess.run([
+                        "git", "add", file_path
+                    ], capture_output=True, text=True, cwd=repo_path, check=False)
+                    
+                    if result.returncode != 0:
+                        logger.error(f"Failed to add file {file_path}: {result.stderr}")
+                        return False
+            else:
+                # Add all changes
+                result = subprocess.run([
+                    "git", "add", "-A"
+                ], capture_output=True, text=True, cwd=repo_path, check=False)
+                
+                if result.returncode != 0:
+                    logger.error(f"Failed to add changes: {result.stderr}")
+                    return False
+            
+            # Commit changes
+            result = subprocess.run([
+                "git", "commit", "-m", message
+            ], capture_output=True, text=True, cwd=repo_path, check=False)
+            
+            if result.returncode == 0:
+                logger.info(f"Changes committed successfully: {message}")
+                return True
+            else:
+                logger.error(f"Failed to commit changes: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error committing changes: {e}")
+            return False
+    
+    def push_branch(self) -> bool:
+        """
+        Push the current branch to origin.
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.current_workspace or not self.current_workspace.repo_exists:
+            logger.error("No workspace or repository available for pushing")
+            return False
+            
+        try:
+            repo_path = self.current_workspace.repo_path
+            
+            # Get current branch name
+            result = subprocess.run([
+                "git", "branch", "--show-current"
+            ], capture_output=True, text=True, cwd=repo_path, check=False)
+            
+            if result.returncode != 0:
+                logger.error(f"Failed to get current branch: {result.stderr}")
+                return False
+                
+            branch_name = result.stdout.strip()
+            logger.info(f"Pushing branch '{branch_name}' to origin")
+            
+            # Push branch
+            result = subprocess.run([
+                "git", "push", "-u", "origin", branch_name
+            ], capture_output=True, text=True, cwd=repo_path, check=False)
+            
+            if result.returncode == 0:
+                logger.info(f"Branch '{branch_name}' pushed successfully")
+                return True
+            else:
+                logger.error(f"Failed to push branch: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error pushing branch: {e}")
+            return False
+    
+    def write_file_to_workspace(self, file_path: str, content: str) -> bool:
+        """
+        Write content directly to a file in the workspace repository.
+        
+        Args:
+            file_path: Relative path within the repository
+            content: File content to write
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.current_workspace or not self.current_workspace.repo_exists:
+            logger.error("No workspace or repository available for file writing")
+            return False
+            
+        try:
+            full_path = self.current_workspace.repo_path / file_path
+            
+            # Create directory if it doesn't exist
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Write file content
+            with open(full_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            logger.info(f"File written to workspace: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error writing file {file_path}: {e}")
+            return False
+    
+    def read_file_from_workspace(self, file_path: str) -> Optional[str]:
+        """
+        Read file content from the workspace repository.
+        
+        Args:
+            file_path: Relative path within the repository
+            
+        Returns:
+            File content if successful, None otherwise
+        """
+        if not self.current_workspace or not self.current_workspace.repo_exists:
+            logger.error("No workspace or repository available for file reading")
+            return None
+            
+        try:
+            full_path = self.current_workspace.repo_path / file_path
+            
+            if not full_path.exists():
+                logger.warning(f"File does not exist: {file_path}")
+                return None
+                
+            with open(full_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            logger.debug(f"File read from workspace: {file_path}")
+            return content
+            
+        except Exception as e:
+            logger.error(f"Error reading file {file_path}: {e}")
+            return None
+    
     def read_file(self, path: str, ref: str = "main") -> Optional[str]:
         """Read file content from repository using GitHub CLI."""
         try:
