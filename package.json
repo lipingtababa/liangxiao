@@ -1,33 +1,24 @@
 {
-  "name": "synthetic-coding-team",
+  "name": "nextjs-project",
   "version": "0.1.0",
-  "description": "AI multi-agent coding system with Python/LangChain orchestrator",
   "private": true,
   "scripts": {
-    "dev": "python main.py",
-    "docker:up": "docker-compose up --build",
-    "docker:down": "docker-compose down",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
-    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
-    "docker:logs": "docker-compose logs -f orchestrator",
-    "setup": "pip install -r requirements.txt",
-    "test": "pytest",
-    "test:verbose": "pytest -v"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "private"
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18"
   },
-  "keywords": [
-    "ai",
-    "agents",
-    "coding",
-    "automation",
-    "github",
-    "python",
-    "langchain",
-    "langgraph"
-  ],
-  "author": "AI Team Leader",
-  "private": true
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "typescript": "^5"
+  }
 }
