@@ -17,6 +17,12 @@ from core.tools.ai_interface import AITool
 from core.tools.factory import create_ai_tool
 from pydantic import ValidationError
 
+from core.interfaces import (
+    StepResult as StandardStepResult, DeveloperInput as StandardDeveloperInput,
+    DeveloperOutput as StandardDeveloperOutput, CodeChange,
+    create_step_result, create_quality_metrics
+)
+
 from .models import (
     CodeArtifact, ImplementationResult, FileModification, CodeSolution,
     DeveloperContext, ArtifactType, ModificationType, ImplementationStatus,
@@ -286,6 +292,146 @@ class DeveloperAgent:
             navigator_feedback=navigator_feedback,
             github_service_available=self.github_service is not None
         )
+    
+    async def execute_standardized(self, developer_input: StandardDeveloperInput) -> StandardStepResult:
+        """
+        Execute developer with standardized interface for Dynamic PM system.
+        
+        Args:
+            developer_input: Standardized input for developer
+            
+        Returns:
+            Standardized StepResult with implementation output
+        """
+        start_time = datetime.utcnow()
+        
+        try:
+            # Convert standardized input to legacy format for existing execute method
+            task = {
+                "id": f"implementation_{datetime.utcnow().timestamp()}",
+                "type": "implementation",
+                "description": developer_input.requirements
+            }
+            
+            context = {
+                "requirements": {
+                    "acceptance_criteria": developer_input.acceptance_criteria,
+                    "implementation_requirements": developer_input.requirements
+                },
+                "testing": {
+                    "test_file_path": developer_input.test_file_path
+                }
+            }
+            
+            # Execute using existing method
+            legacy_result = await self.execute(task, context)
+            
+            # Convert to standardized format
+            if legacy_result.get("success", False):
+                # Extract implementation information
+                artifacts = legacy_result.get("artifacts", [])
+                changes_made = []
+                implementation_notes = legacy_result.get("summary", "Implementation completed")
+                tests_passed = legacy_result.get("test_results", {}).get("all_passed", False)
+                test_output = legacy_result.get("test_results", {}).get("output", "")
+                
+                # Convert artifacts to CodeChange format
+                for artifact in artifacts:
+                    if artifact.get("type") == "code_file":
+                        # Create a diff representation
+                        file_path = artifact.get("path", "")
+                        content = artifact.get("content", "")
+                        
+                        # Simple diff representation (in real implementation, would generate proper diff)
+                        diff = f"--- a/{file_path}\n+++ b/{file_path}\n" + \
+                               f"@@ -0,0 +{len(content.split())} @@\n" + \
+                               "\n".join(f"+{line}" for line in content.split('\n')[:10])  # Truncate for display
+                        
+                        changes_made.append(CodeChange(
+                            file_path=file_path,
+                            diff=diff,
+                            summary=artifact.get("description", f"Modified {file_path}")
+                        ))
+                
+                # Create standardized output
+                output_data = StandardDeveloperOutput(
+                    changes_made=changes_made,
+                    tests_passed=tests_passed,
+                    test_output=test_output,
+                    implementation_notes=implementation_notes
+                ).model_dump()
+                
+                # Calculate confidence based on test results and implementation quality
+                test_score = 0.4 if tests_passed else 0.0
+                impl_score = min(0.6, len(changes_made) / 3 * 0.6)  # More changes might be better implementation
+                confidence = test_score + impl_score
+                
+                # Create quality metrics
+                quality_metrics = create_quality_metrics(
+                    completeness=0.9 if tests_passed else 0.6,
+                    accuracy=confidence,
+                    code_quality=legacy_result.get("code_quality_score", 0.8),
+                    critical_issues=len([issue for issue in legacy_result.get("validation_errors", []) 
+                                       if issue.get("severity") == "critical"]),
+                    warnings=len(legacy_result.get("warnings", []))
+                )
+                
+                status = "success"
+                suggestions = ["run_integration_tests", "review_code_quality"] if tests_passed else ["fix_failing_tests"]
+                
+            else:
+                # Handle failure case
+                output_data = {
+                    "error": legacy_result.get("error", "Implementation failed"),
+                    "error_details": legacy_result.get("error_details", {}),
+                    "changes_made": [],
+                    "tests_passed": False,
+                    "test_output": "",
+                    "implementation_notes": "Implementation failed"
+                }
+                
+                confidence = 0.0
+                quality_metrics = create_quality_metrics(
+                    completeness=0.0,
+                    accuracy=0.0,
+                    critical_issues=1,
+                    warnings=1
+                )
+                
+                status = "failed"
+                suggestions = ["retry_implementation", "simplify_requirements"]
+            
+            return create_step_result(
+                agent="developer",
+                status=status,
+                output_data=output_data,
+                confidence=confidence,
+                suggestions=suggestions,
+                quality_metrics=quality_metrics
+            )
+            
+        except Exception as e:
+            logger.error(f"Standardized developer execution failed: {e}")
+            
+            return create_step_result(
+                agent="developer",
+                status="failed",
+                output_data={
+                    "error": str(e),
+                    "changes_made": [],
+                    "tests_passed": False,
+                    "test_output": "",
+                    "implementation_notes": "Implementation failed due to error"
+                },
+                confidence=0.0,
+                suggestions=["retry_implementation", "escalate_to_human"],
+                quality_metrics=create_quality_metrics(
+                    completeness=0.0,
+                    accuracy=0.0,
+                    critical_issues=1,
+                    warnings=0
+                )
+            )
     
     def _extract_requirements_from_context(self, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Extract requirements from completed tasks, typically from Analyst."""

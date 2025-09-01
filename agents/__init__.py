@@ -12,12 +12,13 @@ Each agent is designed to work collaboratively in the multi-agent system.
 from .pm import PMAgent
 from .navigator.agent import NavigatorAgent
 from .analyst import AnalystAgent
-from .tester.agent import TesterAgent, create_tester_agent
+# TODO: Fix TesterAgent import issue
+# from .tester.agent import TesterAgent, create_tester_agent
 
 __all__ = [
     "PMAgent",
     "NavigatorAgent", 
     "AnalystAgent",
-    "TesterAgent",
-    "create_tester_agent"
+    # "TesterAgent",
+    # "create_tester_agent"
 ]

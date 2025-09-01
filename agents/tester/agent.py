@@ -8,26 +8,81 @@ correct, executable test code with proper assertions and coverage analysis.
 import logging
 import re
 import json
-from typing import List, Optional, Dict, Any, Set, Tuple
+from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime
 from pathlib import Path
 
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
-from langchain.output_parsers import PydanticOutputParser
-from pydantic import ValidationError
+import openai
+from pydantic import BaseModel, Field
 
-from .models import TestCase, TestSuite, CoverageAnalysis, TestExecutionResult
-from .exceptions import (
-    TesterError, TestGenerationError, TestValidationError, 
-    FrameworkNotSupportedError, TestSuiteEmpty, DisasterPreventionInsufficient,
-    validate_test_context, sanitize_test_name, validate_test_code_syntax,
-    assess_disaster_prevention_coverage
+from .models import TestCase, TestSuite
+from core.interfaces import (
+    StepResult as StandardStepResult, TesterInput as StandardTesterInput, 
+    TesterOutput as StandardTesterOutput, QualityMetrics as StandardQualityMetrics,
+    create_step_result, create_quality_metrics
 )
 from core.logging import get_logger
 from core.exceptions import AgentExecutionError
 
 logger = get_logger(__name__)
+
+# Step interface models
+class Issue(BaseModel):
+    """Represents an issue or problem found during step execution."""
+    severity: Literal["critical", "high", "medium", "low", "info"]
+    category: str
+    description: str
+
+class QualityMetrics(BaseModel):
+    """Quality assessment metrics for step output."""
+    completeness_score: float = Field(ge=0.0, le=1.0)
+    accuracy_score: float = Field(ge=0.0, le=1.0)
+    code_quality_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    test_coverage: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    critical_issues_count: int = Field(ge=0)
+    warning_count: int = Field(ge=0)
+    performance_impact: Optional[Literal["positive", "neutral", "negative"]] = None
+
+class StepMetadata(BaseModel):
+    """Metadata about step execution."""
+    agent_type: str
+    step_duration_seconds: float
+    tokens_used: Optional[int] = None
+    model_used: Optional[str] = None
+    iteration_number: int = Field(ge=1)
+
+class StepResult(BaseModel):
+    """Standardized output format for all workflow steps."""
+    status: Literal["success", "partial", "failed", "blocked"]
+    output_data: Dict[str, Any]
+    quality_metrics: QualityMetrics
+    issues_found: List[Issue] = Field(default_factory=list)
+    confidence_score: float = Field(ge=0.0, le=1.0)
+    estimated_remaining_effort: str
+    recommendations: List[str] = Field(default_factory=list)
+    next_step_suggestions: List[str] = Field(default_factory=list)
+    step_metadata: StepMetadata
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class TesterInput(BaseModel):
+    """Input data for Tester agent - simplified for test creation only."""
+    acceptance_criteria: List[str] = Field(min_length=1, description="What needs to be tested")
+    feature_description: str = Field(description="Brief context about the feature")
+    edge_cases: List[str] = Field(default_factory=list, description="Edge cases to cover")
+    test_framework: Optional[Literal["pytest", "jest", "unittest"]] = Field(
+        default=None, description="Preferred test framework"
+    )
+
+class TesterOutput(BaseModel):
+    """Output data from Tester agent - focused on test creation only."""
+    type: Literal["test_suite"] = "test_suite"
+    tests_created: List[str] = Field(description="List of test names/descriptions")
+    test_code: str = Field(description="Generated test code")
+    test_file_path: str = Field(description="Suggested file path for tests")
+    test_framework: str = Field(description="Test framework used")
+    edge_cases_covered: List[str] = Field(default_factory=list)
+    test_count: int = Field(description="Number of test cases created")
+    comprehensiveness_score: float = Field(ge=0.0, le=1.0)
 
 
 class TesterAgent:
@@ -48,31 +103,17 @@ class TesterAgent:
     
     def __init__(
         self,
-        model: str = "gpt-4-turbo-preview",
-        temperature: float = 0.2,
-        max_tokens: int = 3000
+        openai_client: Optional[openai.OpenAI] = None
     ):
         """
         Initialize the Tester Agent.
         
         Args:
-            model: LLM model to use for test generation
-            temperature: Sampling temperature (low for consistent tests)
-            max_tokens: Maximum tokens for test generation
+            openai_client: OpenAI client for direct API calls
         """
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        
-        # Initialize LLM with consistent temperature for reliable test generation
-        self.llm = ChatOpenAI(
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
-        
-        # Initialize parser for structured output
-        self.parser = PydanticOutputParser(pydantic_object=TestSuite)
+        self.openai_client = openai_client or openai.OpenAI()
+        self.total_tests_created = 0
+        self.total_tokens_used = 0
         
         # Supported testing frameworks and their configurations
         self.framework_configs = {
@@ -258,6 +299,123 @@ class TesterAgent:
                 "summary": f"Test generation failed with unexpected error: {str(e)}",
                 "validation_passed": False
             }
+    
+    async def execute_standardized(self, tester_input: StandardTesterInput) -> StandardStepResult:
+        """
+        Execute tester with standardized interface for Dynamic PM system.
+        
+        Args:
+            tester_input: Standardized input for tester
+            
+        Returns:
+            Standardized StepResult with test generation output
+        """
+        start_time = datetime.utcnow()
+        
+        try:
+            # Convert standardized input to legacy format for existing execute method
+            task = {
+                "id": f"test_generation_{datetime.utcnow().timestamp()}",
+                "type": "create_test_suite",
+                "description": f"Generate tests for: {tester_input.feature_description}"
+            }
+            
+            context = {
+                "requirements": {
+                    "acceptance_criteria": tester_input.acceptance_criteria,
+                    "feature_description": tester_input.feature_description
+                },
+                "testing": {
+                    "framework": "pytest"  # Default framework
+                }
+            }
+            
+            # Execute using existing method
+            legacy_result = await self.execute(task, context)
+            
+            # Convert to standardized format
+            if legacy_result.get("success", False):
+                # Extract test information
+                artifacts = legacy_result.get("artifacts", [])
+                test_code = ""
+                test_file_path = "tests/test_generated.py"
+                test_count = 0
+                
+                for artifact in artifacts:
+                    if artifact.get("type") == "test_file":
+                        test_code = artifact.get("content", "")
+                        test_file_path = artifact.get("path", "tests/test_generated.py")
+                        # Count test functions in the code
+                        test_count = len([line for line in test_code.split('\n') if line.strip().startswith('def test_')])
+                        break
+                
+                # Create standardized output
+                output_data = StandardTesterOutput(
+                    test_code=test_code,
+                    test_file_path=test_file_path,
+                    test_count=test_count,
+                    framework="pytest"
+                ).model_dump()
+                
+                # Calculate confidence based on test coverage and quality
+                confidence = min(0.9, legacy_result.get("validation_passed", False) * 0.4 + 
+                               min(test_count / 5, 1.0) * 0.6)  # More tests = higher confidence
+                
+                # Create quality metrics
+                quality_metrics = create_quality_metrics(
+                    completeness=legacy_result.get("coverage_analysis", {}).get("overall_coverage", 80) / 100,
+                    accuracy=confidence,
+                    test_coverage=legacy_result.get("coverage_analysis", {}).get("overall_coverage", 80),
+                    critical_issues=0,
+                    warnings=len(legacy_result.get("warnings", []))
+                )
+                
+                status = "success"
+                suggestions = ["run_tests_after_implementation", "review_test_coverage"]
+                
+            else:
+                # Handle failure case
+                output_data = {
+                    "error": legacy_result.get("error", "Test generation failed"),
+                    "error_details": legacy_result.get("error_details", {})
+                }
+                
+                confidence = 0.0
+                quality_metrics = create_quality_metrics(
+                    completeness=0.0,
+                    accuracy=0.0,
+                    critical_issues=1,
+                    warnings=1
+                )
+                
+                status = "failed"
+                suggestions = ["retry_with_simpler_requirements", "manual_test_creation"]
+            
+            return create_step_result(
+                agent="tester",
+                status=status,
+                output_data=output_data,
+                confidence=confidence,
+                suggestions=suggestions,
+                quality_metrics=quality_metrics
+            )
+            
+        except Exception as e:
+            logger.error(f"Standardized tester execution failed: {e}")
+            
+            return create_step_result(
+                agent="tester",
+                status="failed",
+                output_data={"error": str(e)},
+                confidence=0.0,
+                suggestions=["retry_test_generation", "escalate_to_human"],
+                quality_metrics=create_quality_metrics(
+                    completeness=0.0,
+                    accuracy=0.0,
+                    critical_issues=1,
+                    warnings=0
+                )
+            )
     
     def _extract_requirements(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Extract requirements from context."""

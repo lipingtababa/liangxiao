@@ -47,7 +47,7 @@ async def receive_issue_node(state: IssueWorkflowState) -> IssueWorkflowState:
             return update_state_timestamp(state)
     
     # Set initial status
-    state["status"] = WorkflowStatus.PENDING
+    state["status"] = WorkflowStatus.RECEIVED
     state["should_continue"] = True
     
     # Initialize collections if not present
