@@ -1,7 +1,7 @@
 """GitHub webhook endpoints."""
 
 from fastapi import APIRouter, Header, HTTPException, Request
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import json
 from datetime import datetime
 
@@ -329,6 +329,12 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
             try:
                 workflow_id = await orchestrator.start_workflow(event)
                 logger.info(f"✓ Workflow started successfully: {workflow_id}")
+            except Exception as e:
+                logger.error(f"Failed to start workflow: {e}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to start workflow: {str(e)}"
+                )
             
             return {
                 "status": "workflow_started",
@@ -342,23 +348,6 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
                 },
                 "repository": event.repository.full_name,
                 "message": "Workflow started successfully"
-            }
-        
-            except ValueError as e:
-                # Workflow already exists
-                logger.warning(f"Workflow already exists for issue #{event.issue.number}")
-                logger.debug(f"Existing workflow error: {e}")
-                return {
-                "status": "workflow_exists",
-                "event": "issues",
-                "action": event.action,
-                "issue": {
-                    "number": event.issue.number,
-                    "title": event.issue.title,
-                    "url": event.issue.html_url
-                },
-                "repository": event.repository.full_name,
-                "message": "Workflow already running for this issue"
             }
         
         except Exception as e:
@@ -401,17 +390,17 @@ async def handle_comment_event(payload: dict) -> Dict[str, Any]:
                 f"Comment preview: {event.comment.body[:100]}{'...' if len(event.comment.body) > 100 else ''}"
             )
         
-        # TODO: Process comment for agent communication (future stories)
-        # For now, we just acknowledge receipt
-        
-        return {
-            "status": "received",
-            "event": "issue_comment",
-            "action": event.action,
-            "issue": event.issue.number,
-            "repository": event.repository.full_name,
-            "message": "Comment received"
-        }
+            # TODO: Process comment for agent communication (future stories)
+            # For now, we just acknowledge receipt
+            
+            return {
+                "status": "received",
+                "event": "issue_comment",
+                "action": event.action,
+                "issue": event.issue.number,
+                "repository": event.repository.full_name,
+                "message": "Comment received"
+            }
         
         except Exception as e:
             logger.error(f"Failed to process comment event: {e}", exc_info=True)
