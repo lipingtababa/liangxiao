@@ -259,6 +259,11 @@ class DynamicPMAgent:
         
         # Default fallback for unhandled states
         logger.warning(f"Unhandled state transition from {current_state.value}")
+        
+        # For RECEIVED state, default to requirements analysis
+        if current_state == IssueState.RECEIVED:
+            return IssueState.ANALYZING_REQUIREMENTS
+        
         return IssueState.FAILED
     
     def _should_adapt_strategy(

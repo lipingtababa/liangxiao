@@ -129,7 +129,7 @@ Return JSON with:
                 }
             ]
             
-            response = await self.openai_client.chat.completions.acreate(
+            response = self.openai_client.chat.completions.create(
                 model="gpt-4o",
                 messages=messages,
                 temperature=0.1,

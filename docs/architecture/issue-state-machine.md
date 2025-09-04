@@ -1,31 +1,18 @@
-"""Issue State Machine Implementation for Dynamic PM System.
+# Issue State Machine Design
 
-This module implements the complete state machine for issue processing
-with Navigator states frozen/commented out to reduce complexity while
-maintaining PM intelligence for workflow control.
+## Core Principle: Single State Execution
 
-Based on: docs/architecture/issue-state-machine.md
-"""
+**Rule**: Every issue exists in exactly ONE state at any given time. Only ONE agent can work on an issue at a time. The PM agent makes ONE decision to transition to ONE next state.
 
+## State Enum Definition
+
+```python
 from enum import Enum
-from typing import Dict, List, Optional, Any, TYPE_CHECKING
-from datetime import datetime
-from pydantic import BaseModel, Field
-
-if TYPE_CHECKING:
-    from core.interfaces import StepResult
-
-from core.logging import get_logger
-
-logger = get_logger(__name__)
-
 
 class IssueState(Enum):
     """
     Sequential states for issue processing.
     Each state represents exactly one type of work being performed by one agent type.
-    
-    Navigator states are FROZEN/COMMENTED to reduce workflow complexity.
     """
     
     # Initial Reception
@@ -50,7 +37,7 @@ class IssueState(Enum):
     FIXING_ISSUES = "fixing_issues"                   # Developer fixing identified problems
     REFACTORING = "refactoring"                       # Developer improving code structure
     
-    # Code Quality States (Navigator FROZEN for now - removing complexity)
+    # Code Quality States (Navigator frozen for now)
     # REVIEWING_CODE = "reviewing_code"                 # Navigator reviewing implementation  
     # REVIEWING_ARCHITECTURE = "reviewing_architecture" # Navigator reviewing system design
     # REVIEWING_INTEGRATION = "reviewing_integration"   # Navigator checking integration points
@@ -90,10 +77,9 @@ class StateTransitionRule:
         IssueState.IMPLEMENTING: "developer",
         IssueState.FIXING_ISSUES: "developer",
         IssueState.REFACTORING: "developer", 
-        # Navigator states FROZEN - removing complexity
-        # IssueState.REVIEWING_CODE: "navigator",        
-        # IssueState.REVIEWING_ARCHITECTURE: "navigator", 
-        # IssueState.REVIEWING_INTEGRATION: "navigator",  
+        # IssueState.REVIEWING_CODE: "navigator",        # Navigator frozen
+        # IssueState.REVIEWING_ARCHITECTURE: "navigator", # Navigator frozen
+        # IssueState.REVIEWING_INTEGRATION: "navigator",  # Navigator frozen
         IssueState.VALIDATING_SOLUTION: "tester",
         IssueState.ADDRESSING_FEEDBACK: "developer",
         IssueState.CREATING_PR: "pm",  # PM orchestrates PR creation
@@ -106,7 +92,6 @@ class StateTransitionRule:
     }
     
     # Valid state transitions (from -> [to_states])
-    # Navigator review states REMOVED to eliminate complexity
     VALID_TRANSITIONS = {
         IssueState.RECEIVED: [
             IssueState.ANALYZING_REQUIREMENTS,
@@ -118,7 +103,6 @@ class StateTransitionRule:
             IssueState.REQUIREMENTS_UNCLEAR,      # Need clarification  
             IssueState.CREATING_TESTS,             # Requirements clear, start testing
             IssueState.IMPLEMENTING,               # Skip tests for simple fixes
-            IssueState.WAITING_FOR_REQUIREMENTS_CLARIFICATION,  # Direct to waiting if questions found
             IssueState.FAILED
         ],
         
@@ -170,18 +154,16 @@ class StateTransitionRule:
             IssueState.FAILED
         ],
         
-        # KEY CHANGE: NAVIGATOR REVIEW STATES BYPASSED
-        # Implementation goes directly to testing or PR creation
         IssueState.IMPLEMENTING: [
-            IssueState.RUNNING_TESTS,              # Run tests on implementation (SKIP Navigator review)
-            IssueState.CREATING_PR,                # Simple implementations can go direct to PR  
+            IssueState.RUNNING_TESTS,              # Run tests on implementation (skip Navigator review)
+            IssueState.CREATING_PR,                # Simple implementations can go direct to PR
             IssueState.FIXING_ISSUES,              # Self-identified issues
             IssueState.ANALYZING_REQUIREMENTS,     # Implementation revealed requirement gaps
             IssueState.FAILED
         ],
         
         IssueState.FIXING_ISSUES: [
-            IssueState.RUNNING_TESTS,              # Test the fixes (SKIP Navigator review)
+            IssueState.RUNNING_TESTS,              # Test the fixes (skip Navigator review)
             IssueState.CREATING_PR,                # Fixes complete, ready for PR
             IssueState.IMPLEMENTING,               # More implementation needed
             IssueState.REFACTORING,                # Code needs restructuring
@@ -189,16 +171,37 @@ class StateTransitionRule:
         ],
         
         IssueState.REFACTORING: [
-            IssueState.RUNNING_TESTS,              # Test refactored code (SKIP Navigator review)
+            IssueState.RUNNING_TESTS,              # Test refactored code (skip Navigator review)
             IssueState.CREATING_PR,                # Refactoring complete, ready for PR
             IssueState.IMPLEMENTING,               # More work needed
             IssueState.FAILED
         ],
         
-        # Navigator states FROZEN - removing all Navigator review complexity
-        # IssueState.REVIEWING_CODE: [...],
-        # IssueState.REVIEWING_ARCHITECTURE: [...],
-        # IssueState.REVIEWING_INTEGRATION: [...],
+        # Navigator states frozen for now - removing complexity
+        # IssueState.REVIEWING_CODE: [
+        #     IssueState.CREATING_PR,                # Review approved
+        #     IssueState.FIXING_ISSUES,              # Review found issues
+        #     IssueState.REFACTORING,                # Code needs restructuring
+        #     IssueState.REVIEWING_ARCHITECTURE,     # Deeper architectural review needed
+        #     IssueState.REVIEWING_INTEGRATION,      # Integration concerns found
+        #     IssueState.UPDATING_TESTS,             # Tests need changes  
+        #     IssueState.ANALYZING_REQUIREMENTS,     # Requirements need clarification
+        #     IssueState.FAILED
+        # ],
+        
+        # IssueState.REVIEWING_ARCHITECTURE: [
+        #     IssueState.CREATING_PR,                # Architecture approved
+        #     IssueState.REFACTORING,                # Architecture needs changes
+        #     IssueState.ANALYZING_REQUIREMENTS,     # Requirements conflict
+        #     IssueState.FAILED
+        # ],
+        
+        # IssueState.REVIEWING_INTEGRATION: [
+        #     IssueState.CREATING_PR,                # Integration approved
+        #     IssueState.FIXING_ISSUES,              # Integration issues found
+        #     IssueState.ANALYZING_REQUIREMENTS,     # Integration reveals requirement gaps
+        #     IssueState.FAILED
+        # ],
         
         IssueState.VALIDATING_SOLUTION: [
             IssueState.CREATING_PR,                # Validation passed
@@ -208,7 +211,7 @@ class StateTransitionRule:
         ],
         
         IssueState.ADDRESSING_FEEDBACK: [
-            IssueState.RUNNING_TESTS,              # Test feedback changes (SKIP Navigator re-review)
+            IssueState.RUNNING_TESTS,              # Test feedback changes (skip Navigator re-review)
             IssueState.CREATING_PR,                # Feedback addressed, ready for PR
             IssueState.FAILED
         ],
@@ -227,11 +230,11 @@ class StateTransitionRule:
         ],
         
         IssueState.HUMAN_INPUT_RECEIVED: [
-            # Can transition to any appropriate state based on input (Navigator FROZEN)
+            # Can transition to any appropriate state based on input (Navigator frozen)
             IssueState.ANALYZING_REQUIREMENTS,
             IssueState.CREATING_TESTS,
             IssueState.IMPLEMENTING,
-            # Navigator states REMOVED
+            # IssueState.REVIEWING_CODE,              # Navigator frozen
             IssueState.CREATING_PR,
             IssueState.COMPLETED,
             IssueState.FAILED
@@ -257,7 +260,7 @@ class StateTransitionRule:
         return to_state in cls.VALID_TRANSITIONS.get(from_state, [])
     
     @classmethod  
-    def get_responsible_agent(cls, state: IssueState) -> Optional[str]:
+    def get_responsible_agent(cls, state: IssueState) -> str:
         """Get the agent type responsible for handling this state."""
         return cls.STATE_AGENT_MAPPING.get(state)
     
@@ -265,97 +268,42 @@ class StateTransitionRule:
     def get_valid_next_states(cls, from_state: IssueState) -> List[IssueState]:
         """Get all valid next states from current state."""
         return cls.VALID_TRANSITIONS.get(from_state, [])
-    
-    @classmethod
-    def is_terminal_state(cls, state: IssueState) -> bool:
-        """Check if state is terminal (no valid transitions out)."""
-        return len(cls.VALID_TRANSITIONS.get(state, [])) == 0
-    
-    @classmethod
-    def is_waiting_state(cls, state: IssueState) -> bool:
-        """Check if state is a waiting state (no agent assigned)."""
-        return cls.STATE_AGENT_MAPPING.get(state) is None and not cls.is_terminal_state(state)
-
-
-class StateTransition(BaseModel):
-    """Records a state transition with context."""
-    from_state: IssueState
-    to_state: IssueState
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    reason: str = ""
-    triggered_by: Optional[str] = None  # Agent or system that triggered transition
-    iteration: int = 0
 
 
 class WorkflowContext(BaseModel):
-    """Enhanced context for PM decision making with state tracking."""
+    """Context for PM decision making with state tracking."""
     issue_number: int
-    issue_title: str = ""
-    issue_description: str = ""
-    repository: str = ""
-    
-    # State tracking
-    current_state: IssueState = IssueState.RECEIVED
+    current_state: IssueState
     previous_states: List[IssueState] = Field(default_factory=list)
-    state_transitions: List[StateTransition] = Field(default_factory=list)
+    state_history_with_timestamps: List[Dict[str, Any]] = Field(default_factory=list)
     
-    # Agent tracking
     current_agent: Optional[str] = None
     iteration_count: int = 0
     max_iterations: int = 10
     
-    # Step execution history
-    step_history: List[Any] = Field(default_factory=list)  # List of StepResult objects
-    
     # Quality and progress tracking
-    confidence_threshold: float = 0.7
+    confidence_threshold: float = 0.85
     quality_gates_passed: List[str] = Field(default_factory=list)
     blocking_issues: List[str] = Field(default_factory=list)
     
-    # Timing
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
-    completed_at: Optional[datetime] = None
-    
-    def transition_to_state(
-        self, 
-        new_state: IssueState, 
-        reason: str = "", 
-        triggered_by: Optional[str] = None
-    ) -> bool:
+    def transition_to_state(self, new_state: IssueState, reason: str = "") -> bool:
         """Transition to new state with validation."""
         if not StateTransitionRule.is_valid_transition(self.current_state, new_state):
-            error_msg = f"Invalid state transition: {self.current_state.value} -> {new_state.value}"
-            logger.error(error_msg)
-            raise ValueError(error_msg)
+            raise ValueError(f"Invalid state transition: {self.current_state} -> {new_state}")
         
         # Record state change  
         self.previous_states.append(self.current_state)
+        self.state_history_with_timestamps.append({
+            "from_state": self.current_state.value,
+            "to_state": new_state.value, 
+            "timestamp": datetime.utcnow().isoformat(),
+            "reason": reason,
+            "iteration": self.iteration_count
+        })
         
-        transition = StateTransition(
-            from_state=self.current_state,
-            to_state=new_state,
-            reason=reason,
-            triggered_by=triggered_by,
-            iteration=self.iteration_count
-        )
-        self.state_transitions.append(transition)
-        
-        # Update state
         self.current_state = new_state
         self.current_agent = StateTransitionRule.get_responsible_agent(new_state)
         self.iteration_count += 1
-        self.updated_at = datetime.utcnow()
-        
-        # Mark completion time for terminal states
-        if StateTransitionRule.is_terminal_state(new_state):
-            self.completed_at = datetime.utcnow()
-        
-        logger.info(
-            f"Issue #{self.issue_number} transitioned: "
-            f"{transition.from_state.value} -> {transition.to_state.value} "
-            f"(reason: {reason})"
-        )
         
         return True
     
@@ -370,156 +318,148 @@ class WorkflowContext(BaseModel):
     def get_current_responsible_agent(self) -> Optional[str]:
         """Get agent responsible for current state."""
         return StateTransitionRule.get_responsible_agent(self.current_state)
-    
-    def is_terminal_state(self) -> bool:
-        """Check if workflow is in a terminal state."""
-        return StateTransitionRule.is_terminal_state(self.current_state)
-    
-    def is_waiting_for_human(self) -> bool:
-        """Check if workflow is waiting for human input."""
-        return self.current_state in [
-            IssueState.WAITING_FOR_REQUIREMENTS_CLARIFICATION,
-            IssueState.WAITING_FOR_HUMAN_INPUT
-        ]
-    
-    def get_state_duration(self, state: IssueState) -> Optional[float]:
-        """Get how long was spent in a specific state (in seconds)."""
-        transitions_in = [t for t in self.state_transitions if t.to_state == state]
-        transitions_out = [t for t in self.state_transitions if t.from_state == state]
-        
-        if not transitions_in:
-            return None
-            
-        enter_time = transitions_in[0].timestamp
-        exit_time = transitions_out[0].timestamp if transitions_out else datetime.utcnow()
-        
-        return (exit_time - enter_time).total_seconds()
-    
-    def get_workflow_summary(self) -> Dict[str, Any]:
-        """Get a summary of the workflow execution."""
-        return {
-            "issue_number": self.issue_number,
-            "current_state": self.current_state.value,
-            "total_iterations": self.iteration_count,
-            "states_visited": len(set(self.previous_states + [self.current_state])),
-            "is_terminal": self.is_terminal_state(),
-            "is_waiting_for_human": self.is_waiting_for_human(),
-            "blocking_issues": self.blocking_issues,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
-            "total_duration_seconds": (
-                (self.completed_at or datetime.utcnow()) - self.created_at
-            ).total_seconds()
-        }
+```
 
+## PM Decision Integration
 
-class StateMachine:
-    """State machine manager for issue workflow."""
-    
-    def __init__(self):
-        """Initialize state machine."""
-        self.active_workflows: Dict[int, WorkflowContext] = {}
-        logger.info("State machine initialized with Navigator states FROZEN")
-    
-    def create_workflow(
+```python
+class DynamicPMAgent:
+    def evaluate_step_result(
         self, 
-        issue_number: int, 
-        issue_title: str = "", 
-        issue_description: str = "",
-        repository: str = ""
-    ) -> WorkflowContext:
-        """Create a new workflow for an issue."""
-        if issue_number in self.active_workflows:
-            logger.warning(f"Workflow for issue #{issue_number} already exists")
-            return self.active_workflows[issue_number]
+        step_result: StepResult, 
+        context: WorkflowContext
+    ) -> NextAction:
+        """
+        PM evaluates step result and decides next state transition.
+        Enforces single-state principle.
+        """
         
-        context = WorkflowContext(
-            issue_number=issue_number,
-            issue_title=issue_title,
-            issue_description=issue_description,
-            repository=repository
+        # Quality gate evaluation
+        if not self._passes_quality_requirements(step_result, context):
+            return self._handle_quality_failure(step_result, context)
+        
+        # Context-aware state transition decision
+        next_state = self._determine_next_state(step_result, context)
+        
+        # Validate transition is allowed
+        if not StateTransitionRule.is_valid_transition(context.current_state, next_state):
+            raise ValueError(f"PM attempted invalid transition: {context.current_state} -> {next_state}")
+        
+        # Create action for next state
+        return NextAction(
+            action=self._get_action_for_state(next_state),
+            target_agent=StateTransitionRule.get_responsible_agent(next_state),
+            new_state=next_state,
+            input_data=self._prepare_input_for_state(step_result, next_state, context)
         )
-        
-        self.active_workflows[issue_number] = context
-        
-        logger.info(
-            f"Created workflow for issue #{issue_number}: {issue_title} "
-            f"(Navigator FROZEN - simplified workflow)"
-        )
-        
-        return context
     
-    def get_workflow(self, issue_number: int) -> Optional[WorkflowContext]:
-        """Get existing workflow context."""
-        return self.active_workflows.get(issue_number)
-    
-    def transition_workflow(
-        self, 
-        issue_number: int, 
-        new_state: IssueState, 
-        reason: str = "",
-        triggered_by: Optional[str] = None
-    ) -> bool:
-        """Transition workflow to new state."""
-        context = self.get_workflow(issue_number)
-        if not context:
-            logger.error(f"No workflow found for issue #{issue_number}")
-            return False
+    def _determine_next_state(self, step_result: StepResult, context: WorkflowContext) -> IssueState:
+        """Determine next state based on step result and current context."""
+        current_state = context.current_state
         
-        try:
-            return context.transition_to_state(new_state, reason, triggered_by)
-        except ValueError as e:
-            logger.error(f"State transition failed for issue #{issue_number}: {e}")
-            return False
-    
-    def complete_workflow(self, issue_number: int, reason: str = "Workflow completed") -> bool:
-        """Mark workflow as completed and remove from active tracking."""
-        context = self.get_workflow(issue_number)
-        if not context:
-            return False
+        if current_state == IssueState.ANALYZING_REQUIREMENTS:
+            if step_result.confidence_score < context.confidence_threshold:
+                return IssueState.REQUIREMENTS_UNCLEAR
+            else:
+                return IssueState.CREATING_TESTS
+                
+        elif current_state == IssueState.CREATING_TESTS:
+            if step_result.status == "success":
+                return IssueState.IMPLEMENTING
+            else:
+                return IssueState.ANALYZING_REQUIREMENTS
+                
+        elif current_state == IssueState.IMPLEMENTING:
+            if step_result.confidence_score > 0.9 and len(step_result.issues_found) == 0:
+                return IssueState.RUNNING_TESTS  # High quality implementation, test it
+            elif step_result.confidence_score > 0.8:
+                return IssueState.CREATING_PR     # Good implementation, create PR directly
+            else:
+                return IssueState.FIXING_ISSUES   # Need to fix issues first
+                
+        # Navigator states removed - skipping review complexity
+                
+        # Add more state-specific logic...
         
-        # Transition to completed state if not already there
-        if context.current_state != IssueState.COMPLETED:
-            context.transition_to_state(IssueState.COMPLETED, reason)
-        
-        # Remove from active tracking
-        del self.active_workflows[issue_number]
-        
-        logger.info(f"Workflow completed for issue #{issue_number}")
+        return IssueState.FAILED  # Default if no valid transition found
+```
+
+## PM as Human-AI Bridge
+
+The PM agent serves as the **exclusive interface** between human stakeholders and AI agents:
+
+### Human Interaction Responsibilities
+```python
+class PMHumanInterface:
+    def post_requirements_questions(self, questions: List[str], issue_number: int) -> bool:
+        """
+        PM posts clarifying questions to GitHub issue when requirements are unclear.
+        Transitions issue to WAITING_FOR_REQUIREMENTS_CLARIFICATION state.
+        """
+        comment = self._format_requirements_questions(questions)
+        self.github_service.create_issue_comment(issue_number, comment)
         return True
     
-    def get_active_workflows(self) -> List[WorkflowContext]:
-        """Get all active workflow contexts."""
-        return list(self.active_workflows.values())
+    def process_human_clarification(self, human_response: str, context: WorkflowContext) -> NextAction:
+        """
+        PM processes human clarification and decides next step.
+        Called when issue transitions from WAITING_FOR_REQUIREMENTS_CLARIFICATION to REQUIREMENTS_CLARIFIED.
+        """
+        clarified_requirements = self._parse_human_response(human_response)
+        
+        # PM decides whether to proceed with implementation or need more analysis
+        if self._requirements_sufficient(clarified_requirements):
+            return NextAction(
+                action="create_tests",
+                target_agent="tester", 
+                new_state=IssueState.CREATING_TESTS,
+                input_data={"clarified_requirements": clarified_requirements}
+            )
+        else:
+            return NextAction(
+                action="analyze_requirements",
+                target_agent="analyst",
+                new_state=IssueState.ANALYZING_REQUIREMENTS,
+                input_data={"human_clarification": clarified_requirements}
+            )
     
-    def get_workflows_by_state(self, state: IssueState) -> List[WorkflowContext]:
-        """Get all workflows in a specific state."""
-        return [ctx for ctx in self.active_workflows.values() if ctx.current_state == state]
-    
-    def get_waiting_workflows(self) -> List[WorkflowContext]:
-        """Get all workflows waiting for human input."""
-        return [ctx for ctx in self.active_workflows.values() if ctx.is_waiting_for_human()]
+    def request_human_approval(self, decision_context: Dict, issue_number: int) -> bool:
+        """
+        PM requests human approval for complex decisions (architecture changes, etc.).
+        Transitions issue to WAITING_FOR_HUMAN_INPUT state.
+        """
+        approval_request = self._format_approval_request(decision_context)
+        self.github_service.create_issue_comment(issue_number, approval_request)
+        return True
+```
 
+### Human Interaction Flow Examples
 
-# Global state machine instance
-_state_machine = StateMachine()
+**Requirements Clarification Flow:**
+1. `ANALYZING_REQUIREMENTS` → Analyst finds unclear requirements
+2. `REQUIREMENTS_UNCLEAR` → PM decides human input needed  
+3. `WAITING_FOR_REQUIREMENTS_CLARIFICATION` → PM posts questions to GitHub issue, stops processing
+4. *Human responds to GitHub issue*
+5. `REQUIREMENTS_CLARIFIED` → PM processes human response  
+6. `CREATING_TESTS` → PM routes to Tester with clarified requirements
 
+**Approval Request Flow:**
+1. `REVIEWING_ARCHITECTURE` → Navigator identifies major architectural change needed
+2. `WAITING_FOR_HUMAN_INPUT` → PM requests human approval for architecture change
+3. *Human approves via GitHub issue comment*
+4. `HUMAN_INPUT_RECEIVED` → PM processes approval
+5. `IMPLEMENTING` → PM authorizes Developer to proceed with architectural change
 
-def get_state_machine() -> StateMachine:
-    """Get the global state machine instance."""
-    return _state_machine
+### AI Agent Isolation
+- **Other agents never interact with humans directly**
+- **All human communication goes through PM**
+- **Agents focus purely on their technical expertise**
+- **PM translates between human language and technical requirements**
 
-
-# ============================================================================
-# Export List
-# ============================================================================
-
-__all__ = [
-    "IssueState",
-    "StateTransitionRule", 
-    "StateTransition",
-    "WorkflowContext",
-    "StateMachine",
-    "get_state_machine"
-]
+This state machine design ensures:
+- **Single state execution**: Issue is always in exactly one state
+- **Clear ownership**: Each state maps to one agent type
+- **Validated transitions**: PM cannot make invalid state transitions  
+- **Loop detection**: Prevents infinite cycles
+- **Complete traceability**: Full history of state changes with reasons
+- **Human-AI separation**: PM is the exclusive human interface layer
