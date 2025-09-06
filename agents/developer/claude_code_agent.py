@@ -36,6 +36,28 @@ class ClaudeCodeDeveloperAgent:
         
         logger.info("Claude Code Developer Agent initialized")
     
+    async def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
+        """
+        Standardized execution method for workflow compatibility.
+        
+        Args:
+            input_data: Dictionary or DeveloperInput with implementation requirements
+            
+        Returns:
+            StepResult with implementation status
+        """
+        # Convert dict input to DeveloperInput if needed
+        if isinstance(input_data, dict):
+            developer_input = DeveloperInput(
+                requirements=input_data.get("requirements", ""),
+                acceptance_criteria=input_data.get("acceptance_criteria", []),
+                test_file_path=input_data.get("test_file_path")
+            )
+        else:
+            developer_input = input_data
+            
+        return await self.execute(developer_input)
+    
     async def execute(self, developer_input: DeveloperInput) -> StepResult:
         """
         Execute implementation using Claude Code AI capabilities.
@@ -81,7 +103,6 @@ class ClaudeCodeDeveloperAgent:
                 status=status,
                 output_data=output_data,
                 confidence=confidence,
-                suggestions=["create_pull_request"] if status == "success" else ["review_changes", "test_implementation"]
             )
             
         except Exception as e:
@@ -92,7 +113,6 @@ class ClaudeCodeDeveloperAgent:
                 status="failed", 
                 output_data={"error": str(e)},
                 confidence=0.0,
-                suggestions=["retry_implementation", "manual_review"]
             )
     
     async def _implement_with_claude_code(self, developer_input: DeveloperInput) -> List[Dict[str, Any]]:

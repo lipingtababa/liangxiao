@@ -37,7 +37,7 @@ class TesterAgent:
         
         logger.info("Simplified Tester Agent initialized")
     
-    def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
+    async def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
         """
         Standardized execution method for workflow compatibility.
         
@@ -61,7 +61,6 @@ class TesterAgent:
                 "test_framework": "pytest"
             },
             confidence=0.85,
-            suggestions=["run_tests", "proceed_to_implementation"]
         )
     
     async def execute(self, tester_input: TesterInput) -> StepResult:
@@ -102,7 +101,6 @@ class TesterAgent:
                 status="success",
                 output_data=output_data,
                 confidence=0.9,
-                suggestions=["implement_changes", "run_tests"]
             )
             
         except Exception as e:
@@ -113,7 +111,6 @@ class TesterAgent:
                 status="failed",
                 output_data={"error": str(e)},
                 confidence=0.0,
-                suggestions=["retry_test_generation", "manual_test_creation"]
             )
     
     async def _generate_tests(self, tester_input: TesterInput) -> str:

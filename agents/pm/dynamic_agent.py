@@ -348,7 +348,7 @@ class DynamicPMAgent:
                     input_data={
                         "issue_description": context.issue_description,
                         "previous_attempts": len([s for s in context.previous_states if s == IssueState.ANALYZING_REQUIREMENTS]),
-                        "focus_areas": step_result.next_suggestions
+                        "focus_areas": step_result.output.get('focus_areas', ['requirements_analysis'])
                     },
                     reason="Retrying requirements analysis with additional focus areas"
                 )
@@ -539,7 +539,7 @@ class DynamicPMAgent:
         if next_state == IssueState.ANALYZING_REQUIREMENTS:
             return {
                 **base_input,
-                "focus_areas": step_result.next_suggestions,
+                "focus_areas": step_result.output.get('focus_areas', ['requirements_analysis']),
                 "previous_analysis": step_result.output if step_result.agent == "analyst" else None
             }
         
@@ -575,7 +575,7 @@ class DynamicPMAgent:
                 "requirements": step_result.output.get('requirements', context.issue_description),
                 "acceptance_criteria": step_result.output.get('acceptance_criteria', []),
                 "test_file_path": step_result.output.get('test_file_path'),
-                "implementation_guidance": step_result.next_suggestions
+                "implementation_guidance": step_result.output.get('implementation_guidance', [])
             }
         
         elif next_state == IssueState.RUNNING_TESTS:
@@ -589,6 +589,7 @@ class DynamicPMAgent:
         elif next_state == IssueState.CREATING_PR:
             return {
                 **base_input,
+                "action": "create_pr",
                 "code_changes": step_result.output.get('changes_made', []),
                 "test_results": step_result.output.get('test_results', {}),
                 "implementation_notes": step_result.output.get('implementation_notes', ''),

@@ -37,6 +37,28 @@ class DeveloperAgent:
         
         logger.info("Simplified Developer Agent initialized")
     
+    async def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
+        """
+        Standardized execution method for workflow compatibility.
+        
+        Args:
+            input_data: Dictionary or DeveloperInput with implementation requirements
+            
+        Returns:
+            StepResult with implementation status
+        """
+        # Convert dict input to DeveloperInput if needed
+        if isinstance(input_data, dict):
+            developer_input = DeveloperInput(
+                requirements=input_data.get("requirements", ""),
+                acceptance_criteria=input_data.get("acceptance_criteria", []),
+                test_file_path=input_data.get("test_file_path")
+            )
+        else:
+            developer_input = input_data
+            
+        return await self.execute(developer_input)
+    
     async def execute(self, developer_input: DeveloperInput) -> StepResult:
         """
         Execute implementation and test execution.
@@ -84,7 +106,6 @@ class DeveloperAgent:
                 status=status,
                 output_data=output_data,
                 confidence=confidence,
-                suggestions=["create_pull_request", "notify_stakeholders"] if status == "success" else ["fix_implementation", "review_test_failures"]
             )
             
         except Exception as e:
@@ -95,7 +116,6 @@ class DeveloperAgent:
                 status="failed", 
                 output_data={"error": str(e)},
                 confidence=0.0,
-                suggestions=["retry_implementation", "review_requirements"]
             )
     
     async def _generate_implementation(self, developer_input: DeveloperInput) -> List[Dict[str, Any]]:

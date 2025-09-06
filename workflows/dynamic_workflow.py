@@ -226,7 +226,7 @@ class DynamicWorkflowController:
                 status="success",
                 output_data={"state": current_state.value, "action": "state_transition"},
                 confidence=1.0,
-                suggestions=[]
+                
             )
         
         logger.debug(
@@ -253,7 +253,7 @@ class DynamicWorkflowController:
                 status="failed",
                 output_data={"error": str(e), "state": current_state.value},
                 confidence=0.0,
-                suggestions=["retry", "escalate_to_human"]
+                
             )
     
     async def _execute_analyst(self, context: WorkflowContext) -> StepResult:
@@ -276,12 +276,12 @@ class DynamicWorkflowController:
         if not acceptance_criteria:
             acceptance_criteria = [f"Implement solution for: {context.issue_title}"]
         
-        tester_input = TesterInput(
-            acceptance_criteria=acceptance_criteria,
-            feature_description=context.issue_title
-        )
+        tester_input_data = {
+            "acceptance_criteria": acceptance_criteria,
+            "feature_description": context.issue_title
+        }
         
-        return await self.tester_agent.execute_standardized(tester_input)
+        return await self.tester_agent.execute_standardized(tester_input_data)
     
     async def _execute_developer(self, context: WorkflowContext) -> StepResult:
         """Execute Developer agent for implementation."""
@@ -298,13 +298,13 @@ class DynamicWorkflowController:
         if not acceptance_criteria:
             acceptance_criteria = [f"Implement solution for: {context.issue_title}"]
         
-        developer_input = DeveloperInput(
-            requirements=context.issue_description,
-            acceptance_criteria=acceptance_criteria,
-            test_file_path=test_file_path
-        )
+        developer_input_data = {
+            "requirements": context.issue_description,
+            "acceptance_criteria": acceptance_criteria,
+            "test_file_path": test_file_path
+        }
         
-        return await self.developer_agent.execute_standardized(developer_input)
+        return await self.developer_agent.execute_standardized(developer_input_data)
     
     async def _execute_pm(self, context: WorkflowContext) -> StepResult:
         """Execute PM agent for orchestration tasks."""
@@ -321,7 +321,7 @@ class DynamicWorkflowController:
                     "recommended_next_state": "analyzing_requirements"
                 },
                 confidence=0.8,
-                suggestions=["start_requirements_analysis"]
+                
             )
         
         elif current_state == IssueState.REQUIREMENTS_UNCLEAR:
@@ -338,7 +338,7 @@ class DynamicWorkflowController:
                     ]
                 },
                 confidence=0.6,
-                suggestions=["post_github_comment", "wait_for_human_input"]
+                
             )
         
         elif current_state == IssueState.REQUIREMENTS_CLARIFIED:
@@ -352,7 +352,7 @@ class DynamicWorkflowController:
                     "ready_for_testing": True
                 },
                 confidence=0.9,
-                suggestions=["create_tests"]
+                
             )
         
         elif current_state == IssueState.CREATING_PR:
@@ -369,7 +369,7 @@ class DynamicWorkflowController:
                     "current_state": current_state.value
                 },
                 confidence=0.7,
-                suggestions=["continue_workflow"]
+                
             )
     
     async def _handle_pr_creation(self, context: WorkflowContext) -> StepResult:
@@ -436,7 +436,7 @@ class DynamicWorkflowController:
                             "tests_passed": test_results.get("tests_passed", False)
                         },
                         confidence=0.95,
-                        suggestions=["workflow_complete"]
+                        
                     )
                 else:
                     logger.warning(f"PR creation returned non-zero: {result.stderr}")
@@ -465,7 +465,7 @@ class DynamicWorkflowController:
                     "tests_passed": test_results.get("tests_passed", False)
                 },
                 confidence=0.9,
-                suggestions=["workflow_complete"]
+                
             )
             
         except Exception as e:
@@ -475,7 +475,7 @@ class DynamicWorkflowController:
                 status="failed",
                 output_data={"error": f"PR creation failed: {str(e)}"},
                 confidence=0.0,
-                suggestions=["retry_pr_creation", "manual_pr_creation"]
+                
             )
     
     def _generate_pr_description(
@@ -574,6 +574,29 @@ class DynamicWorkflowController:
                 return await self._handle_terminal_state(next_action, context)
             elif action_type == "continue_with_assumptions":
                 return await self._handle_continue_with_assumptions(next_action, context)
+            elif action_type == "create_pr":
+                # First transition to CREATING_PR state
+                context.transition_to_state(
+                    IssueState.CREATING_PR,
+                    "Starting PR creation process",
+                    "pm"
+                )
+                # Handle PR creation
+                pr_result = await self._handle_pr_creation(context)
+                if pr_result.status == "success":
+                    context.transition_to_state(
+                        IssueState.COMPLETED,
+                        "PR created successfully",
+                        "pm"
+                    )
+                    return True
+                else:
+                    context.transition_to_state(
+                        IssueState.FAILED,
+                        f"PR creation failed: {pr_result.output.get('error', 'Unknown error')}",
+                        "pm"
+                    )
+                    return False
             elif action_type in ["pr_created", "workflow_complete"]:
                 # Transition to completed
                 context.transition_to_state(

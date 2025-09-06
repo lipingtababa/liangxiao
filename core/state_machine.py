@@ -166,6 +166,7 @@ class StateTransitionRule:
             IssueState.IMPLEMENTING,               # Tests pass, continue
             IssueState.FIXING_ISSUES,              # Tests fail, need fixes
             IssueState.UPDATING_TESTS,             # Tests themselves need changes
+            IssueState.CREATING_PR,                # Tests pass, ready for PR
             IssueState.COMPLETED,                  # All tests pass, done
             IssueState.FAILED
         ],

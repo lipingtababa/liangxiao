@@ -73,8 +73,7 @@ class ClaudeCodeAnalystAgent:
                 agent="claude_code_analyst",
                 status=status,
                 output_data=output_data,
-                confidence=confidence,
-                suggestions=["proceed_to_implementation"] if status == "success" else ["clarify_requirements", "review_analysis"]
+                confidence=confidence
             )
             
         except Exception as e:
@@ -84,8 +83,7 @@ class ClaudeCodeAnalystAgent:
                 agent="claude_code_analyst",
                 status="failed", 
                 output_data={"error": str(e)},
-                confidence=0.0,
-                suggestions=["retry_analysis", "manual_review"]
+                confidence=0.0
             )
     
     async def _analyze_with_claude_code(self, analyst_input: AnalystInput) -> Dict[str, Any]:

@@ -81,7 +81,6 @@ class AnalystAgent:
                 status=status,
                 output_data=analysis.model_dump(),
                 confidence=confidence,
-                suggestions=self._get_next_suggestions(analysis)
             )
             
             duration = (datetime.utcnow() - start_time).total_seconds()
@@ -96,7 +95,6 @@ class AnalystAgent:
                 status="failed",
                 output_data={"error": str(e)},
                 confidence=0.0,
-                suggestions=["retry_analysis", "escalate_to_human"]
             )
     
     async def _analyze_requirements(self, issue_description: str) -> AnalystOutput:

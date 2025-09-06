@@ -44,17 +44,17 @@ class QualityMetrics(BaseModel):
 
 
 class StepResult(BaseModel):
-    """Universal output format for all agents."""
+    """Universal output format for all agents - pure work results only."""
     status: Literal["success", "failed", "needs_clarification"]
     agent: str  # Which agent produced this
     output: Dict[str, Any]  # Agent-specific output data
     confidence: float = Field(ge=0.0, le=1.0)
-    next_suggestions: List[str] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     quality_metrics: Optional[QualityMetrics] = Field(
         default=None,
         description="Quality assessment of the step output"
     )
+    # Note: next_suggestions field removed - agents should not influence workflow routing
 
 
 class NextAction(BaseModel):
@@ -216,16 +216,14 @@ def create_step_result(
     status: Literal["success", "failed", "needs_clarification"],
     output_data: Dict[str, Any],
     confidence: float = 0.8,
-    suggestions: List[str] = None,
     quality_metrics: QualityMetrics = None
 ) -> StepResult:
-    """Helper function to create a StepResult."""
+    """Helper function to create a StepResult - pure work results only."""
     return StepResult(
         status=status,
         agent=agent,
         output=output_data,
         confidence=confidence,
-        next_suggestions=suggestions or [],
         quality_metrics=quality_metrics
     )
 
