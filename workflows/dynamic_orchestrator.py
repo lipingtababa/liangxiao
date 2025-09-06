@@ -131,9 +131,18 @@ class DynamicOrchestrator:
         
         try:
             # Set up workspace using existing infrastructure
+            logger.info(f"Setting up workspace for issue #{issue_event.issue.number}")
+            logger.debug(f"Workspace base path: {self.workspace_base_path}")
             workspace = await self._setup_workspace(issue_event)
+            logger.info(f"✓ Workspace setup {'completed' if workspace else 'failed (continuing anyway)'}")
             
             # Execute through NEW Dynamic Workflow Controller (not LangGraph)
+            logger.info(f"Starting Dynamic Workflow execution for issue #{issue_event.issue.number}")
+            logger.info(f"Issue details: '{issue_event.issue.title}' in {issue_event.repository.full_name}")
+            logger.debug(f"Issue body preview: {(issue_event.issue.body or '')[:100]}...")
+            logger.info(f"PM Agent will control execution flow (Navigator FROZEN)")
+            
+            logger.info(f"Invoking DynamicWorkflowController.execute_workflow()...")
             context = await self.dynamic_controller.execute_workflow(
                 issue_number=issue_event.issue.number,
                 issue_title=issue_event.issue.title,
@@ -141,16 +150,29 @@ class DynamicOrchestrator:
                 repository=issue_event.repository.full_name
             )
             
+            logger.info(f"Dynamic Workflow execution completed for issue #{issue_event.issue.number}")
+            logger.info(f"Final state: {context.current_state.value}")
+            logger.info(f"Total iterations: {context.iteration_count}")
+            logger.info(f"Steps executed: {len(context.step_history)}")
+            
             # Track workflow for compatibility
+            logger.debug(f"Analyzing workflow completion status...")
+            logger.debug(f"Is terminal state: {context.is_terminal_state()}")
+            logger.debug(f"Is waiting for human: {context.is_waiting_for_human()}")
+            
             if context.is_terminal_state():
                 if context.current_state == IssueState.COMPLETED:
                     self.active_workflows[workflow_id] = "completed"
+                    logger.info(f"✅ Workflow COMPLETED successfully")
                 else:
                     self.active_workflows[workflow_id] = "failed"
+                    logger.warning(f"❌ Workflow FAILED in state: {context.current_state.value}")
             elif context.is_waiting_for_human():
                 self.active_workflows[workflow_id] = "waiting_for_human"
+                logger.info(f"⏳ Workflow WAITING for human input")
             else:
                 self.active_workflows[workflow_id] = "running"
+                logger.info(f"🔄 Workflow still RUNNING")
             
             # Store metadata for compatibility
             self.workflow_metadata[workflow_id] = {
@@ -174,9 +196,12 @@ class DynamicOrchestrator:
             
         except Exception as e:
             logger.error(f"Failed to start dynamic workflow: {e}")
+            logger.error(f"Error type: {type(e).__name__}")
+            logger.debug(f"Full traceback available in logs")
             self.active_workflows[workflow_id] = "failed"
             self.workflow_metadata[workflow_id] = {
                 "error": str(e),
+                "error_type": type(e).__name__,
                 "failed_at": datetime.utcnow().isoformat(),
                 "navigator_status": "FROZEN"
             }
@@ -193,6 +218,7 @@ class DynamicOrchestrator:
             )
             
             # Set up workspace
+            logger.debug(f"Creating workspace for {issue_event.repository.owner.login}/{issue_event.repository.name}")
             workspace = github_service.setup_workspace(
                 issue_event.issue.number,
                 {
@@ -203,11 +229,14 @@ class DynamicOrchestrator:
                 }
             )
             
-            logger.info(f"Workspace set up for issue #{issue_event.issue.number}")
+            logger.info(f"✓ Workspace set up successfully for issue #{issue_event.issue.number}")
+            logger.debug(f"Workspace object: {type(workspace).__name__ if workspace else None}")
             return workspace
             
         except Exception as e:
             logger.warning(f"Workspace setup failed: {e}")
+            logger.debug(f"Workspace setup error type: {type(e).__name__}")
+            logger.info(f"Continuing without workspace (system can handle this gracefully)")
             return None
     
     async def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:

@@ -172,10 +172,12 @@ class SCTBlackBoxTest:
                 }
             }
             
-            # Generate webhook signature (if needed)
+            # Generate webhook signature with consistent JSON serialization
             import hmac
             import hashlib
-            payload_bytes = json.dumps(webhook_payload).encode('utf-8')
+            # Serialize payload consistently (no spaces, sorted keys)
+            payload_json = json.dumps(webhook_payload, separators=(',', ':'), sort_keys=True)
+            payload_bytes = payload_json.encode('utf-8')
             signature = hmac.new(
                 self.webhook_secret.encode('utf-8'),
                 payload_bytes,
@@ -193,7 +195,7 @@ class SCTBlackBoxTest:
             
             response = requests.post(
                 f"{self.sct_url}/api/webhook/github",  # Correct API path
-                json=webhook_payload,
+                data=payload_json,  # Use same JSON string that was signed
                 headers=headers,
                 timeout=10
             )

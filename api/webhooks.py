@@ -17,14 +17,14 @@ from models.github import (
     PingEvent
 )
 from config import Settings
-from workflows.orchestrator import WorkflowOrchestrator
+from workflows.dynamic_orchestrator import DynamicOrchestrator
 
 logger = get_logger(__name__)
 settings = Settings()
 router = APIRouter()
 
-# Initialize workflow orchestrator
-orchestrator = WorkflowOrchestrator()
+# Initialize dynamic orchestrator (replaces broken LangGraph system)
+orchestrator = DynamicOrchestrator()
 
 # Track recent webhook requests for debugging
 recent_webhooks = []  # Will store last 100 webhook requests
