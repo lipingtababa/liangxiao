@@ -14,6 +14,7 @@ from .navigator.agent import NavigatorAgent
 from .analyst import AnalystAgent
 from .tester.agent import TesterAgent, create_tester_agent
 from .developer.agent import DeveloperAgent, create_developer_agent
+from .developer.claude_code_agent import ClaudeCodeDeveloperAgent, create_claude_code_developer_agent
 
 __all__ = [
     "PMAgent",
@@ -22,5 +23,7 @@ __all__ = [
     "TesterAgent", 
     "create_tester_agent",
     "DeveloperAgent",
-    "create_developer_agent"
+    "create_developer_agent",
+    "ClaudeCodeDeveloperAgent",
+    "create_claude_code_developer_agent"
 ]

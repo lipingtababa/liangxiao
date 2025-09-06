@@ -13,6 +13,9 @@ import os
 # Add the current directory to the path so we can import our modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# Load environment variables before any other imports that might need them
+import core.env_loader  # This automatically loads .env at import time
+
 from config import Settings
 from core.logging import (
     setup_logging, get_logger, log_startup_info,

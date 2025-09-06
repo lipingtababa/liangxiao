@@ -17,6 +17,7 @@ from core.interfaces import (
 )
 from core.logging import get_logger
 from core.exceptions import AgentExecutionError
+from .persona import get_analyst_persona
 
 
 logger = get_logger(__name__)
@@ -156,7 +157,7 @@ Return JSON with:
     
     def _get_system_prompt(self) -> str:
         """Get the system prompt for requirements analysis."""
-        return """You are a Business Analyst focused on converting issues into clear acceptance criteria.
+        return get_analyst_persona() + """
 
 FOCUS ON:
 1. Business requirements - What does the user/business need?
@@ -225,3 +226,10 @@ Always return valid JSON format."""
                 self.total_tokens_used / max(self.total_analyses, 1)
             )
         }
+
+
+def create_analyst_agent(**kwargs):
+    """Factory function to create an Analyst Agent."""
+    # Use Claude Code implementation by default (no OpenAI dependency)
+    from .claude_code_agent import ClaudeCodeAnalystAgent
+    return ClaudeCodeAnalystAgent(**kwargs)

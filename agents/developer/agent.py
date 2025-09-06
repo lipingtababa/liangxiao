@@ -248,4 +248,6 @@ test_generated.py::test_acceptance_criteria_1 PASSED  [100%]
 
 def create_developer_agent(**kwargs):
     """Factory function to create a Developer Agent."""
-    return DeveloperAgent(**kwargs)
+    # Use Claude Code implementation by default (no OpenAI dependency)
+    from .claude_code_agent import ClaudeCodeDeveloperAgent
+    return ClaudeCodeDeveloperAgent(**kwargs)

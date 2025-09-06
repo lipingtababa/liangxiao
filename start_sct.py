@@ -12,15 +12,30 @@ from pathlib import Path
 
 
 def load_env_file(env_file_path=".env"):
-    """Load environment variables from .env file."""
+    """Load environment variables from .env file using python-dotenv if available."""
+    # First try using python-dotenv (more robust)
+    try:
+        from dotenv import load_dotenv
+        if load_dotenv(env_file_path):
+            print(f"✅ Environment variables loaded from {env_file_path} (using python-dotenv)")
+            return True
+    except ImportError:
+        pass
+    
+    # Fallback to manual loading
     env_file = Path(env_file_path)
     if env_file.exists():
-        print(f"Loading environment variables from {env_file_path}...")
+        print(f"Loading environment variables from {env_file_path} (manual method)...")
         with open(env_file, 'r') as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith('#') and '=' in line:
                     key, value = line.split('=', 1)
+                    # Handle quoted values
+                    if value.startswith('"') and value.endswith('"'):
+                        value = value[1:-1]
+                    elif value.startswith("'") and value.endswith("'"):
+                        value = value[1:-1]
                     os.environ[key] = value
         print("✅ Environment variables loaded successfully")
         return True
@@ -58,6 +73,11 @@ def start_sct_service(host="0.0.0.0", port=8000, reload=False):
     print(f"   Host: {host}")
     print(f"   Port: {port}")
     print(f"   Auto-reload: {reload}")
+    
+    if reload:
+        print("⚠️  Warning: Auto-reload can cause issues with environment variables")
+        print("   Consider using --no-reload for production")
+    
     print("=" * 50)
     
     # Build uvicorn command
@@ -70,9 +90,12 @@ def start_sct_service(host="0.0.0.0", port=8000, reload=False):
     if reload:
         cmd.append("--reload")
     
+    # Pass current environment to subprocess (including loaded .env vars)
+    env = os.environ.copy()
+    
     # Start the service
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, env=env)
     except KeyboardInterrupt:
         print("\n🛑 Service stopped by user")
     except subprocess.CalledProcessError as e:

@@ -23,8 +23,17 @@ logger = get_logger(__name__)
 settings = Settings()
 router = APIRouter()
 
-# Initialize dynamic orchestrator (replaces broken LangGraph system)
-orchestrator = DynamicOrchestrator()
+# Lazy-loaded dynamic orchestrator (replaces broken LangGraph system)
+# This is initialized on first use to avoid environment variable issues during import
+orchestrator = None
+
+def get_orchestrator():
+    """Get or create the dynamic orchestrator instance."""
+    global orchestrator
+    if orchestrator is None:
+        # Ensure env variables are loaded (happens at import time via core.env_loader)
+        orchestrator = DynamicOrchestrator()
+    return orchestrator
 
 # Track recent webhook requests for debugging
 recent_webhooks = []  # Will store last 100 webhook requests
@@ -327,7 +336,7 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
             # Start workflow
             logger.info("Initiating workflow for issue...")
             try:
-                workflow_id = await orchestrator.start_workflow(event)
+                workflow_id = await get_orchestrator().start_workflow(event)
                 logger.info(f"✓ Workflow started successfully: {workflow_id}")
             except Exception as e:
                 logger.error(f"Failed to start workflow: {e}")
@@ -422,7 +431,7 @@ async def get_workflow_status(workflow_id: str) -> Dict[str, Any]:
     
     try:
         # Get workflow summary
-        summary = await orchestrator.get_workflow_summary(workflow_id)
+        summary = await get_orchestrator().get_workflow_summary(workflow_id)
         
         if not summary:
             logger.warning(f"Workflow not found: {workflow_id}")
@@ -459,8 +468,8 @@ async def get_active_workflows() -> Dict[str, Any]:
     logger.debug("Retrieving active workflows...")
     
     try:
-        workflows = orchestrator.get_active_workflows()
-        stats = orchestrator.get_stats()
+        workflows = get_orchestrator().get_active_workflows()
+        stats = get_orchestrator().get_stats()
         
         logger.debug(f"Found {len(workflows)} active workflows")
         logger.debug(f"Stats: {stats}")
@@ -477,3 +486,58 @@ async def get_active_workflows() -> Dict[str, Any]:
             status_code=500,
             detail="Failed to retrieve workflows"
         )
+
+
+@router.post("/webhook/github/test")
+async def github_webhook_test(request: Request) -> Dict[str, Any]:
+    """
+    Test webhook endpoint that bypasses signature verification.
+    
+    For testing purposes only - allows workflow testing without valid signatures.
+    """
+    logger.info("Test webhook endpoint called (bypassing signature verification)")
+    
+    try:
+        # Get raw body
+        body = await request.body()
+        payload = json.loads(body)
+        
+        logger.info(f"Test webhook payload: action={payload.get('action')}, issue={payload.get('issue', {}).get('number')}")
+        
+        # Process directly without signature verification  
+        if payload.get("action") == "opened" and "issue" in payload:
+            # Create event and start workflow
+            try:
+                event = IssueEvent.model_validate(payload)
+                workflow_id = await get_orchestrator().start_workflow(event)
+                
+                logger.info(f"Test workflow started: {workflow_id}")
+                
+                return {
+                    "status": "workflow_started",
+                    "workflow_id": workflow_id,
+                    "issue": payload["issue"]["number"],
+                    "message": "Test workflow started (bypassed signature verification)"
+                }
+                
+            except Exception as e:
+                logger.error(f"Failed to start test workflow: {e}", exc_info=True)
+                return {
+                    "status": "failed", 
+                    "error": str(e),
+                    "message": "Test workflow failed to start"
+                }
+        
+        return {
+            "status": "ignored", 
+            "action": payload.get("action"),
+            "message": "Test endpoint - action not processed"
+        }
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in test webhook: {e}")
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+        
+    except Exception as e:
+        logger.error(f"Test webhook processing failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Test webhook processing failed")
