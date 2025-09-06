@@ -309,6 +309,9 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
     ):
         try:
             logger.debug("Validating issue event payload...")
+            logger.debug(f"Payload keys: {list(payload.keys())}")
+            logger.debug(f"Issue keys: {list(payload.get('issue', {}).keys())}")
+            logger.debug(f"Repository keys: {list(payload.get('repository', {}).keys())}")
             event = IssueEvent.model_validate(payload)
             logger.debug(f"✓ Issue event validated: #{event.issue.number} - {event.action}")
         
@@ -361,7 +364,12 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
         
         except Exception as e:
             logger.error(f"Failed to process issue event: {e}", exc_info=True)
-            raise HTTPException(status_code=400, detail="Invalid issue event payload")
+            # Include validation error details if it's a Pydantic error
+            if "validation error" in str(e).lower():
+                detail = f"Invalid issue event payload: {str(e)}"
+            else:
+                detail = "Invalid issue event payload"
+            raise HTTPException(status_code=400, detail=detail)
 
 
 async def handle_comment_event(payload: dict) -> Dict[str, Any]:

@@ -26,20 +26,24 @@ from typing import Optional, Dict, Any
 class SCTBlackBoxTest:
     """Black box E2E test for SyntheticCodingTeam."""
     
-    def __init__(self, github_token: str, test_repo: str = "lipingtababa/liangxiao"):
+    def __init__(self, github_token: str, test_repo: str = "lipingtababa/liangxiao", sct_url: str = "http://localhost:8000"):
         """
         Initialize the black box test.
         
         Args:
             github_token: GitHub personal access token
             test_repo: Repository to test with (format: owner/repo)
+            sct_url: URL of running SCT service (default: http://localhost:8000)
         """
         self.github_token = github_token
         self.github = Github(github_token)
         self.test_repo = test_repo
         self.sct_process = None
-        self.port = 8001  # Use 8001 to avoid conflicts
-        self.sct_url = f"http://localhost:{self.port}"
+        self.sct_url = sct_url
+        # Extract port from sct_url
+        from urllib.parse import urlparse
+        parsed_url = urlparse(sct_url)
+        self.port = parsed_url.port or 8000
         self.webhook_secret = os.getenv("GITHUB_WEBHOOK_SECRET", "98jsdifem2ijTFE")  # From .env
         
     def start_sct_service(self) -> bool:
@@ -127,48 +131,42 @@ class SCTBlackBoxTest:
             repo = self.github.get_repo(self.test_repo)
             issue = repo.get_issue(issue_number)
             
-            # Build webhook payload (GitHub issue opened event)
+            # Build webhook payload following official GitHub webhook schema
             webhook_payload = {
                 "action": "opened",
                 "issue": {
+                    "url": f"https://api.github.com/repos/{repo.full_name}/issues/{issue.number}",
                     "number": issue.number,
+                    "state": issue.state,
                     "title": issue.title,
                     "body": issue.body or "",
-                    "state": issue.state,
-                    "labels": [{"name": label.name, "color": "000000", "id": 1} for label in issue.labels],
-                    "created_at": issue.created_at.isoformat(),
-                    "updated_at": issue.updated_at.isoformat(),
-                    "html_url": issue.html_url,
-                    "id": issue.id,
-                    "url": f"https://api.github.com/repos/{repo.full_name}/issues/{issue.number}",
-                    "locked": False,
                     "user": {
                         "login": issue.user.login,
                         "id": issue.user.id,
-                        "type": "User",
-                        "html_url": f"https://github.com/{issue.user.login}"
-                    }
+                        "type": getattr(issue.user, 'type', "User")
+                    },
+                    "labels": [{"name": label.name} for label in issue.labels],
+                    "assignees": [],
+                    "milestone": None,
+                    "comments": getattr(issue, 'comments', 0),
+                    "created_at": issue.created_at.isoformat(),
+                    "updated_at": issue.updated_at.isoformat()
                 },
                 "repository": {
-                    "name": repo.name,
-                    "full_name": repo.full_name,
-                    "private": repo.private,
                     "id": repo.id,
-                    "html_url": repo.html_url,
-                    "description": repo.description,
-                    "default_branch": repo.default_branch,
+                    "full_name": repo.full_name,
                     "owner": {
                         "login": repo.owner.login,
                         "id": repo.owner.id,
-                        "type": repo.owner.type,
-                        "html_url": f"https://github.com/{repo.owner.login}"
-                    }
+                        "type": getattr(repo.owner, 'type', 'User')
+                    },
+                    "private": repo.private,
+                    "name": repo.name
                 },
                 "sender": {
                     "login": issue.user.login,
                     "id": issue.user.id,
-                    "type": "User",
-                    "html_url": f"https://github.com/{issue.user.login}"
+                    "type": getattr(issue.user, 'type', "User")
                 }
             }
             
@@ -318,6 +316,14 @@ class SCTBlackBoxTest:
         
         return is_valid
     
+    def check_sct_health(self) -> bool:
+        """Check if SCT service is healthy and running."""
+        try:
+            response = requests.get(f"{self.sct_url}/health", timeout=10)
+            return response.status_code == 200
+        except Exception:
+            return False
+    
     async def run_test(self, issue_number: int = 21) -> bool:
         """
         Run the complete black box E2E test.
@@ -333,18 +339,19 @@ class SCTBlackBoxTest:
         print("=" * 60)
         print(f"Testing with issue #{issue_number} from {self.test_repo}")
         print("This test treats SCT as a complete black box")
+        print(f"Using SCT endpoint: {self.sct_url}")
         print()
         
         success = False
         
         try:
-            # Step 1: Start SCT service
-            if not self.start_sct_service():
-                print("❌ Failed to start SCT service")
+            # Step 1: Check SCT service is running
+            print("🔍 Checking SCT service health...")
+            if not self.check_sct_health():
+                print(f"❌ SCT service not running at {self.sct_url}")
+                print("   Please start SCT service first")
                 return False
-            
-            # Give service time to fully initialize
-            await asyncio.sleep(5)
+            print(f"✅ SCT service is healthy at {self.sct_url}")
             
             # Step 2: Send webhook
             if not self.simulate_github_webhook(issue_number):
@@ -360,7 +367,7 @@ class SCTBlackBoxTest:
                 
                 if success:
                     print(f"\n🎉 BLACK BOX TEST: SUCCESS!")
-                    print(f"   1. ✅ SCT service started")
+                    print(f"   1. ✅ SCT service running")
                     print(f"   2. ✅ Webhook processed") 
                     print(f"   3. ✅ PR #{pr_details['number']} created")
                     print(f"   4. ✅ PR validated (no disasters)")
@@ -374,10 +381,6 @@ class SCTBlackBoxTest:
             print(f"\n❌ Test error: {e}")
             import traceback
             traceback.print_exc()
-            
-        finally:
-            # Always stop the service
-            self.stop_sct_service()
         
         print("\n" + "=" * 60)
         print("📊 TEST COMPLETE")

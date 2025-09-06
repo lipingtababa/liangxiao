@@ -44,7 +44,10 @@ def verify_webhook_signature(
     is_valid = hmac.compare_digest(expected, signature)
     
     if not is_valid:
-        logger.warning("Invalid webhook signature")
+        logger.warning(f"Invalid webhook signature - Expected: {expected}, Got: {signature}")
+        logger.debug(f"Payload size: {len(payload)} bytes, Secret length: {len(secret)}")
+    else:
+        logger.debug("Webhook signature verification successful")
     
     return is_valid
 

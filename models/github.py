@@ -17,41 +17,45 @@ class GitHubUser(BaseModel):
 class GitHubLabel(BaseModel):
     """GitHub issue label representation."""
     name: str
-    color: str
+    color: Optional[str] = None  # Make color optional as it's not always in webhook payload
     description: Optional[str] = None
     id: Optional[int] = None
     url: Optional[str] = None
 
 
 class GitHubIssue(BaseModel):
-    """GitHub issue representation."""
+    """GitHub issue representation following official webhook schema."""
+    url: str  # API URL
     number: int
+    state: Literal["open", "closed"]
     title: str
     body: Optional[str] = None
-    state: Literal["open", "closed"]
+    user: GitHubUser
     labels: List[GitHubLabel] = []
-    assignee: Optional[GitHubUser] = None
     assignees: List[GitHubUser] = []
+    milestone: Optional[Dict[str, Any]] = None
+    comments: int = 0
     created_at: datetime
     updated_at: datetime
-    html_url: str
-    id: int
-    url: str
-    user: GitHubUser
-    locked: bool = False
+    # Additional fields that may be present but not in minimal schema
+    html_url: Optional[str] = None
+    id: Optional[int] = None
+    assignee: Optional[GitHubUser] = None
+    locked: Optional[bool] = False
     draft: Optional[bool] = None
 
 
 class GitHubRepository(BaseModel):
-    """GitHub repository representation."""
-    name: str
+    """GitHub repository representation following official webhook schema."""
+    id: int
     full_name: str
     owner: GitHubUser
     private: bool
-    id: int
-    html_url: str
+    name: str
+    # Optional fields not required in minimal webhook payload
+    html_url: Optional[str] = None
     description: Optional[str] = None
-    default_branch: str = "main"
+    default_branch: Optional[str] = None
 
 
 class GitHubComment(BaseModel):

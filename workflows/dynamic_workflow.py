@@ -572,6 +572,8 @@ class DynamicWorkflowController:
                 return await self._handle_human_clarification_request(next_action, context)
             elif action_type == "handle_terminal_state":
                 return await self._handle_terminal_state(next_action, context)
+            elif action_type == "continue_with_assumptions":
+                return await self._handle_continue_with_assumptions(next_action, context)
             elif action_type in ["pr_created", "workflow_complete"]:
                 # Transition to completed
                 context.transition_to_state(
@@ -637,6 +639,22 @@ class DynamicWorkflowController:
         
         return success
     
+    async def _handle_continue_with_assumptions(self, next_action: NextAction, context: WorkflowContext) -> bool:
+        """Handle continuing with assumptions when requirements are unclear but no specific questions."""
+        assumptions = next_action.input_data.get("assumptions", [])
+        reason = next_action.input_data.get("reason", "Proceeding with assumptions")
+        
+        logger.info(f"Continuing workflow with assumptions: {assumptions}")
+        
+        # Transition back to creating tests with the available information
+        context.transition_to_state(
+            IssueState.CREATING_TESTS,
+            reason,
+            "pm"
+        )
+        
+        return True
+    
     async def _handle_terminal_state(self, next_action: NextAction, context: WorkflowContext) -> bool:
         """Handle transition to terminal state."""
         terminal_state_name = next_action.input_data.get("terminal_state", "completed")
@@ -677,6 +695,11 @@ class DynamicWorkflowController:
             return False
         
         try:
+            # Check if we're trying to transition to the same state
+            if context.current_state == target_state:
+                logger.debug(f"Agent routing: Already in target state {target_state.value}, skipping transition")
+                return True
+            
             # Transition to target state
             context.transition_to_state(
                 target_state,
