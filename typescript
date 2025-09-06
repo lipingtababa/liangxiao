@@ -1,0 +1,286 @@
+Script started on Sat Sep  6 00:49:14 2025
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hlls[?2004l
+CLAUDE.md			create_actual_pr.py		demonstrate_real_changes.py	requirements.txt
+DEMO_FILE_PROCESSED.md		create_real_pr.py		demonstrate_working_pr.py	run_blackbox_test.sh
+DEMO_FILE_WITH_PHRASE.md	create_real_pr_api.py		docker-compose.dev.yml		run_complete_workflow.py
+DEMO_README.md			create_smart_developer_demo.py	docker-compose.yml		scripts
+DEPLOY.md			create_working_pr.py		docker-dev.sh			sct.log
+Dockerfile			data				docs				services
+LOGGING_IMPROVEMENTS.md		demo_analyst_navigator_pair.py	examples			show_navigator_prevention.py
+README.md			demo_claude_integration.py	fix_developer_and_create_pr.py	show_working_pr_fix.py
+REAL_WORKFLOW_DEMO.md		demo_complete_workflow.py	hello.py			simulate_pr_creation.py
+WORKFLOW_EXECUTION_SUMMARY.md	demo_disaster_prevention.py	logs				start.sh
+__init__.py			demo_git_workflow.py		main.py				start_sct_for_issue_21.py
+__pycache__			demo_navigator.py		migration			test_auth_fix.py
+agents				demo_poller.py			models				testing
+api				demo_poller_state.json		package.json			tests
+auth.py				demo_real_workflow.py		poetry.lock			typescript
+config.py			demo_task_pair.py		pyproject.toml			workflows
+core				demo_workspaces			pytest.ini			workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hlls -l [?2004l
+total 736
+-rw-r--r--@  1 machi  staff    144 Sep  5 08:44 CLAUDE.md
+-rw-r--r--@  1 machi  staff    514 Sep  6 00:26 DEMO_FILE_PROCESSED.md
+-rw-r--r--@  1 machi  staff    502 Sep  6 00:26 DEMO_FILE_WITH_PHRASE.md
+-rw-r--r--@  1 machi  staff    467 Sep  6 00:26 DEMO_README.md
+-rw-rw-r--@  1 machi  staff   1826 Aug 30 16:54 DEPLOY.md
+-rw-rw-r--@  1 machi  staff   2126 Aug 30 16:54 Dockerfile
+-rw-r--r--@  1 machi  staff   7108 Sep  6 00:26 LOGGING_IMPROVEMENTS.md
+-rw-rw-r--@  1 machi  staff   8462 Aug 30 20:21 README.md
+-rw-r--r--@  1 machi  staff   2282 Sep  6 00:26 REAL_WORKFLOW_DEMO.md
+-rw-r--r--@  1 machi  staff   1061 Sep  6 00:26 WORKFLOW_EXECUTION_SUMMARY.md
+-rw-rw-r--@  1 machi  staff      0 Aug 30 16:54 __init__.py
+drwxrwxr-x@  5 machi  staff    160 Sep  6 00:46 __pycache__
+drwxrwxr-x@ 10 machi  staff    320 Sep  6 00:26 agents
+drwxrwxr-x@  7 machi  staff    224 Sep  6 00:26 api
+-rw-r--r--@  1 machi  staff    878 Sep  6 00:47 auth.py
+-rw-rw-r--@  1 machi  staff   1828 Aug 31 01:03 config.py
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 core
+-rw-r--r--@  1 machi  staff   9938 Sep  6 00:26 create_actual_pr.py
+-rw-r--r--@  1 machi  staff   9893 Sep  6 00:26 create_real_pr.py
+-rw-r--r--@  1 machi  staff   7901 Sep  6 00:26 create_real_pr_api.py
+-rw-r--r--@  1 machi  staff  10634 Sep  6 00:26 create_smart_developer_demo.py
+-rw-r--r--@  1 machi  staff   8154 Sep  6 00:26 create_working_pr.py
+drwxrwxr-x@  3 machi  staff     96 Sep  3 09:24 data
+-rw-rw-r--@  1 machi  staff   9666 Aug 30 16:54 demo_analyst_navigator_pair.py
+-rw-r--r--@  1 machi  staff   4760 Aug 31 01:06 demo_claude_integration.py
+-rw-r--r--@  1 machi  staff  17299 Sep  6 00:26 demo_complete_workflow.py
+-rw-r--r--@  1 machi  staff   7076 Aug 31 18:52 demo_disaster_prevention.py
+-rw-r--r--@  1 machi  staff   6665 Aug 31 00:20 demo_git_workflow.py
+-rw-rw-r--@  1 machi  staff   6631 Aug 30 16:54 demo_navigator.py
+-rw-r--r--@  1 machi  staff   3874 Aug 31 01:33 demo_poller.py
+-rw-r--r--@  1 machi  staff    184 Aug 31 01:34 demo_poller_state.json
+-rw-r--r--@  1 machi  staff   8301 Sep  6 00:26 demo_real_workflow.py
+-rw-r--r--@  1 machi  staff   9754 Sep  5 13:53 demo_task_pair.py
+drwxr-xr-x@  3 machi  staff     96 Aug 31 00:20 demo_workspaces
+-rw-r--r--@  1 machi  staff   5980 Sep  6 00:26 demonstrate_real_changes.py
+-rw-r--r--@  1 machi  staff   7111 Sep  6 00:26 demonstrate_working_pr.py
+-rw-r--r--@  1 machi  staff   1439 Aug 30 20:18 docker-compose.dev.yml
+-rw-rw-r--@  1 machi  staff   2195 Aug 30 16:54 docker-compose.yml
+-rw-rw-r--@  1 machi  staff   1937 Aug 30 16:54 docker-dev.sh
+drwxrwxr-x@  6 machi  staff    192 Sep  6 00:26 docs
+drwxr-xr-x@  3 machi  staff     96 Sep  6 00:26 examples
+-rw-r--r--@  1 machi  staff   8884 Sep  6 00:26 fix_developer_and_create_pr.py
+-rw-r--r--@  1 machi  staff     39 Aug 31 01:25 hello.py
+drwxrwxr-x@  3 machi  staff     96 Aug 26 01:02 logs
+-rw-r--r--@  1 machi  staff  10708 Sep  6 00:26 main.py
+drwxrwxr-x@  7 machi  staff    224 Aug 27 23:33 migration
+drwxrwxr-x@  5 machi  staff    160 Aug 26 01:11 models
+-rw-rw-r--@  1 machi  staff    473 Aug 31 12:28 package.json
+-rw-rw-r--@  1 machi  staff    395 Aug 30 16:54 poetry.lock
+-rw-rw-r--@  1 machi  staff   1160 Aug 30 16:54 pyproject.toml
+-rw-r--r--@  1 machi  staff    671 Sep  6 00:26 pytest.ini
+-rw-r--r--@  1 machi  staff    503 Sep  6 00:26 requirements.txt
+-rwxr-xr-x@  1 machi  staff   1204 Sep  6 00:26 run_blackbox_test.sh
+-rw-r--r--@  1 machi  staff  20888 Sep  6 00:26 run_complete_workflow.py
+drwxr-xr-x@  3 vivi   staff     96 Sep  3 17:37 scripts
+-rw-r--r--@  1 vivi   staff     65 Sep  3 18:20 sct.log
+drwxr-xr-x@  7 machi  staff    224 Aug 31 01:34 services
+-rw-r--r--@  1 machi  staff   6882 Sep  6 00:26 show_navigator_prevention.py
+-rw-r--r--@  1 machi  staff   6070 Sep  6 00:26 show_working_pr_fix.py
+-rw-r--r--@  1 machi  staff   9844 Sep  6 00:26 simulate_pr_creation.py
+-rwxr-xr-x@  1 machi  staff   7760 Sep  6 00:26 start.sh
+-rw-r--r--@  1 machi  staff   4419 Sep  6 00:26 start_sct_for_issue_21.py
+-rw-r--r--@  1 machi  staff    885 Sep  6 00:47 test_auth_fix.py
+drwxrwxr-x@  4 machi  staff    128 Aug 27 23:33 testing
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 tests
+-rw-r--r--   1 machi  staff     43 Sep  6 00:49 typescript
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 workflows
+drwxr-xr-x@  5 machi  staff    160 Aug 31 00:08 workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hcchmod   own machi.staff *[?2004l
+chown: machi.staff: illegal user name
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hchown machi.staff *[1C[1C[1C[1C[1C *  *  *  *  *  * [?2004l
+chown: scripts: Operation not permitted
+chown: sct.log: Operation not permitted
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hssudpo  o chown machi.  *[?2004l
+Password:
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hlls -l[?2004l
+total 744
+-rw-r--r--@  1 machi  staff    144 Sep  5 08:44 CLAUDE.md
+-rw-r--r--@  1 machi  staff    514 Sep  6 00:26 DEMO_FILE_PROCESSED.md
+-rw-r--r--@  1 machi  staff    502 Sep  6 00:26 DEMO_FILE_WITH_PHRASE.md
+-rw-r--r--@  1 machi  staff    467 Sep  6 00:26 DEMO_README.md
+-rw-rw-r--@  1 machi  staff   1826 Aug 30 16:54 DEPLOY.md
+-rw-rw-r--@  1 machi  staff   2126 Aug 30 16:54 Dockerfile
+-rw-r--r--@  1 machi  staff   7108 Sep  6 00:26 LOGGING_IMPROVEMENTS.md
+-rw-rw-r--@  1 machi  staff   8462 Aug 30 20:21 README.md
+-rw-r--r--@  1 machi  staff   2282 Sep  6 00:26 REAL_WORKFLOW_DEMO.md
+-rw-r--r--@  1 machi  staff   1061 Sep  6 00:26 WORKFLOW_EXECUTION_SUMMARY.md
+-rw-rw-r--@  1 machi  staff      0 Aug 30 16:54 __init__.py
+drwxrwxr-x@  5 machi  staff    160 Sep  6 00:46 __pycache__
+drwxrwxr-x@ 10 machi  staff    320 Sep  6 00:26 agents
+drwxrwxr-x@  7 machi  staff    224 Sep  6 00:26 api
+-rw-r--r--@  1 machi  staff    878 Sep  6 00:47 auth.py
+-rw-rw-r--@  1 machi  staff   1828 Aug 31 01:03 config.py
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 core
+-rw-r--r--@  1 machi  staff   9938 Sep  6 00:26 create_actual_pr.py
+-rw-r--r--@  1 machi  staff   9893 Sep  6 00:26 create_real_pr.py
+-rw-r--r--@  1 machi  staff   7901 Sep  6 00:26 create_real_pr_api.py
+-rw-r--r--@  1 machi  staff  10634 Sep  6 00:26 create_smart_developer_demo.py
+-rw-r--r--@  1 machi  staff   8154 Sep  6 00:26 create_working_pr.py
+drwxrwxr-x@  3 machi  staff     96 Sep  3 09:24 data
+-rw-rw-r--@  1 machi  staff   9666 Aug 30 16:54 demo_analyst_navigator_pair.py
+-rw-r--r--@  1 machi  staff   4760 Aug 31 01:06 demo_claude_integration.py
+-rw-r--r--@  1 machi  staff  17299 Sep  6 00:26 demo_complete_workflow.py
+-rw-r--r--@  1 machi  staff   7076 Aug 31 18:52 demo_disaster_prevention.py
+-rw-r--r--@  1 machi  staff   6665 Aug 31 00:20 demo_git_workflow.py
+-rw-rw-r--@  1 machi  staff   6631 Aug 30 16:54 demo_navigator.py
+-rw-r--r--@  1 machi  staff   3874 Aug 31 01:33 demo_poller.py
+-rw-r--r--@  1 machi  staff    184 Aug 31 01:34 demo_poller_state.json
+-rw-r--r--@  1 machi  staff   8301 Sep  6 00:26 demo_real_workflow.py
+-rw-r--r--@  1 machi  staff   9754 Sep  5 13:53 demo_task_pair.py
+drwxr-xr-x@  3 machi  staff     96 Aug 31 00:20 demo_workspaces
+-rw-r--r--@  1 machi  staff   5980 Sep  6 00:26 demonstrate_real_changes.py
+-rw-r--r--@  1 machi  staff   7111 Sep  6 00:26 demonstrate_working_pr.py
+-rw-r--r--@  1 machi  staff   1439 Aug 30 20:18 docker-compose.dev.yml
+-rw-rw-r--@  1 machi  staff   2195 Aug 30 16:54 docker-compose.yml
+-rw-rw-r--@  1 machi  staff   1937 Aug 30 16:54 docker-dev.sh
+drwxrwxr-x@  6 machi  staff    192 Sep  6 00:26 docs
+drwxr-xr-x@  3 machi  staff     96 Sep  6 00:26 examples
+-rw-r--r--@  1 machi  staff   8884 Sep  6 00:26 fix_developer_and_create_pr.py
+-rw-r--r--@  1 machi  staff     39 Aug 31 01:25 hello.py
+drwxrwxr-x@  3 machi  staff     96 Aug 26 01:02 logs
+-rw-r--r--@  1 machi  staff  10708 Sep  6 00:26 main.py
+drwxrwxr-x@  7 machi  staff    224 Aug 27 23:33 migration
+drwxrwxr-x@  5 machi  staff    160 Aug 26 01:11 models
+-rw-rw-r--@  1 machi  staff    473 Aug 31 12:28 package.json
+-rw-rw-r--@  1 machi  staff    395 Aug 30 16:54 poetry.lock
+-rw-rw-r--@  1 machi  staff   1160 Aug 30 16:54 pyproject.toml
+-rw-r--r--@  1 machi  staff    671 Sep  6 00:26 pytest.ini
+-rw-r--r--@  1 machi  staff    503 Sep  6 00:26 requirements.txt
+-rwxr-xr-x@  1 machi  staff   1204 Sep  6 00:26 run_blackbox_test.sh
+-rw-r--r--@  1 machi  staff  20888 Sep  6 00:26 run_complete_workflow.py
+drwxr-xr-x@  3 machi  staff     96 Sep  3 17:37 scripts
+-rw-r--r--@  1 machi  staff     65 Sep  3 18:20 sct.log
+drwxr-xr-x@  7 machi  staff    224 Aug 31 01:34 services
+-rw-r--r--@  1 machi  staff   6882 Sep  6 00:26 show_navigator_prevention.py
+-rw-r--r--@  1 machi  staff   6070 Sep  6 00:26 show_working_pr_fix.py
+-rw-r--r--@  1 machi  staff   9844 Sep  6 00:26 simulate_pr_creation.py
+-rwxr-xr-x@  1 machi  staff   7760 Sep  6 00:26 start.sh
+-rw-r--r--@  1 machi  staff   4419 Sep  6 00:26 start_sct_for_issue_21.py
+-rw-r--r--@  1 machi  staff    885 Sep  6 00:47 test_auth_fix.py
+drwxrwxr-x@  4 machi  staff    128 Aug 27 23:33 testing
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 tests
+-rw-r--r--   1 machi  staff   7122 Sep  6 00:49 typescript
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 workflows
+drwxr-xr-x@  5 machi  staff    160 Aug 31 00:08 workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hccd ..[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 code % [K[?2004hcd ..ls -lsudo chown machi *-machi *rmachi * machi *[?2004l
+chown: illegal option -- r
+usage: chown [-fhnvx] [-R [-H | -L | -P]] owner[:group] file ...
+       chown [-fhnvx] [-R [-H | -L | -P]] :group file ...
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 code % [K[?2004hsudo chown -r machi * machi * [9D machi * [9D[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 code % [K[?2004hlls -l[?2004l
+total 0
+drwxrwxr-x@ 79 machi  staff  2528 Sep  6 00:49 SyntheticCodingTeam
+drwxr-xr-x  19 machi  staff   608 Aug 31 16:42 any2md
+drwxr-xr-x  14 machi  staff   448 Aug 31 17:24 articles
+drwxrwxr--   5 machi  staff   160 Aug 31 16:26 mathematics
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 code % [K[?2004hccd SyntheticCodingTeam[1m/[0m[0m [?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hlls[?2004l
+CLAUDE.md			create_actual_pr.py		demonstrate_real_changes.py	requirements.txt
+DEMO_FILE_PROCESSED.md		create_real_pr.py		demonstrate_working_pr.py	run_blackbox_test.sh
+DEMO_FILE_WITH_PHRASE.md	create_real_pr_api.py		docker-compose.dev.yml		run_complete_workflow.py
+DEMO_README.md			create_smart_developer_demo.py	docker-compose.yml		scripts
+DEPLOY.md			create_working_pr.py		docker-dev.sh			sct.log
+Dockerfile			data				docs				services
+LOGGING_IMPROVEMENTS.md		demo_analyst_navigator_pair.py	examples			show_navigator_prevention.py
+README.md			demo_claude_integration.py	fix_developer_and_create_pr.py	show_working_pr_fix.py
+REAL_WORKFLOW_DEMO.md		demo_complete_workflow.py	hello.py			simulate_pr_creation.py
+WORKFLOW_EXECUTION_SUMMARY.md	demo_disaster_prevention.py	logs				start.sh
+__init__.py			demo_git_workflow.py		main.py				start_sct_for_issue_21.py
+__pycache__			demo_navigator.py		migration			test_auth_fix.py
+agents				demo_poller.py			models				testing
+api				demo_poller_state.json		package.json			tests
+auth.py				demo_real_workflow.py		poetry.lock			typescript
+config.py			demo_task_pair.py		pyproject.toml			workflows
+core				demo_workspaces			pytest.ini			workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hlls -k[?2004l
+CLAUDE.md			create_actual_pr.py		demonstrate_real_changes.py	requirements.txt
+DEMO_FILE_PROCESSED.md		create_real_pr.py		demonstrate_working_pr.py	run_blackbox_test.sh
+DEMO_FILE_WITH_PHRASE.md	create_real_pr_api.py		docker-compose.dev.yml		run_complete_workflow.py
+DEMO_README.md			create_smart_developer_demo.py	docker-compose.yml		scripts
+DEPLOY.md			create_working_pr.py		docker-dev.sh			sct.log
+Dockerfile			data				docs				services
+LOGGING_IMPROVEMENTS.md		demo_analyst_navigator_pair.py	examples			show_navigator_prevention.py
+README.md			demo_claude_integration.py	fix_developer_and_create_pr.py	show_working_pr_fix.py
+REAL_WORKFLOW_DEMO.md		demo_complete_workflow.py	hello.py			simulate_pr_creation.py
+WORKFLOW_EXECUTION_SUMMARY.md	demo_disaster_prevention.py	logs				start.sh
+__init__.py			demo_git_workflow.py		main.py				start_sct_for_issue_21.py
+__pycache__			demo_navigator.py		migration			test_auth_fix.py
+agents				demo_poller.py			models				testing
+api				demo_poller_state.json		package.json			tests
+auth.py				demo_real_workflow.py		poetry.lock			typescript
+config.py			demo_task_pair.py		pyproject.toml			workflows
+core				demo_workspaces			pytest.ini			workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004hls -k l[?2004l
+total 760
+-rw-r--r--@  1 machi  staff    144 Sep  5 08:44 CLAUDE.md
+-rw-r--r--@  1 machi  staff    514 Sep  6 00:26 DEMO_FILE_PROCESSED.md
+-rw-r--r--@  1 machi  staff    502 Sep  6 00:26 DEMO_FILE_WITH_PHRASE.md
+-rw-r--r--@  1 machi  staff    467 Sep  6 00:26 DEMO_README.md
+-rw-rw-r--@  1 machi  staff   1826 Aug 30 16:54 DEPLOY.md
+-rw-rw-r--@  1 machi  staff   2126 Aug 30 16:54 Dockerfile
+-rw-r--r--@  1 machi  staff   7108 Sep  6 00:26 LOGGING_IMPROVEMENTS.md
+-rw-rw-r--@  1 machi  staff   8462 Aug 30 20:21 README.md
+-rw-r--r--@  1 machi  staff   2282 Sep  6 00:26 REAL_WORKFLOW_DEMO.md
+-rw-r--r--@  1 machi  staff   1061 Sep  6 00:26 WORKFLOW_EXECUTION_SUMMARY.md
+-rw-rw-r--@  1 machi  staff      0 Aug 30 16:54 __init__.py
+drwxrwxr-x@  5 machi  staff    160 Sep  6 00:46 __pycache__
+drwxrwxr-x@ 10 machi  staff    320 Sep  6 00:26 agents
+drwxrwxr-x@  7 machi  staff    224 Sep  6 00:26 api
+-rw-r--r--@  1 machi  staff    878 Sep  6 00:47 auth.py
+-rw-rw-r--@  1 machi  staff   1828 Aug 31 01:03 config.py
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 core
+-rw-r--r--@  1 machi  staff   9938 Sep  6 00:26 create_actual_pr.py
+-rw-r--r--@  1 machi  staff   9893 Sep  6 00:26 create_real_pr.py
+-rw-r--r--@  1 machi  staff   7901 Sep  6 00:26 create_real_pr_api.py
+-rw-r--r--@  1 machi  staff  10634 Sep  6 00:26 create_smart_developer_demo.py
+-rw-r--r--@  1 machi  staff   8154 Sep  6 00:26 create_working_pr.py
+drwxrwxr-x@  3 machi  staff     96 Sep  3 09:24 data
+-rw-rw-r--@  1 machi  staff   9666 Aug 30 16:54 demo_analyst_navigator_pair.py
+-rw-r--r--@  1 machi  staff   4760 Aug 31 01:06 demo_claude_integration.py
+-rw-r--r--@  1 machi  staff  17299 Sep  6 00:26 demo_complete_workflow.py
+-rw-r--r--@  1 machi  staff   7076 Aug 31 18:52 demo_disaster_prevention.py
+-rw-r--r--@  1 machi  staff   6665 Aug 31 00:20 demo_git_workflow.py
+-rw-rw-r--@  1 machi  staff   6631 Aug 30 16:54 demo_navigator.py
+-rw-r--r--@  1 machi  staff   3874 Aug 31 01:33 demo_poller.py
+-rw-r--r--@  1 machi  staff    184 Aug 31 01:34 demo_poller_state.json
+-rw-r--r--@  1 machi  staff   8301 Sep  6 00:26 demo_real_workflow.py
+-rw-r--r--@  1 machi  staff   9754 Sep  5 13:53 demo_task_pair.py
+drwxr-xr-x@  3 machi  staff     96 Aug 31 00:20 demo_workspaces
+-rw-r--r--@  1 machi  staff   5980 Sep  6 00:26 demonstrate_real_changes.py
+-rw-r--r--@  1 machi  staff   7111 Sep  6 00:26 demonstrate_working_pr.py
+-rw-r--r--@  1 machi  staff   1439 Aug 30 20:18 docker-compose.dev.yml
+-rw-rw-r--@  1 machi  staff   2195 Aug 30 16:54 docker-compose.yml
+-rw-rw-r--@  1 machi  staff   1937 Aug 30 16:54 docker-dev.sh
+drwxrwxr-x@  6 machi  staff    192 Sep  6 00:26 docs
+drwxr-xr-x@  3 machi  staff     96 Sep  6 00:26 examples
+-rw-r--r--@  1 machi  staff   8884 Sep  6 00:26 fix_developer_and_create_pr.py
+-rw-r--r--@  1 machi  staff     39 Aug 31 01:25 hello.py
+drwxrwxr-x@  3 machi  staff     96 Aug 26 01:02 logs
+-rw-r--r--@  1 machi  staff  10708 Sep  6 00:26 main.py
+drwxrwxr-x@  7 machi  staff    224 Aug 27 23:33 migration
+drwxrwxr-x@  5 machi  staff    160 Aug 26 01:11 models
+-rw-rw-r--@  1 machi  staff    473 Aug 31 12:28 package.json
+-rw-rw-r--@  1 machi  staff    395 Aug 30 16:54 poetry.lock
+-rw-rw-r--@  1 machi  staff   1160 Aug 30 16:54 pyproject.toml
+-rw-r--r--@  1 machi  staff    671 Sep  6 00:26 pytest.ini
+-rw-r--r--@  1 machi  staff    503 Sep  6 00:26 requirements.txt
+-rwxr-xr-x@  1 machi  staff   1204 Sep  6 00:26 run_blackbox_test.sh
+-rw-r--r--@  1 machi  staff  20888 Sep  6 00:26 run_complete_workflow.py
+drwxr-xr-x@  3 machi  staff     96 Sep  3 17:37 scripts
+-rw-r--r--@  1 machi  staff     65 Sep  3 18:20 sct.log
+drwxr-xr-x@  7 machi  staff    224 Aug 31 01:34 services
+-rw-r--r--@  1 machi  staff   6882 Sep  6 00:26 show_navigator_prevention.py
+-rw-r--r--@  1 machi  staff   6070 Sep  6 00:26 show_working_pr_fix.py
+-rw-r--r--@  1 machi  staff   9844 Sep  6 00:26 simulate_pr_creation.py
+-rwxr-xr-x@  1 machi  staff   7760 Sep  6 00:26 start.sh
+-rw-r--r--@  1 machi  staff   4419 Sep  6 00:26 start_sct_for_issue_21.py
+-rw-r--r--@  1 machi  staff    885 Sep  6 00:47 test_auth_fix.py
+drwxrwxr-x@  4 machi  staff    128 Aug 27 23:33 testing
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 tests
+-rw-r--r--   1 machi  staff  12793 Sep  6 00:50 typescript
+drwxrwxr-x@ 11 machi  staff    352 Sep  6 00:26 workflows
+drwxr-xr-x@  5 machi  staff    160 Aug 31 00:08 workspaces
+[1m[7m%[27m[1m[0m                                                                                                                                        [0m[27m[24m[Jmachi@m1 SyntheticCodingTeam % [K[?2004h

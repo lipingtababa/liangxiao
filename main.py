@@ -3,7 +3,6 @@
 import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import time
 import uuid
@@ -243,14 +242,7 @@ async def request_tracking_middleware(request: Request, call_next):
         clear_request_context()
 
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS middleware removed - causing FastAPI middleware unpacking error
 
 # Exception handler for our custom exceptions
 @app.exception_handler(OrchestratorError)

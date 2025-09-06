@@ -10,7 +10,7 @@ import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from .task_pair import TaskPair, PairResult
+from .task_pair import TaskPair, TaskPairResult
 from agents.analyst.agent import AnalystAgent
 from agents.navigator.requirements_reviewer import RequirementsNavigator
 from core.logging import get_logger
@@ -115,7 +115,7 @@ class AnalystNavigatorPair(TaskPair):
         
         if pair_result.success:
             logger.info(
-                f"Requirements analysis completed successfully in {pair_result.total_iterations} iterations"
+                f"Requirements analysis completed successfully in {len(pair_result.iterations)} iterations"
             )
             
             # Create comprehensive output with analysis summary
@@ -148,11 +148,11 @@ class AnalystNavigatorPair(TaskPair):
                 "success": False,
                 "error": pair_result.failure_reason,
                 "artifacts": [],
-                "analysis_summary": f"Analysis failed after {pair_result.total_iterations} iterations: {pair_result.failure_reason}",
-                "iterations": pair_result.total_iterations
+                "analysis_summary": f"Analysis failed after {len(pair_result.iterations)} iterations: {pair_result.failure_reason}",
+                "iterations": len(pair_result.iterations)
             }
     
-    def _create_analysis_summary(self, pair_result: PairResult) -> str:
+    def _create_analysis_summary(self, pair_result: TaskPairResult) -> str:
         """Create comprehensive summary of the analysis process.
         
         Args:
