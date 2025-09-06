@@ -60,9 +60,9 @@ class SCTBlackBoxTest:
             subprocess.run(f"lsof -ti:{self.port} | xargs kill -9", shell=True, capture_output=True)
             time.sleep(1)
             
-            # Start the SCT service using main.py with uvicorn
+            # Start the SCT service using the proper start script
             self.sct_process = subprocess.Popen(
-                ["python", "-m", "uvicorn", "main:app", "--port", str(self.port)],
+                ["python", "start_sct.py", "--port", str(self.port)],
                 env=env,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

@@ -10,21 +10,6 @@ import logging
 import sys
 import os
 
-# Load .env file automatically at startup
-from pathlib import Path
-env_file = Path(".env")
-if env_file.exists():
-    print("Loading environment variables from .env file...")
-    with open(env_file, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                key, value = line.split('=', 1)
-                os.environ[key] = value
-    print("✓ Environment variables loaded from .env")
-else:
-    print("⚠️ Warning: .env file not found")
-
 # Add the current directory to the path so we can import our modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
