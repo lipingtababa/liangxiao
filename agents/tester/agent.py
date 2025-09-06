@@ -37,7 +37,7 @@ class TesterAgent:
         
         logger.info("Simplified Tester Agent initialized")
     
-    async def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
+    def execute_standardized(self, input_data: Dict[str, Any]) -> StepResult:
         """
         Standardized execution method for workflow compatibility.
         
