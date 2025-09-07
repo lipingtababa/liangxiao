@@ -74,7 +74,7 @@ logs/
 *.log
 
 # Workspaces (repository clones and artifacts)
-workspaces/
+# workspaces/ - TEMPORARILY COMMENTED OUT FOR PR TESTING
 *.workspace
 
 # OS generated files

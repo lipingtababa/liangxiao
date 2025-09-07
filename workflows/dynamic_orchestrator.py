@@ -147,7 +147,8 @@ class DynamicOrchestrator:
                 issue_number=issue_event.issue.number,
                 issue_title=issue_event.issue.title,
                 issue_description=issue_event.issue.body or "",
-                repository=issue_event.repository.full_name
+                repository=issue_event.repository.full_name,
+                workspace=workspace
             )
             
             logger.info(f"Dynamic Workflow execution completed for issue #{issue_event.issue.number}")
@@ -217,9 +218,9 @@ class DynamicOrchestrator:
                 workspace_manager=self.workspace_manager
             )
             
-            # Set up workspace
-            logger.debug(f"Creating workspace for {issue_event.repository.owner.login}/{issue_event.repository.name}")
-            workspace = github_service.setup_workspace(
+            # Set up complete git workspace (clone repo + create branch)
+            logger.debug(f"Setting up git workspace for {issue_event.repository.owner.login}/{issue_event.repository.name}")
+            git_setup_success = github_service.setup_git_workspace(
                 issue_event.issue.number,
                 {
                     "title": issue_event.issue.title,
@@ -228,6 +229,21 @@ class DynamicOrchestrator:
                     "type": "issue_processing"
                 }
             )
+            
+            if git_setup_success:
+                workspace = github_service.current_workspace
+                logger.info(f"✓ Git workspace setup successful for issue #{issue_event.issue.number}")
+            else:
+                logger.warning(f"Git workspace setup failed, falling back to basic workspace")
+                workspace = github_service.setup_workspace(
+                    issue_event.issue.number,
+                    {
+                        "title": issue_event.issue.title,
+                        "body": issue_event.issue.body or "",
+                        "source": "GitHub",
+                        "type": "issue_processing"
+                    }
+                )
             
             logger.info(f"✓ Workspace set up successfully for issue #{issue_event.issue.number}")
             logger.debug(f"Workspace object: {type(workspace).__name__ if workspace else None}")

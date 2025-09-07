@@ -1,0 +1,8 @@
+{
+  "title": "Smart fix: Conservative password validation update",
+  "body": "Minimal change to allow @ symbol in passwords",
+  "source": "GitHub",
+  "approach": "conservative",
+  "created_at": "2025-09-06T00:47:07.537657",
+  "workspace_created": "2025-09-06T00:47:07.537691"
+}

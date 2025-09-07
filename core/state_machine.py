@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 if TYPE_CHECKING:
     from core.interfaces import StepResult
 
+from core.workspace_manager import Workspace  # Move import outside TYPE_CHECKING
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -290,10 +291,13 @@ class StateTransition(BaseModel):
 
 class WorkflowContext(BaseModel):
     """Enhanced context for PM decision making with state tracking."""
+    model_config = {"arbitrary_types_allowed": True}
+    
     issue_number: int
     issue_title: str = ""
     issue_description: str = ""
     repository: str = ""
+    workspace: Optional[Workspace] = None
     
     # State tracking
     current_state: IssueState = IssueState.RECEIVED
@@ -428,18 +432,21 @@ class StateMachine:
         issue_number: int, 
         issue_title: str = "", 
         issue_description: str = "",
-        repository: str = ""
+        repository: str = "",
+        workspace = None
     ) -> WorkflowContext:
         """Create a new workflow for an issue."""
-        if issue_number in self.active_workflows:
-            logger.warning(f"Workflow for issue #{issue_number} already exists")
-            return self.active_workflows[issue_number]
+        # REMOVED CACHING: Always create fresh workflow to allow testing
+        # if issue_number in self.active_workflows:
+        #     logger.warning(f"Workflow for issue #{issue_number} already exists")
+        #     return self.active_workflows[issue_number]
         
         context = WorkflowContext(
             issue_number=issue_number,
             issue_title=issue_title,
             issue_description=issue_description,
-            repository=repository
+            repository=repository,
+            workspace=workspace
         )
         
         self.active_workflows[issue_number] = context

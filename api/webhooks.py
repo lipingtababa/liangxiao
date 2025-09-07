@@ -432,8 +432,8 @@ async def get_workflow_status(workflow_id: str) -> Dict[str, Any]:
     logger.debug(f"Retrieving workflow status for: {workflow_id}")
     
     try:
-        # Get workflow summary
-        summary = await get_orchestrator().get_workflow_summary(workflow_id)
+        # Get workflow status
+        summary = await get_orchestrator().get_workflow_status(workflow_id)
         
         if not summary:
             logger.warning(f"Workflow not found: {workflow_id}")

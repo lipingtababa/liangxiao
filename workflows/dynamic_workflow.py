@@ -90,7 +90,8 @@ class DynamicWorkflowController:
         issue_number: int,
         issue_title: str,
         issue_description: str,
-        repository: str = ""
+        repository: str = "",
+        workspace = None
     ) -> WorkflowContext:
         """
         Execute complete workflow for an issue using PM-controlled routing.
@@ -123,7 +124,8 @@ class DynamicWorkflowController:
             issue_number=issue_number,
             issue_title=issue_title,
             issue_description=issue_description,
-            repository=repository
+            repository=repository,
+            workspace=workspace
         )
         
         try:
@@ -394,47 +396,72 @@ class DynamicWorkflowController:
             pr_description = self._generate_pr_description(context, changes_made, test_results, implementation_notes)
             pr_title = f"Fix #{context.issue_number}: {context.issue_title}"
             
-            # ACTUALLY CREATE THE PR using GitHub CLI (not just logging!)
+            # Get workspace directory for git operations
+            if not context.workspace or not context.workspace.repo_path:
+                logger.error("No workspace available for PR creation")
+                raise Exception("Workspace not properly set up")
+            
+            workspace_dir = context.workspace.repo_path
+            logger.info(f"Creating PR in workspace: {workspace_dir}")
+            
+            # ACTUALLY CREATE THE PR using workspace repository
             import subprocess
             import json
+            import os
+            from config import Settings
+            
+            settings = Settings()
             
             logger.info(f"Actually creating PR for issue #{context.issue_number}")
             
+            # Set up git authentication and configuration
+            await self._setup_git_auth(workspace_dir, settings)
+            
             # Create a branch with actual changes to create PR from
-            branch_name = f"fix-issue-{context.issue_number}"
+            # Add random suffix to prevent conflicts when running multiple times
+            import random
+            import string
+            random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+            branch_name = f"fix-issue-{context.issue_number}-{random_suffix}"
             try:
                 # Switch back to main first to ensure clean state
-                subprocess.run(["git", "checkout", "main"], check=True, capture_output=True)
+                subprocess.run(["git", "checkout", "main"], check=True, capture_output=True, cwd=workspace_dir)
                 
                 # Delete branch if it already exists
-                subprocess.run(["git", "branch", "-D", branch_name], capture_output=True)
+                subprocess.run(["git", "branch", "-D", branch_name], capture_output=True, cwd=workspace_dir)
                 
                 # Create and switch to new branch
-                subprocess.run(["git", "checkout", "-b", branch_name], check=True, capture_output=True)
+                subprocess.run(["git", "checkout", "-b", branch_name], check=True, capture_output=True, cwd=workspace_dir)
                 
                 # Create a dummy file change to commit (for E2E testing)
-                import os
-                dummy_file = f"fix_issue_{context.issue_number}.txt"
+                # Use relative filename since we're working in the workspace directory
+                dummy_filename = f"fix_issue_{context.issue_number}.txt"
+                dummy_file = os.path.join(workspace_dir, dummy_filename)
                 with open(dummy_file, "w") as f:
                     f.write(f"Fix for issue #{context.issue_number}: {context.issue_title}\n")
                     f.write(f"Changes made:\n")
                     for change in changes_made:
                         f.write(f"- {change.get('summary', 'Code change')}\n")
                 
-                # Stage and commit the change
-                subprocess.run(["git", "add", dummy_file], check=True, capture_output=True)
+                # Stage and commit the change (use relative filename, no force needed)
+                logger.info(f"🔧 DEBUG: About to run git add with filename: {dummy_filename}")
+                logger.info(f"🔧 DEBUG: Working directory: {workspace_dir}")
+                subprocess.run(["git", "add", dummy_filename], check=True, capture_output=True, cwd=workspace_dir)
                 commit_msg = f"Fix #{context.issue_number}: {context.issue_title}"
-                subprocess.run(["git", "commit", "-m", commit_msg], check=True, capture_output=True)
+                subprocess.run(["git", "commit", "-m", commit_msg], check=True, capture_output=True, cwd=workspace_dir)
                 
-                # Push the branch
-                subprocess.run(["git", "push", "origin", branch_name], check=True, capture_output=True)
+                # Push the branch to the target repository
+                result = subprocess.run(["git", "push", "origin", branch_name], 
+                                      check=True, capture_output=True, text=True, cwd=workspace_dir)
+                logger.info(f"✅ Successfully pushed branch {branch_name} to target repository")
                 
-                # Create the PR using GitHub CLI
+                # Create the PR using GitHub CLI in the workspace
+                repo_name = f"{settings.github_owner}/{settings.github_repo}"
                 cmd = [
                     "gh", "pr", "create",
                     "--title", pr_title,
                     "--body", pr_description,
-                    "--repo", context.repository if context.repository else "lipingtababa/SyntheticCodingTeam",
+                    "--repo", repo_name,
                     "--head", branch_name,
                     "--base", "main"
                 ]
@@ -443,7 +470,8 @@ class DynamicWorkflowController:
                     cmd,
                     capture_output=True,
                     text=True,
-                    timeout=30
+                    timeout=30,
+                    cwd=workspace_dir
                 )
                 
                 if result.returncode == 0:
@@ -469,13 +497,17 @@ class DynamicWorkflowController:
                     # Fall back to just logging if actual PR creation fails
                     pass
                     
+            except subprocess.CalledProcessError as e:
+                logger.error(f"❌ Git operation failed in {workspace_dir}: {e.stderr if hasattr(e, 'stderr') else str(e)}")
+                logger.error(f"Command failed with return code: {e.returncode}")
+                # Continue with logging approach as fallback
             except Exception as pr_error:
                 logger.warning(f"Could not create actual PR: {pr_error}")
                 # Continue with logging approach as fallback
             finally:
                 # Always switch back to main branch to clean up
                 try:
-                    subprocess.run(["git", "checkout", "main"], capture_output=True)
+                    subprocess.run(["git", "checkout", "main"], capture_output=True, cwd=workspace_dir)
                 except:
                     pass  # Ignore errors during cleanup
             
@@ -561,6 +593,34 @@ class DynamicWorkflowController:
         ])
         
         return "\n".join(description_parts)
+    
+    async def _setup_git_auth(self, workspace_dir: str, settings) -> None:
+        """Set up git authentication and user configuration in workspace."""
+        import subprocess
+        
+        try:
+            # Set up git user identity for automated commits
+            subprocess.run(["git", "config", "user.name", "SCT Bot"], 
+                         check=True, capture_output=True, cwd=workspace_dir)
+            subprocess.run(["git", "config", "user.email", "sct@users.noreply.github.com"], 
+                         check=True, capture_output=True, cwd=workspace_dir)
+            
+            # Configure git to use token authentication
+            # Set up remote URL with authentication token
+            token = settings.github_personal_access_token
+            repo_url = f"https://{token}@github.com/{settings.github_owner}/{settings.github_repo}.git"
+            
+            subprocess.run(["git", "remote", "set-url", "origin", repo_url], 
+                         check=True, capture_output=True, cwd=workspace_dir)
+            
+            logger.debug(f"✅ Git authentication configured for {settings.github_owner}/{settings.github_repo}")
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"❌ Failed to set up git authentication: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"❌ Error configuring git: {e}")
+            raise
     
     async def _handle_next_action(
         self, 

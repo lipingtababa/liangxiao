@@ -1,0 +1,8 @@
+{
+  "title": "Test workflow fix",
+  "body": "Simple test to verify workflow agents work",
+  "source": "GitHub",
+  "type": "issue_processing",
+  "created_at": "2025-09-07T12:49:34.850907",
+  "workspace_created": "2025-09-07T12:49:34.850921"
+}

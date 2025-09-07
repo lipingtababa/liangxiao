@@ -330,7 +330,12 @@ def create_workspace_manager(workspace_root: Optional[str] = None) -> WorkspaceM
     Returns:
         Configured WorkspaceManager instance
     """
-    root = workspace_root or "workspaces"
+    if workspace_root is None:
+        from config import Settings
+        settings = Settings()
+        root = settings.workspace_root
+    else:
+        root = workspace_root
     return WorkspaceManager(root)
 
 

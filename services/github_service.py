@@ -235,13 +235,17 @@ class GitHubService:
             return False
             
         try:
-            # Generate branch name
+            # Generate branch name with random suffix to prevent conflicts
+            import random
+            import string
+            random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+            
             issue_str = str(issue_id)
             if issue_str.isdigit():
-                branch_name = f"feature/issue-{issue_str}"
+                branch_name = f"feature/issue-{issue_str}-{random_suffix}"
             else:
                 # For Jira tickets like SOT-123
-                branch_name = f"feature/{issue_str.lower()}"
+                branch_name = f"feature/{issue_str.lower()}-{random_suffix}"
             
             repo_path = self.current_workspace.repo_path
             logger.info(f"Creating feature branch '{branch_name}' from '{base_branch}' in {repo_path}")

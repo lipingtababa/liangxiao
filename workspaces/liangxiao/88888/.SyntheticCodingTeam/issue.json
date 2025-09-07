@@ -1,0 +1,8 @@
+{
+  "title": "TEST: Verify workspace fix",
+  "body": "Testing that correct repository is cloned",
+  "source": "GitHub",
+  "type": "issue_processing",
+  "created_at": "2025-09-07T11:49:28.687671",
+  "workspace_created": "2025-09-07T11:49:28.687675"
+}

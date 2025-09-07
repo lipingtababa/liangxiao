@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     webhook_replay_window_seconds: int = 300
     
     # Workspace Configuration
-    workspace_root: str = "workspaces"
+    workspace_root: str = "/Users/machi/code/workspaces"
     workspace_cleanup_days: int = 30  # Clean up workspaces older than 30 days
     max_concurrent_workspaces: int = 10  # Limit concurrent workspaces
     

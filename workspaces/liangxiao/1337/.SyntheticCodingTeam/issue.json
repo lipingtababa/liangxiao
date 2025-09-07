@@ -1,0 +1,7 @@
+{
+  "title": "Password validation fails for special characters",
+  "body": "## Bug Report\n\n**Description:**\nUsers cannot log into the system when their password contains special characters like `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`.\n\n**Steps to Reproduce:**\n1. User registers with password: `MySecure@Pass123!`\n2. User attempts to log in with the same password\n3. System rejects the password with validation error\n\n**Expected Behavior:**\n- Password with special characters should be accepted\n- User should be able to log in successfully\n\n**Current Behavior:**\n- Password validation fails\n- Login is rejected\n- Error message: \"Invalid password format\"\n\n**Impact:**\n- HIGH: Affects users with secure passwords\n- Security concern: Forces users to use less secure passwords\n\n**Technical Context:**\nThe issue appears to be in the password validation function that only accepts alphanumeric characters.\n\n**Acceptance Criteria:**\n- [ ] Password validation accepts common special characters\n- [ ] Existing security measures are maintained\n- [ ] All existing tests continue to pass\n- [ ] New tests added for special character scenarios",
+  "source": "GitHub",
+  "created_at": "2025-08-31T19:24:19.173243",
+  "workspace_created": "2025-08-31T19:24:19.173274"
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Test issue for SCT E2E verification",
+  "body": "This is a test issue to verify that SCT can process webhooks correctly.",
+  "source": "GitHub",
+  "type": "issue_processing",
+  "created_at": "2025-09-06T21:57:03.835204",
+  "workspace_created": "2025-09-06T21:57:03.835208"
+}

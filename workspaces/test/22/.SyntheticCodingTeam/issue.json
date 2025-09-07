@@ -1,0 +1,8 @@
+{
+  "title": "Fix workflow routing after requirements analysis",
+  "body": "The PM Agent should properly handle routing decisions after requirements analysis without getting stuck in state transition loops.",
+  "source": "GitHub",
+  "type": "issue_processing",
+  "created_at": "2025-09-07T12:49:38.440864",
+  "workspace_created": "2025-09-07T12:49:38.440866"
+}
