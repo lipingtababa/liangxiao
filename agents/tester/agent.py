@@ -15,9 +15,9 @@ from core.interfaces import (
     StepResult, TesterInput, TesterOutput, 
     create_step_result
 )
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class TesterAgent:
@@ -73,8 +73,9 @@ class TesterAgent:
         Returns:
             StepResult with generated test code
         """
+        log_agent_start(logger, "Tester Agent", tester_input.feature_description)
+        
         try:
-            logger.info(f"Generating tests for: {tester_input.feature_description[:50]}...")
             
             # Generate test code using OpenAI
             test_code = await self._generate_tests(tester_input)
@@ -94,7 +95,7 @@ class TesterAgent:
             self.total_executions += 1
             self.total_tests_created += len(test_names)
             
-            logger.info(f"Generated {len(test_names)} test cases")
+            log_agent_complete(logger, "Tester Agent", f"Generated {len(test_names)} test cases")
             
             return create_step_result(
                 agent="tester",
@@ -104,7 +105,7 @@ class TesterAgent:
             )
             
         except Exception as e:
-            logger.error(f"Test generation failed: {e}")
+            log_agent_error(logger, "Tester Agent", str(e))
             
             return create_step_result(
                 agent="tester", 

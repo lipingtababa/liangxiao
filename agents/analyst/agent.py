@@ -15,12 +15,12 @@ from core.interfaces import (
     StepResult, AnalystInput, AnalystOutput, 
     create_step_result, WorkflowStates
 )
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 from core.exceptions import AgentExecutionError
 from .persona import get_analyst_persona
 
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class AnalystAgent:
@@ -60,7 +60,7 @@ class AnalystAgent:
             StepResult containing AnalystOutput
         """
         start_time = datetime.utcnow()
-        logger.info("Analyst executing requirements analysis")
+        log_agent_start(logger, "Analyst Agent", analyst_input.issue_description)
         
         try:
             # Analyze requirements
@@ -84,12 +84,12 @@ class AnalystAgent:
             )
             
             duration = (datetime.utcnow() - start_time).total_seconds()
-            logger.info(f"Analysis completed in {duration:.2f}s, status: {status}")
+            log_agent_complete(logger, "Analyst Agent", f"in {duration:.2f}s, status: {status}")
             
             return result
             
         except Exception as e:
-            logger.error(f"Analysis failed: {e}")
+            log_agent_error(logger, "Analyst Agent", str(e))
             return create_step_result(
                 agent="analyst",
                 status="failed",

@@ -20,11 +20,11 @@ from pydantic import ValidationError
 from .models import (
     Task, IssueAnalysis, TaskBreakdown, PMAgentConfig
 )
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 from core.exceptions import AgentExecutionError
 
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class PMAgent:
@@ -234,6 +234,7 @@ class PMAgent:
             AgentExecutionError: If execution fails
         """
         start_time = datetime.utcnow()
+        log_agent_start(logger, "PM Agent", issue.get('title', 'Issue analysis'))
         
         try:
             # Step 1: Analyze the issue
@@ -244,11 +245,9 @@ class PMAgent:
             
             # Log execution summary
             execution_time = (datetime.utcnow() - start_time).total_seconds()
-            logger.info(
-                f"PM execution complete in {execution_time:.2f}s: "
-                f"{len(breakdown.tasks)} tasks, "
-                f"{breakdown.total_estimated_hours:.1f}h estimated"
-            )
+            log_agent_complete(logger, "PM Agent", 
+                f"in {execution_time:.2f}s: {len(breakdown.tasks)} tasks, "
+                f"{breakdown.total_estimated_hours:.1f}h estimated")
             
             return breakdown
             
@@ -256,7 +255,7 @@ class PMAgent:
             # Re-raise agent errors as-is
             raise
         except Exception as e:
-            logger.error(f"PM Agent execution failed: {e}")
+            log_agent_error(logger, "PM Agent", str(e))
             raise AgentExecutionError(
                 f"PM Agent complete execution failed: {str(e)}"
             ) from e

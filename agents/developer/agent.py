@@ -15,9 +15,9 @@ from core.interfaces import (
     StepResult, DeveloperInput, DeveloperOutput, CodeChange,
     create_step_result
 )
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class DeveloperAgent:
@@ -69,8 +69,9 @@ class DeveloperAgent:
         Returns:
             StepResult with implementation changes and test results
         """
+        log_agent_start(logger, "Developer Agent", developer_input.requirements)
+        
         try:
-            logger.info(f"Implementing: {developer_input.requirements[:50]}...")
             
             # Generate implementation using OpenAI
             changes = await self._generate_implementation(developer_input)
@@ -99,7 +100,7 @@ class DeveloperAgent:
             status = "success" if test_results.get("passed", True) else "failed"
             confidence = 0.9 if test_results.get("passed", True) else 0.3
             
-            logger.info(f"Implementation completed: {len(changes_applied)} changes, tests {'passed' if test_results.get('passed', True) else 'failed'}")
+            log_agent_complete(logger, "Developer Agent", f"{len(changes_applied)} changes, tests {'passed' if test_results.get('passed', True) else 'failed'}")
             
             return create_step_result(
                 agent="developer",
@@ -109,7 +110,7 @@ class DeveloperAgent:
             )
             
         except Exception as e:
-            logger.error(f"Implementation failed: {e}")
+            log_agent_error(logger, "Developer Agent", str(e))
             
             return create_step_result(
                 agent="developer",

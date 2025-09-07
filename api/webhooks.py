@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any, List
 import json
 from datetime import datetime
 
-from core.logging import get_logger, set_request_id, set_request_context, LogContext
+from core.unified_logging import get_unified_logger, log_workflow_start, log_workflow_complete, log_workflow_error
 from core.webhook_security import (
     verify_webhook_signature,
     validate_webhook_headers,
@@ -19,7 +19,7 @@ from models.github import (
 from config import Settings
 from workflows.dynamic_orchestrator import DynamicOrchestrator
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 settings = Settings()
 router = APIRouter()
 
@@ -57,12 +57,7 @@ async def github_webhook(
         Dict containing processing status and event information
     """
     # Set up request tracking
-    request_id = set_request_id(x_github_delivery or None)
-    set_request_context(
-        event_type=x_github_event,
-        delivery_id=x_github_delivery,
-        source_ip=request.client.host if request.client else "unknown"
-    )
+    request_id = x_github_delivery or "unknown"
     
     # Log incoming webhook
     logger.info(f"Webhook received: {x_github_event} event")
@@ -140,14 +135,11 @@ async def github_webhook(
         payload = json.loads(body)
         logger.debug(f"✓ Payload parsed successfully (keys: {list(payload.keys())[:5]}...)")
         
-        # Add payload info to context
+        # Log payload info
         if 'repository' in payload:
-            set_request_context(repository=payload['repository'].get('full_name', 'unknown'))
+            logger.debug(f"Repository: {payload['repository'].get('full_name', 'unknown')}")
         if 'issue' in payload:
-            set_request_context(
-                issue_number=payload['issue'].get('number'),
-                issue_title=payload['issue'].get('title', '')[:50]
-            )
+            logger.debug(f"Issue #{payload['issue'].get('number')}: {payload['issue'].get('title', '')[:50]}")
             
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse webhook payload: {e}")
@@ -303,73 +295,74 @@ async def handle_issue_event(payload: dict) -> Dict[str, Any]:
     Returns:
         Response indicating workflow start status
     """
-    with LogContext(
-        issue_number=payload.get('issue', {}).get('number'),
-        action=payload.get('action')
-    ):
-        try:
-            logger.debug("Validating issue event payload...")
-            logger.debug(f"Payload keys: {list(payload.keys())}")
-            logger.debug(f"Issue keys: {list(payload.get('issue', {}).keys())}")
-            logger.debug(f"Repository keys: {list(payload.get('repository', {}).keys())}")
-            event = IssueEvent.model_validate(payload)
-            logger.debug(f"✓ Issue event validated: #{event.issue.number} - {event.action}")
-        
-            # Only process certain actions
-            supported_actions = ["opened", "edited", "labeled", "assigned"]
-            if event.action not in supported_actions:
-                logger.info(f"Ignoring unsupported issue action: {event.action}")
-                logger.debug(f"Supported actions: {supported_actions}")
-                return {
-                    "status": "ignored",
-                    "action": event.action,
-                    "message": f"Action '{event.action}' not processed"
-                }
-        
-            logger.info(
-                f"Processing issue event: #{event.issue.number} - "
-                f"{event.issue.title[:50]}{'...' if len(event.issue.title) > 50 else ''}"
-            )
-            logger.debug(
-                f"Issue details: action={event.action}, "
-                f"labels={[l.name for l in event.issue.labels]}, "
-                f"assignees={[a.login for a in event.issue.assignees]}"
-            )
-        
-            # Start workflow
-            logger.info("Initiating workflow for issue...")
-            try:
-                workflow_id = await get_orchestrator().start_workflow(event)
-                logger.info(f"✓ Workflow started successfully: {workflow_id}")
-            except Exception as e:
-                logger.error(f"Failed to start workflow: {e}")
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Failed to start workflow: {str(e)}"
-                )
-            
+    # Log issue event context
+    issue_number = payload.get('issue', {}).get('number')
+    action = payload.get('action')
+    logger.debug(f"Processing issue #{issue_number} with action: {action}")
+    
+    try:
+        logger.debug("Validating issue event payload...")
+        logger.debug(f"Payload keys: {list(payload.keys())}")
+        logger.debug(f"Issue keys: {list(payload.get('issue', {}).keys())}")
+        logger.debug(f"Repository keys: {list(payload.get('repository', {}).keys())}")
+        event = IssueEvent.model_validate(payload)
+        logger.debug(f"✓ Issue event validated: #{event.issue.number} - {event.action}")
+    
+        # Only process certain actions
+        supported_actions = ["opened", "edited", "labeled", "assigned"]
+        if event.action not in supported_actions:
+            logger.info(f"Ignoring unsupported issue action: {event.action}")
+            logger.debug(f"Supported actions: {supported_actions}")
             return {
-                "status": "workflow_started",
-                "event": "issues",
+                "status": "ignored",
                 "action": event.action,
-                "workflow_id": workflow_id,
-                "issue": {
-                    "number": event.issue.number,
-                    "title": event.issue.title,
-                    "url": event.issue.html_url
-                },
-                "repository": event.repository.full_name,
-                "message": "Workflow started successfully"
+                "message": f"Action '{event.action}' not processed"
             }
-        
+    
+        logger.info(
+            f"Processing issue event: #{event.issue.number} - "
+            f"{event.issue.title[:50]}{'...' if len(event.issue.title) > 50 else ''}"
+        )
+        logger.debug(
+            f"Issue details: action={event.action}, "
+            f"labels={[l.name for l in event.issue.labels]}, "
+            f"assignees={[a.login for a in event.issue.assignees]}"
+        )
+    
+        # Start workflow
+        logger.info("Initiating workflow for issue...")
+        try:
+            workflow_id = await get_orchestrator().start_workflow(event)
+            logger.info(f"✓ Workflow started successfully: {workflow_id}")
         except Exception as e:
-            logger.error(f"Failed to process issue event: {e}", exc_info=True)
-            # Include validation error details if it's a Pydantic error
-            if "validation error" in str(e).lower():
-                detail = f"Invalid issue event payload: {str(e)}"
-            else:
-                detail = "Invalid issue event payload"
-            raise HTTPException(status_code=400, detail=detail)
+            logger.error(f"Failed to start workflow: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to start workflow: {str(e)}"
+            )
+        
+        return {
+            "status": "workflow_started",
+            "event": "issues",
+            "action": event.action,
+            "workflow_id": workflow_id,
+            "issue": {
+                "number": event.issue.number,
+                "title": event.issue.title,
+                "url": event.issue.html_url
+            },
+            "repository": event.repository.full_name,
+            "message": "Workflow started successfully"
+        }
+    
+    except Exception as e:
+        logger.error(f"Failed to process issue event: {e}", exc_info=True)
+        # Include validation error details if it's a Pydantic error
+        if "validation error" in str(e).lower():
+            detail = f"Invalid issue event payload: {str(e)}"
+        else:
+            detail = "Invalid issue event payload"
+        raise HTTPException(status_code=400, detail=detail)
 
 
 async def handle_comment_event(payload: dict) -> Dict[str, Any]:
@@ -382,46 +375,47 @@ async def handle_comment_event(payload: dict) -> Dict[str, Any]:
     Returns:
         Response indicating event processing status
     """
-    with LogContext(
-        issue_number=payload.get('issue', {}).get('number'),
-        comment_action=payload.get('action')
-    ):
-        try:
-            logger.debug("Validating issue comment event...")
-            event = IssueCommentEvent.model_validate(payload)
-            logger.debug(f"✓ Comment event validated: Issue #{event.issue.number}")
-        
-            # Only process comment creation for now
-            if event.action != "created":
-                logger.info(f"Ignoring non-creation comment action: {event.action}")
-                return {
-                    "status": "ignored",
-                    "action": event.action,
-                    "message": f"Comment action '{event.action}' not processed"
-                }
-        
-            logger.info(
-                f"Processing comment from {event.sender.login} on issue #{event.issue.number}"
-            )
-            logger.debug(
-                f"Comment preview: {event.comment.body[:100]}{'...' if len(event.comment.body) > 100 else ''}"
-            )
-        
-            # TODO: Process comment for agent communication (future stories)
-            # For now, we just acknowledge receipt
-            
+    # Log comment event context
+    issue_number = payload.get('issue', {}).get('number')
+    comment_action = payload.get('action')
+    logger.debug(f"Processing comment on issue #{issue_number} with action: {comment_action}")
+    
+    try:
+        logger.debug("Validating issue comment event...")
+        event = IssueCommentEvent.model_validate(payload)
+        logger.debug(f"✓ Comment event validated: Issue #{event.issue.number}")
+    
+        # Only process comment creation for now
+        if event.action != "created":
+            logger.info(f"Ignoring non-creation comment action: {event.action}")
             return {
-                "status": "received",
-                "event": "issue_comment",
+                "status": "ignored",
                 "action": event.action,
-                "issue": event.issue.number,
-                "repository": event.repository.full_name,
-                "message": "Comment received"
+                "message": f"Comment action '{event.action}' not processed"
             }
+    
+        logger.info(
+            f"Processing comment from {event.sender.login} on issue #{event.issue.number}"
+        )
+        logger.debug(
+            f"Comment preview: {event.comment.body[:100]}{'...' if len(event.comment.body) > 100 else ''}"
+        )
+    
+        # TODO: Process comment for agent communication (future stories)
+        # For now, we just acknowledge receipt
         
-        except Exception as e:
-            logger.error(f"Failed to process comment event: {e}", exc_info=True)
-            raise HTTPException(status_code=400, detail="Invalid comment event payload")
+        return {
+            "status": "received",
+            "event": "issue_comment",
+            "action": event.action,
+            "issue": event.issue.number,
+            "repository": event.repository.full_name,
+            "message": "Comment received"
+        }
+    
+    except Exception as e:
+        logger.error(f"Failed to process comment event: {e}", exc_info=True)
+        raise HTTPException(status_code=400, detail="Invalid comment event payload")
 
 
 @router.get("/workflow/{workflow_id}")

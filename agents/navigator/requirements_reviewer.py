@@ -16,9 +16,9 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 
 from .agent import NavigatorAgent, ReviewFeedback, ReviewDecision
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class RequirementsIssue(BaseModel):

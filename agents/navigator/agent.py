@@ -171,10 +171,9 @@ class NavigatorAgent:
         Returns:
             Structured feedback with decision and specifics
         """
-        logger.info(
-            f"Reviewing {self.specialty} work for task {task.get('id', 'unknown')}, "
-            f"iteration {iteration_number}"
-        )
+        from core.unified_logging import log_agent_start
+        log_agent_start(logger, "Navigator Agent", 
+                       f"Reviewing {self.specialty} work for task {task.get('id', 'unknown')}, iteration {iteration_number}")
         
         # Calculate adjusted strictness based on iteration
         adjusted_strictness = self._calculate_adjusted_strictness(
@@ -203,17 +202,16 @@ class NavigatorAgent:
                 )
             
             # Log the review decision
-            logger.info(
-                f"Review completed: {feedback.decision}, "
-                f"quality={feedback.quality_score}/10, "
-                f"issues={len(feedback.issues)}, "
-                f"strictness={adjusted_strictness}"
-            )
+            from core.unified_logging import log_agent_complete
+            log_agent_complete(logger, "Navigator Agent", 
+                f"{feedback.decision}, quality={feedback.quality_score}/10, "
+                f"issues={len(feedback.issues)}, strictness={adjusted_strictness}")
             
             return feedback
             
         except Exception as e:
-            logger.error(f"Review failed: {e}")
+            from core.unified_logging import log_agent_error
+            log_agent_error(logger, "Navigator Agent", str(e))
             # Return a safe fallback response
             return self._create_error_feedback(e, iteration_number, adjusted_strictness)
     

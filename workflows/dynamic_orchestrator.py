@@ -22,7 +22,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 from pathlib import Path
 
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_workflow_start, log_workflow_complete, log_workflow_error
 from models.github import IssueEvent
 from core.workspace_manager import WorkspaceManager
 from services.github_service import GitHubService
@@ -40,7 +40,7 @@ from workflows.workflow_state import (
     WorkflowStatus
 )
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class DynamicOrchestrator:

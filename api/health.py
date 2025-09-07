@@ -12,13 +12,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Global reference to poller service for health checks
-_poller_service = None
-
-def set_poller_service(poller_service):
-    """Set poller service reference for health checks."""
-    global _poller_service
-    _poller_service = poller_service
 
 
 @router.get("/health")
@@ -67,29 +60,6 @@ async def health_check() -> Dict[str, Any]:
         openai_version = None
         logger.warning(f"✗ OpenAI import failed: {e}")
     
-    # Check poller service status
-    logger.debug("Checking poller service status...")
-    poller_status = "not_initialized"
-    poller_health = None
-    if _poller_service:
-        try:
-            if _poller_service.poller_enabled:
-                poller_health = await _poller_service.get_health()
-                if poller_health.get("healthy"):
-                    poller_status = "healthy"
-                    logger.debug("✓ Poller service: healthy")
-                else:
-                    poller_status = "unhealthy"
-                    error_msg = poller_health.get('message', 'unknown error')
-                    logger.warning(f"✗ Poller service unhealthy: {error_msg}")
-            else:
-                poller_status = "disabled"
-                logger.debug("Poller service: disabled")
-        except Exception as e:
-            poller_status = "error"
-            logger.error(f"✗ Poller service check failed: {e}")
-    else:
-        logger.debug("Poller service: not initialized")
     
     # Get system resource information
     logger.debug("Collecting system resource information...")
@@ -139,12 +109,6 @@ async def health_check() -> Dict[str, Any]:
                 "version": openai_version
             }
         },
-        "services": {
-            "poller": {
-                "status": poller_status,
-                "health": poller_health
-            }
-        },
         "system_resources": system_resources
     }
     
@@ -179,7 +143,6 @@ async def readiness_check() -> Dict[str, Any]:
     ready = health_response["status"] == "healthy"
     ready_checks = {
         "dependencies": health_response["status"] == "healthy",
-        "poller_service": health_response["services"]["poller"]["status"] in ["healthy", "disabled"],
         "system_resources": health_response.get("system_resources", {}).get("error") is None
     }
     

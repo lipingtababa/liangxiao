@@ -115,4 +115,4 @@ langchain.db
 *.p12
 *.pfx
 secrets/
-credentials/
+credentials/node_modules/

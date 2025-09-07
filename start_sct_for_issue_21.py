@@ -3,6 +3,9 @@
 
 This script configures the Synthetic Coding Team to monitor and process
 issue #21: "remove '解释文化细节' from readme" from the liangxiao repository.
+
+⚠️ OUTDATED: This script uses the removed poller service. The poller has been 
+moved to a separate repository. Use the main SCT webhook endpoint instead.
 """
 
 import os

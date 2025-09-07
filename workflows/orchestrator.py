@@ -4,7 +4,7 @@ import asyncio
 from typing import Optional, Dict, List
 from datetime import datetime
 
-from core.logging import get_logger, set_request_context, LogContext
+from core.unified_logging import get_unified_logger, log_workflow_start, log_workflow_complete, log_workflow_error
 from models.github import IssueEvent
 from workflows.issue_workflow import (
     create_issue_workflow,
@@ -17,7 +17,7 @@ from workflows.workflow_state import (
     WorkflowStatus
 )
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class WorkflowOrchestrator:

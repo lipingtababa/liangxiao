@@ -27,10 +27,10 @@ from core.state_machine import (
     IssueState, StateTransitionRule, WorkflowContext, 
     get_state_machine, StateMachine
 )
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 from core.exceptions import AgentExecutionError
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class QualityGateResult:

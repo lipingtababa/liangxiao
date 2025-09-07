@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5"
     
     # GitHub
-    github_token: str = Field(alias="GITHUB_PERSONAL_ACCESS_TOKEN")
+    github_personal_access_token: str = Field(alias="GITHUB_PERSONAL_ACCESS_TOKEN")
     github_webhook_secret: str
     github_owner: str = "test"  # Default for testing
     github_repo: str = "test"   # Default for testing
@@ -27,11 +27,6 @@ class Settings(BaseSettings):
     langchain_tracing_v2: bool = True
     langchain_api_key: Optional[str] = None
     
-    # Poller configuration (for future stories)
-    poll_interval_seconds: int = 300  # 5 minutes
-    poller_enabled: bool = True
-    required_issue_labels: str = ""  # Comma-separated
-    poller_state_file: str = "data/poller_state.json"
     
     # Security
     webhook_replay_window_seconds: int = 300

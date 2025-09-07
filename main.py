@@ -17,16 +17,11 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import core.env_loader  # This automatically loads .env at import time
 
 from config import Settings
-from core.logging import (
-    setup_logging, get_logger, log_startup_info,
-    set_request_id, set_request_context, clear_request_context,
-    LogContext
-)
+from core.unified_logging import setup_unified_logging, get_unified_logger
 from core.exceptions import OrchestratorError
-from api.health import router as health_router, set_poller_service
+from api.health import router as health_router
 from api.webhooks import router as webhooks_router
 from api.debug import router as debug_router
-from services.poller_service import PollerService
 
 # Initialize settings
 try:
@@ -35,21 +30,14 @@ except Exception as e:
     print(f"Failed to load settings: {e}")
     sys.exit(1)
 
-# Setup enhanced logging with structured output
-log_dir = "logs"
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir, exist_ok=True)
-
-setup_logging(
+# Setup unified logging - defaults to stdout + optional file
+setup_unified_logging(
     level="DEBUG" if settings.debug else "INFO",
-    log_file=f"{log_dir}/orchestrator.log",
-    structured=True
+    file_path="logs/sct.log"
 )
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
-# Initialize poller service
-poller_service = None
 
 
 # Create FastAPI app  
@@ -63,127 +51,49 @@ app = FastAPI(
 # Startup and shutdown events using the older API
 @app.on_event("startup")
 async def startup_event():
-    """Application startup event with comprehensive logging."""
+    """Simple application startup event."""
     
-    # Set startup context
-    with LogContext(request_id="startup", phase="initialization"):
-        
-        # Log comprehensive startup information
-        log_startup_info(
-            logger,
-            service_name=settings.app_name,
-            version="0.1.0",
-            environment="DEBUG" if settings.debug else "PRODUCTION",
-            port=settings.port,
-            host="0.0.0.0",
-            github_owner=settings.github_owner,
-            github_repo=settings.github_repo,
-            webhook_secret=settings.github_webhook_secret,
-            github_token=settings.github_token,
-            poller_enabled=settings.poller_enabled,
-            poll_interval=f"{settings.poll_interval_seconds}s",
-            required_labels=settings.required_issue_labels or "None",
-            workspace_root=settings.workspace_root,
-            max_concurrent_workspaces=settings.max_concurrent_workspaces,
-            ai_tools=settings.agent_tools,
-            log_level="DEBUG" if settings.debug else "INFO"
-        )
-        
-        logger.info("Starting service initialization sequence...")
+    # Log startup
+    logger.info("=" * 60)
+    logger.info(f"{settings.app_name} v0.1.0 Starting")
+    logger.info("=" * 60)
+    logger.info(f"Environment: {'DEBUG' if settings.debug else 'PRODUCTION'}")
+    logger.info(f"Port: {settings.port}")
+    logger.info(f"Host: 0.0.0.0")
     
-        # Verify LangChain imports work
-        logger.info("Verifying LangChain dependencies...")
-        try:
-            import langchain
-            import langgraph
-            logger.info(f"✓ LangChain version: {langchain.__version__}")
-            logger.info("✓ LangGraph: Imported successfully")
-            set_request_context(langchain_version=langchain.__version__)
-        except ImportError as e:
-            logger.error(f"✗ Failed to import LangChain/LangGraph: {e}")
-            raise
+    # Check configuration
+    github_secret = "✓" if settings.github_webhook_secret else "✗"
+    openai_key = "✓" if settings.openai_api_key else "✗"
+    github_token = "✓" if settings.github_personal_access_token else "✗"
     
-        # Verify OpenAI import
-        logger.info("Verifying OpenAI SDK...")
-        try:
-            import openai
-            logger.info(f"✓ OpenAI SDK version: {openai.__version__}")
-            set_request_context(openai_version=openai.__version__)
-        except ImportError as e:
-            logger.error(f"✗ Failed to import OpenAI: {e}")
-            raise
+    logger.info(f"GitHub Webhook Secret: {github_secret}")
+    logger.info(f"OpenAI API Key: {openai_key}")
+    logger.info(f"GitHub Token: {github_token}")
     
-        # Create required directories
-        logger.info("Setting up directory structure...")
-        directories = ["data", "logs", settings.workspace_root]
-        for directory in directories:
-            os.makedirs(directory, exist_ok=True)
-            logger.debug(f"✓ Directory ensured: {directory}")
+    # Create directories
+    os.makedirs("data", exist_ok=True)
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs(settings.workspace_root, exist_ok=True)
     
-        # Initialize and start poller service
-        global poller_service
-        if settings.poller_enabled:
-            logger.info("Initializing GitHub poller service...")
-            try:
-                poller_service = PollerService(
-                    github_token=settings.github_token,
-                    github_owner=settings.github_owner,
-                    github_repo=settings.github_repo,
-                    poll_interval_seconds=settings.poll_interval_seconds,
-                    poller_state_file=settings.poller_state_file,
-                    required_issue_labels=settings.required_issue_labels,
-                    poller_enabled=settings.poller_enabled
-                )
-                
-                logger.debug(f"Poller configuration: owner={settings.github_owner}, repo={settings.github_repo}, interval={settings.poll_interval_seconds}s")
-                
-                # Start poller as background task
-                task = asyncio.create_task(poller_service.start_background())
-                logger.info(f"✓ GitHub poller service started (task_id={id(task)})")
-                
-                # Register poller service with health endpoint
-                set_poller_service(poller_service)
-                logger.debug("✓ Poller service registered with health endpoint")
-                
-                set_request_context(poller_status="active", poller_task_id=id(task))
-                
-            except Exception as e:
-                logger.error(f"✗ Failed to start poller service: {e}", exc_info=True)
-                logger.warning("Continuing without poller - webhooks will still work")
-                set_request_context(poller_status="failed", poller_error=str(e))
-        else:
-            logger.info("GitHub poller is disabled by configuration")
-            set_request_context(poller_status="disabled")
     
-        # Log final startup status
-        logger.info("="*60)
-        logger.info("✓ APPLICATION STARTUP COMPLETED SUCCESSFULLY")
-        logger.info(f"✓ Service is ready at http://0.0.0.0:{settings.port}")
-        logger.info(f"✓ API Documentation: http://0.0.0.0:{settings.port}/docs")
-        logger.info(f"✓ Health Check: http://0.0.0.0:{settings.port}/health")
-        logger.info(f"✓ Webhook Endpoint: http://0.0.0.0:{settings.port}/api/webhook/github")
-        logger.info("="*60)
+    # Final status
+    logger.info("=" * 60)
+    logger.info("✓ APPLICATION STARTUP COMPLETED")
+    logger.info(f"✓ Service ready at http://0.0.0.0:{settings.port}")
+    logger.info(f"✓ Webhook: http://0.0.0.0:{settings.port}/api/webhook/github")
+    logger.info("=" * 60)
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown event with detailed logging."""
     
-    with LogContext(request_id="shutdown", phase="cleanup"):
-        logger.info("="*60)
-        logger.info("Initiating application shutdown sequence...")
+    # Shutdown logging
+    logger.info("="*60)
+    logger.info("Initiating application shutdown sequence...")
     
-        # Shutdown poller service
-        global poller_service
-        if poller_service:
-            logger.info("Shutting down GitHub poller service...")
-            try:
-                await poller_service.shutdown()
-                logger.info("✓ Poller service shutdown complete")
-            except Exception as e:
-                logger.error(f"✗ Error shutting down poller service: {e}", exc_info=True)
-        
-        logger.info("✓ SHUTDOWN SEQUENCE COMPLETED")
-        logger.info("="*60)
+    
+    logger.info("✓ SHUTDOWN SEQUENCE COMPLETED")
+    logger.info("="*60)
 
 # Add request tracking middleware
 @app.middleware("http")
@@ -193,13 +103,7 @@ async def request_tracking_middleware(request: Request, call_next):
     # Generate or extract request ID
     request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
     
-    # Set request context for logging
-    set_request_id(request_id)
-    set_request_context(
-        method=request.method,
-        path=request.url.path,
-        client_host=request.client.host if request.client else "unknown"
-    )
+    # Simple request tracking
     
     # Log incoming request
     logger.info(f"Request started: {request.method} {request.url.path}")
@@ -241,8 +145,8 @@ async def request_tracking_middleware(request: Request, call_next):
         raise
         
     finally:
-        # Clear request context
-        clear_request_context()
+        # Request completed
+        pass
 
 
 # CORS middleware removed - causing FastAPI middleware unpacking error

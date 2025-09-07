@@ -36,12 +36,12 @@ Tests for individual components in isolation:
 Tests for component interactions:
 - `test_analyst_navigator_pair.py` - Analyst-Navigator pair integration
 - `test_github_integration.py` - GitHub API integration
-- `test_github_poller.py` - GitHub poller integration
+- `test_github_poller.py` - GitHub poller integration ⚠️ OUTDATED - poller moved to separate repo
 - `test_github_workspace.py` - GitHub workspace integration
 - `test_navigator_integration.py` - Navigator integration
 - `test_pm_integration.py` - PM agent integration
-- `test_poller_integration.py` - Poller service integration
-- `test_poller_service.py` - Poller service tests
+- `test_poller_integration.py` - Poller service integration ⚠️ OUTDATED - poller moved to separate repo
+- `test_poller_service.py` - Poller service tests ⚠️ OUTDATED - poller moved to separate repo
 - `test_task_pair.py` - Task pair integration
 - `test_task_pair_integration.py` - Task pair integration tests
 - `test_workflow.py` - Workflow integration
@@ -71,7 +71,7 @@ Helper scripts for running specific tests:
 - `trigger_issue_21_e2e.py` - Trigger issue #21 E2E test
 - `trigger_issue_processing.py` - Trigger issue processing
 - `trigger_real_issue.py` - Trigger real issue processing
-- `run_e2e_issue_21.py` - Run issue #21 E2E test
+- `run_e2e_issue_21.py` - Run issue #21 E2E test ⚠️ OUTDATED - uses removed poller service
 
 ## Running Tests
 

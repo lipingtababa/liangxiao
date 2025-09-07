@@ -13,9 +13,9 @@ from datetime import datetime
 from .task_pair import TaskPair, TaskPairResult
 from agents.analyst.agent import AnalystAgent
 from agents.navigator.requirements_reviewer import RequirementsNavigator
-from core.logging import get_logger
+from core.unified_logging import get_unified_logger, log_agent_start, log_agent_complete, log_agent_error
 
-logger = get_logger(__name__)
+logger = get_unified_logger(__name__)
 
 
 class AnalystNavigatorPair(TaskPair):

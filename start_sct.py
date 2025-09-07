@@ -8,7 +8,13 @@ Proper startup script that loads environment variables and starts the SCT servic
 import os
 import sys
 import subprocess
+import signal
+import psutil
 from pathlib import Path
+
+# Setup logging early
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from core.unified_logging import setup_unified_logging
 
 
 def load_env_file(env_file_path=".env"):
@@ -44,6 +50,47 @@ def check_required_env_vars():
     
     print("✅ All required environment variables are set")
     return True
+
+
+def kill_existing_sct_processes():
+    """Kill any existing SCT processes to avoid conflicts."""
+    killed_count = 0
+    
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                cmdline = proc.info['cmdline'] or []
+                cmdline_str = ' '.join(cmdline).lower()
+                
+                # Check if this is an SCT process
+                if any(indicator in cmdline_str for indicator in [
+                    'uvicorn main:app',
+                    'start_sct.py',
+                    'python main.py'
+                ]) and proc.pid != os.getpid():
+                    
+                    print(f"🔄 Killing existing SCT process: PID {proc.pid}")
+                    proc.terminate()
+                    
+                    # Wait for graceful termination
+                    try:
+                        proc.wait(timeout=5)
+                    except psutil.TimeoutExpired:
+                        print(f"⚡ Force killing process: PID {proc.pid}")
+                        proc.kill()
+                    
+                    killed_count += 1
+                    
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+                
+    except Exception as e:
+        print(f"⚠️  Warning: Could not check for existing processes: {e}")
+    
+    if killed_count > 0:
+        print(f"✅ Killed {killed_count} existing SCT process(es)")
+    else:
+        print("ℹ️  No existing SCT processes found")
 
 
 def start_sct_service(host="0.0.0.0", port=8000, reload=False):
@@ -85,6 +132,9 @@ def start_sct_service(host="0.0.0.0", port=8000, reload=False):
 
 def main():
     """Main entry point."""
+    # Setup logging first
+    setup_unified_logging(level="INFO")
+    
     print("=" * 60)
     print("🤖 SYNTHETICCODINGTEAM STARTUP")
     print("=" * 60)
@@ -106,6 +156,9 @@ def main():
     if not check_required_env_vars():
         print("❌ Cannot start service without required environment variables")
         sys.exit(1)
+    
+    # Kill any existing SCT processes
+    kill_existing_sct_processes()
     
     # Start the service
     start_sct_service(host=args.host, port=args.port, reload=args.reload)

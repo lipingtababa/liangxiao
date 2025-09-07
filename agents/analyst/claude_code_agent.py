@@ -45,8 +45,9 @@ class ClaudeCodeAnalystAgent:
         Returns:
             StepResult with analysis results
         """
+        logger.info(f"🚀 Claude Code Analyst Agent starting task: {analyst_input.issue_description[:50]}...")
+        
         try:
-            logger.info(f"Claude Code analyzing: {analyst_input.issue_description[:50]}...")
             
             # Analyze requirements using Claude Code intelligence
             analysis = await self._analyze_with_claude_code(analyst_input)
@@ -67,7 +68,7 @@ class ClaudeCodeAnalystAgent:
             confidence = analysis.get("confidence", 0.8)
             status = "success" if confidence > 0.5 else "needs_review"
             
-            logger.info(f"Claude Code analysis completed: status={status}, confidence={confidence}")
+            logger.info(f"✅ Claude Code Analyst Agent completed task: status={status}, confidence={confidence}")
             
             return create_step_result(
                 agent="claude_code_analyst",
@@ -77,7 +78,7 @@ class ClaudeCodeAnalystAgent:
             )
             
         except Exception as e:
-            logger.error(f"Claude Code analysis failed: {e}", exc_info=True)
+            logger.error(f"❌ Claude Code Analyst Agent failed task: {e}", exc_info=True)
             
             return create_step_result(
                 agent="claude_code_analyst",

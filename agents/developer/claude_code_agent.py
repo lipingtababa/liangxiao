@@ -68,8 +68,9 @@ class ClaudeCodeDeveloperAgent:
         Returns:
             StepResult with implementation status and changes
         """
+        logger.info(f"🚀 Claude Code Developer Agent starting task: {developer_input.requirements[:50]}...")
+        
         try:
-            logger.info(f"Claude Code implementing: {developer_input.requirements[:50]}...")
             
             # Analyze the requirements and create implementation plan
             changes = await self._implement_with_claude_code(developer_input)
@@ -96,7 +97,7 @@ class ClaudeCodeDeveloperAgent:
             status = "success" if test_results.get("passed", True) else "needs_review"
             confidence = 0.8 if status == "success" else 0.6
             
-            logger.info(f"Claude Code implementation completed: {len(changes_applied)} changes, status={status}")
+            logger.info(f"✅ Claude Code Developer Agent completed task: {len(changes_applied)} changes, status={status}")
             
             return create_step_result(
                 agent="claude_code_developer",
@@ -106,7 +107,7 @@ class ClaudeCodeDeveloperAgent:
             )
             
         except Exception as e:
-            logger.error(f"Claude Code implementation failed: {e}", exc_info=True)
+            logger.error(f"❌ Claude Code Developer Agent failed task: {e}", exc_info=True)
             
             return create_step_result(
                 agent="claude_code_developer",
