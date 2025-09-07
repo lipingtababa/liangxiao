@@ -22,27 +22,6 @@ def load_env_file(env_file_path=".env"):
     except ImportError:
         pass
     
-    # Fallback to manual loading
-    env_file = Path(env_file_path)
-    if env_file.exists():
-        print(f"Loading environment variables from {env_file_path} (manual method)...")
-        with open(env_file, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    key, value = line.split('=', 1)
-                    # Handle quoted values
-                    if value.startswith('"') and value.endswith('"'):
-                        value = value[1:-1]
-                    elif value.startswith("'") and value.endswith("'"):
-                        value = value[1:-1]
-                    os.environ[key] = value
-        print("✅ Environment variables loaded successfully")
-        return True
-    else:
-        print(f"⚠️  Warning: {env_file_path} not found")
-        return False
-
 
 def check_required_env_vars():
     """Check that required environment variables are set."""
@@ -84,7 +63,8 @@ def start_sct_service(host="0.0.0.0", port=8000, reload=False):
     cmd = [
         "python", "-m", "uvicorn", "main:app",
         "--host", host,
-        "--port", str(port)
+        "--port", str(port),
+        "--log-level", "debug"
     ]
     
     if reload:
@@ -95,7 +75,7 @@ def start_sct_service(host="0.0.0.0", port=8000, reload=False):
     
     # Start the service
     try:
-        subprocess.run(cmd, check=True, env=env)
+        subprocess.run(cmd, check=True, env=env, stdout=sys.stdout, stderr=sys.stderr)
     except KeyboardInterrupt:
         print("\n🛑 Service stopped by user")
     except subprocess.CalledProcessError as e:
