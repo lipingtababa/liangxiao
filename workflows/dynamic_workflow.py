@@ -238,7 +238,7 @@ class DynamicWorkflowController:
             if responsible_agent == "analyst":
                 return await self._execute_analyst(context)
             elif responsible_agent == "tester":
-                return await self._execute_tester(context)
+                return self._execute_tester(context)
             elif responsible_agent == "developer":
                 return await self._execute_developer(context)
             elif responsible_agent == "pm":
@@ -264,7 +264,7 @@ class DynamicWorkflowController:
         
         return await self.analyst_agent.execute(analyst_input)
     
-    async def _execute_tester(self, context: WorkflowContext) -> StepResult:
+    def _execute_tester(self, context: WorkflowContext) -> StepResult:
         """Execute Tester agent for test creation."""
         # Get acceptance criteria from previous analyst step
         acceptance_criteria = []
