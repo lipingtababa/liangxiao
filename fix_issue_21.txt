@@ -1,0 +1,2 @@
+Fix for issue #21: remove "解释文化细节" from readme
+Changes made:
