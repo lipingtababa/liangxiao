@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: '瑞典生活经验分享 - Swedish life experience sharing',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh">
       <body className={inter.className}>
@@ -26,14 +22,10 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
-        <main className="min-h-screen bg-gray-50">
-          {children}
-        </main>
+        <main className="min-h-screen bg-gray-50">{children}</main>
         <footer className="bg-white border-t mt-auto">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-gray-500 text-sm">
-              © 2024 瑞典马工. 保留所有权利。
-            </p>
+            <p className="text-center text-gray-500 text-sm">© 2024 瑞典马工. 保留所有权利。</p>
           </div>
         </footer>
       </body>

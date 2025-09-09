@@ -20,9 +20,11 @@
 ### 1. 翻译流水线 (`scripts/translate.py`)
 
 #### 目的
+
 主脚本，协调整个翻译和发布流程。
 
 #### 设计决策
+
 - **单一入口**：一个脚本处理整个工作流程，保持简单
 - **模块化函数**：提取、翻译、发布功能分离
 - **错误恢复**：每个步骤独立失败，不影响整个流程
@@ -43,13 +45,14 @@ translate.py
 #### 数据流
 
 ```
-URL输入 → 获取HTML → 提取内容 → 翻译文本 → 处理图片 
+URL输入 → 获取HTML → 提取内容 → 翻译文本 → 处理图片
     → 生成Markdown → 本地保存 → Git提交 → 推送到GitHub
 ```
 
 ### 2. 博客应用 (Next.js)
 
 #### 技术选择：Next.js
+
 - **静态站点生成 (SSG)**：预构建页面，性能最优
 - **Markdown支持**：原生支持markdown内容
 - **图片优化**：内置图片优化功能
@@ -102,16 +105,16 @@ liangxiao/
 
 ```yaml
 ---
-title: "英文标题"
-originalTitle: "中文原标题"
-date: "2025-01-15"
-author: "瑞典马工"
-excerpt: "文章简要描述"
-originalUrl: "https://mp.weixin.qq.com/s/xxxxx"
-images: 
-  - "/images/article-hash/image1.jpg"
-  - "/images/article-hash/image2.jpg"
-tags: ["瑞典", "技术", "文化"]
+title: '英文标题'
+originalTitle: '中文原标题'
+date: '2025-01-15'
+author: '瑞典马工'
+excerpt: '文章简要描述'
+originalUrl: 'https://mp.weixin.qq.com/s/xxxxx'
+images:
+  - '/images/article-hash/image1.jpg'
+  - '/images/article-hash/image2.jpg'
+tags: ['瑞典', '技术', '文化']
 readingTime: 5
 ---
 ```
@@ -139,13 +142,15 @@ class ContentTranslator:
 #### 内容适配规则
 
 1. **文化背景**
+
    ```
-   原文: "春节期间" 
+   原文: "春节期间"
    直译: "During Spring Festival"
    适配: "During Spring Festival (Chinese New Year)"
    ```
 
 2. **度量单位**
+
    ```
    原文: "100公里"
    适配: "100 kilometers (62 miles)"
@@ -181,6 +186,7 @@ class ImageProcessor:
 ```
 
 #### 图片优化
+
 - 最大宽度：1200px
 - 格式：WebP，JPEG作为备用
 - 压缩：85%质量
@@ -189,6 +195,7 @@ class ImageProcessor:
 ### 6. 部署架构
 
 #### GitHub仓库
+
 ```
 仓库: lipingtababa/liangxiao
 分支: main (生产环境)
@@ -207,6 +214,7 @@ class ImageProcessor:
 ```
 
 #### 部署流程
+
 1. 开发者运行 `python scripts/translate.py [URL]`
 2. 脚本生成markdown和图片
 3. Git提交并推送到main分支
@@ -313,16 +321,17 @@ logging.basicConfig(
 ## 开发工作流程
 
 1. **添加新文章**
+
    ```bash
    # 1. 获取文章URL
    # 2. 运行翻译脚本
    python scripts/translate.py "https://mp.weixin.qq.com/s/xxxxx"
-   
+
    # 3. 审查生成的markdown
    cat posts/2025-01-15-文章标题.md
-   
+
    # 4. 如需要进行手动调整
-   
+
    # 5. 提交并部署
    git add .
    git commit -m "添加文章: [标题]"
@@ -330,25 +339,28 @@ logging.basicConfig(
    ```
 
 2. **本地开发**
+
    ```bash
    # 安装依赖
    npm install
-   
+
    # 运行开发服务器
    npm run dev
-   
+
    # 在 http://localhost:3000 查看
    ```
 
 ## 未来增强
 
 ### 第二阶段
+
 - 实现RSS订阅
 - 添加搜索功能
 - 创建分类页面
 - 实现相关文章
 
 ### 第三阶段
+
 - 添加评论系统
 - 实现通讯订阅
 - 创建管理仪表板

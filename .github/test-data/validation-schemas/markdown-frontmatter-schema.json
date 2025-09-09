@@ -3,12 +3,7 @@
   "title": "Markdown Frontmatter Schema",
   "description": "Schema for validating YAML frontmatter in generated markdown files",
   "type": "object",
-  "required": [
-    "title",
-    "date", 
-    "author",
-    "description"
-  ],
+  "required": ["title", "date", "author", "description"],
   "properties": {
     "title": {
       "type": "string",

@@ -3,11 +3,13 @@
 如果你是AI开发者，这是你开始开发liangxiao项目的最快路径。
 
 ## 🎯 项目目标
+
 将微信公众号"瑞典马工"的文章翻译成英文并发布到magong.se网站。
 
 ## 🚀 立即开始（3分钟上手）
 
 ### 步骤1: 了解你的环境
+
 运行调试工具了解GitHub Actions环境：
 
 ```yaml
@@ -16,6 +18,7 @@
 ```
 
 ### 步骤2: 创建第一个脚本
+
 复制并修改starter代码：
 
 ```bash
@@ -24,6 +27,7 @@ cp scripts/extract_content_starter.py scripts/extract_content.py
 ```
 
 ### 步骤3: 测试你的代码
+
 运行验证工作流：
 
 ```yaml
@@ -52,6 +56,7 @@ scripts/
 ## 💡 开发技巧
 
 ### 1. 使用starter代码
+
 不要从零开始，使用 `extract_content_starter.py` 作为模板：
 
 ```python
@@ -64,20 +69,22 @@ scripts/
 ```
 
 ### 2. 在线调试
+
 使用 `debug-ai-env.yml` 工作流：
 
 ```yaml
 # 检查文件
-check_file: "scripts/extract_content.py"
+check_file: 'scripts/extract_content.py'
 
 # 测试Python代码
 python_test: "import json; print('OK')"
 
 # 执行命令
-command: "ls -la scripts/"
+command: 'ls -la scripts/'
 ```
 
 ### 3. 验证进度
+
 `validate-ai-implementation.yml` 会给你的实现打分（满分100分）：
 
 - 内容提取器: 40分
@@ -87,6 +94,7 @@ command: "ls -la scripts/"
 ## 📋 实现检查清单
 
 ### 内容提取器 (`extract_content.py`)
+
 - [ ] 能解析HTML提取标题
 - [ ] 能提取作者和日期
 - [ ] 能提取正文内容
@@ -95,12 +103,14 @@ command: "ls -la scripts/"
 - [ ] 输出标准JSON格式
 
 ### 翻译器 (`translate.py`)
+
 - [ ] 能读取提取器的JSON输出
 - [ ] 能翻译标题和内容
 - [ ] 处理API密钥（如果有）
 - [ ] 输出翻译后的JSON
 
-### Markdown生成器 (`generate_markdown.py`)  
+### Markdown生成器 (`generate_markdown.py`)
+
 - [ ] 读取翻译后的JSON
 - [ ] 生成YAML frontmatter
 - [ ] 转换内容为Markdown
@@ -110,24 +120,29 @@ command: "ls -la scripts/"
 ## 🔧 调试常见问题
 
 ### 问题1: 找不到文件
+
 ```bash
 # 使用debug-ai-env.yml检查
 command: "find . -name '*.py'"
 ```
 
 ### 问题2: 导入错误
+
 ```bash
 # 测试导入
 python_test: "import requests; print('requests OK')"
 ```
 
 ### 问题4: 翻译API不工作
+
 检查API密钥是否正确配置：
+
 - 在GitHub Secrets中应该有 `GOOGLE_GEMINI_API_KEY`
 - 使用环境变量: `os.environ.get('GOOGLE_GEMINI_API_KEY')`
 - 名称完全一致，保持简单
 
 ### 问题3: 脚本不执行
+
 ```bash
 # 检查权限和语法
 command: "python scripts/extract_content.py --help"
@@ -145,6 +160,7 @@ command: "python scripts/extract_content.py --help"
 ## 📚 详细文档
 
 如需详细信息，查看：
+
 - `AI_DEVELOPER_GUIDE.md` - 完整开发指南
 - `.github/test-data/README.md` - 测试数据说明
 - GitHub Issues - 具体任务要求

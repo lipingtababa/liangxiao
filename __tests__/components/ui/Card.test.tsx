@@ -9,25 +9,21 @@ describe('Card Component', () => {
         <p>卡片内容</p>
       </Card>
     )
-    
+
     expect(screen.getByText('卡片标题')).toBeInTheDocument()
     expect(screen.getByText('卡片内容')).toBeInTheDocument()
   })
 
   it('应该应用默认样式', () => {
-    const { container } = render(
-      <Card>测试内容</Card>
-    )
-    
+    const { container } = render(<Card>测试内容</Card>)
+
     const card = container.firstChild
     expect(card).toHaveClass('bg-white', 'rounded-lg', 'shadow', 'p-6')
   })
 
   it('应该支持自定义className', () => {
-    const { container } = render(
-      <Card className="custom-card-class">自定义样式卡片</Card>
-    )
-    
+    const { container } = render(<Card className="custom-card-class">自定义样式卡片</Card>)
+
     const card = container.firstChild
     expect(card).toHaveClass('custom-card-class')
     // 同时保留默认样式
@@ -46,7 +42,7 @@ describe('Card Component', () => {
         </div>
       </Card>
     )
-    
+
     expect(screen.getByTestId('nested-div')).toBeInTheDocument()
     expect(screen.getByRole('button')).toBeInTheDocument()
     expect(screen.getByText('项目1')).toBeInTheDocument()

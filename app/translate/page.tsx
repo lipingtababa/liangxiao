@@ -9,7 +9,7 @@ export default function TranslatePage() {
   const handleTranslate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!url) return
-    
+
     setIsTranslating(true)
     // TODO: 实现翻译功能
     console.log('翻译URL:', url)
@@ -22,7 +22,7 @@ export default function TranslatePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">文章翻译工具</h1>
-      
+
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleTranslate} className="space-y-4">
           <div>
@@ -39,20 +39,18 @@ export default function TranslatePage() {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={isTranslating}
             className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-              isTranslating 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700'
+              isTranslating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
             {isTranslating ? '正在翻译...' : '开始翻译'}
           </button>
         </form>
-        
+
         <div className="mt-6 p-4 bg-blue-50 rounded-md">
           <h3 className="font-semibold text-gray-900 mb-2">使用说明：</h3>
           <ol className="list-decimal list-inside text-sm text-gray-700 space-y-1">
