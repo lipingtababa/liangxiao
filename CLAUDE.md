@@ -21,13 +21,13 @@
 1. 用户手动提供微信文章URL
 2. 系统自动提取文章内容和图片
 3. 将中文翻译成英文（为国际读者调整内容）
-4. 通过 Vercel 发布到 magong.se
+4. 发布到 magong.se
 
 ### 4. 技术栈 / Tech Stack
 
 - **前端**: Next.js, React
 - **翻译脚本**: Python 3.9+
-- **部署**: Vercel + GitHub
+- **部署**: GitHub + Web 托管服务
 - **翻译服务**: Google Translate API
 
 ### 5. 代码规范 / Code Standards

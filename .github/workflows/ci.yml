@@ -94,7 +94,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    name: 部署到 Vercel
+    name: 部署
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -103,10 +103,5 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 部署到 Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+      # 部署步骤可以根据选择的托管平台进行配置
+      # 例如：部署到 Netlify, AWS, 或其他托管服务

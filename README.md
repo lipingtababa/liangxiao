@@ -1,6 +1,6 @@
 # 微信文章翻译发布系统
 
-一个自动化工具，用于监控微信公众号"瑞典马工"，将文章翻译成英文并发布到 magong.se（通过 Vercel）。
+一个自动化工具，用于监控微信公众号"瑞典马工"，将文章翻译成英文并发布到 magong.se。
 
 ## 项目概述
 
@@ -37,7 +37,7 @@
 
 #### 4. 发布
 
-- **平台**：通过 Vercel 部署到 magong.se
+- **平台**：部署到 magong.se
 - **格式**：带有 frontmatter 的 Markdown 文件
 - **URL结构**：`/posts/[日期]-[标题]`
 - **图片**：托管在 `/public/images/`
@@ -94,13 +94,13 @@
 ### 翻译流程
 
 ```
-微信文章 → 内容提取 → 翻译API → 格式保留 → Vercel发布
+微信文章 → 内容提取 → 翻译API → 格式保留 → 发布
 ```
 
 - **内容提取**：解析HTML，提取文本和图片
 - **翻译**：使用Google Translate API进行中英翻译
 - **格式保留**：保持文章结构、标题和图片位置
-- **图片处理**：下载并在Vercel CDN上重新托管图片
+- **图片处理**：下载并重新托管图片
 
 ## 技术架构
 
@@ -147,8 +147,6 @@ cp .env.example .env
 # config.py 示例
 WECHAT_ACCOUNT = "瑞典马工"
 TARGET_LANGUAGE = "en"
-VERCEL_TOKEN = "your-vercel-token"
-VERCEL_PROJECT = "magong-se"
 TRANSLATION_API = "google"
 ```
 
@@ -174,7 +172,7 @@ npm run dev
 # 在 http://localhost:3000 查看
 ```
 
-### 部署到Vercel
+### 部署
 
 ```bash
 # 提交更改
@@ -182,7 +180,7 @@ git add .
 git commit -m "添加新文章"
 git push
 
-# Vercel从GitHub自动部署
+# 自动部署
 ```
 
 ## 技术栈
@@ -204,7 +202,7 @@ git push
 ### 基础设施
 
 - **代码仓库**：GitHub (lipingtababa/liangxiao)
-- **托管**：Vercel
+- **托管**：Web 托管服务
 - **域名**：magong.se
 
 ## 限制条件
@@ -219,7 +217,7 @@ git push
 
 - 微信的封闭生态系统（无官方API访问）
 - Google Translate API限制
-- Vercel构建时间限制
+- 构建时间限制
 
 ### 资源
 
@@ -252,7 +250,7 @@ git push
 - [ ] 基础翻译脚本
 - [ ] Next.js博客设置
 - [ ] 手动文章处理
-- [ ] Vercel部署
+- [ ] 部署
 
 ### 第二阶段：增强
 

@@ -307,21 +307,21 @@ EOF
             echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           fi
 
-      # 10. 触发Vercel部署（通过webhook或等待自动部署）
-      - name: 通知Vercel部署
+      # 10. 触发部署（通过webhook或等待自动部署）
+      - name: 通知部署
         if: steps.commit.outputs.has_commits == 'true'
         continue-on-error: true
         run: |
-          echo "## 触发Vercel部署"
+          echo "## 触发部署"
 
-          # Vercel会自动检测到Git推送并部署
-          echo "✓ Git推送已完成，Vercel将自动检测并部署"
+          # 托管平台会自动检测到Git推送并部署
+          echo "✓ Git推送已完成，托管平台将自动检测并部署"
 
-          # 如果配置了Vercel webhook，可以主动触发
-          if [ -n "${{ secrets.VERCEL_DEPLOY_HOOK }}" ]; then
-            echo "触发Vercel部署webhook..."
-            curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}" || {
-              echo "::warning::Vercel webhook触发失败，但Vercel仍会自动部署"
+          # 如果配置了部署webhook，可以主动触发
+          if [ -n "${{ secrets.DEPLOY_HOOK }}" ]; then
+            echo "触发部署webhook..."
+            curl -X POST "${{ secrets.DEPLOY_HOOK }}" || {
+              echo "::warning::部署webhook触发失败，但托管平台仍会自动部署"
             }
           fi
 
@@ -350,7 +350,7 @@ EOF
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 部署状态" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.commit.outputs.has_commits }}" == "true" ]; then
-            echo "✅ 变更已推送，等待Vercel自动部署" >> $GITHUB_STEP_SUMMARY
+            echo "✅ 变更已推送，等待自动部署" >> $GITHUB_STEP_SUMMARY
           else
             echo "ℹ️ 没有新的变更需要部署" >> $GITHUB_STEP_SUMMARY
           fi
