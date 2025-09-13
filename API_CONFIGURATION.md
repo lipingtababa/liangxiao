@@ -6,8 +6,8 @@
 
 GitHub Secrets和代码中使用**相同的名称**，无需映射：
 
-| GitHub Secret 名称 | 代码中的环境变量 | 用途 |
-|-------------------|------------------|------|
+| GitHub Secret 名称      | 代码中的环境变量        | 用途           |
+| ----------------------- | ----------------------- | -------------- |
 | `GOOGLE_GEMINI_API_KEY` | `GOOGLE_GEMINI_API_KEY` | Google翻译服务 |
 
 ### **在代码中正确使用:**
@@ -47,11 +47,11 @@ import sys
 def get_translation_api_key():
     """获取翻译API密钥"""
     api_key = os.environ.get('GOOGLE_GEMINI_API_KEY', '')
-    
+
     if not api_key:
         print("警告: Google Gemini API密钥未配置，翻译功能将受限", file=sys.stderr)
         return None
-    
+
     # 不要打印完整密钥，只显示前几位用于调试
     print(f"✓ API密钥已配置 (开头: {api_key[:8]}...)", file=sys.stderr)
     return api_key

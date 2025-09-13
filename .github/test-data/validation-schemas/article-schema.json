@@ -3,13 +3,7 @@
   "title": "WeChat Article Data Schema",
   "description": "Schema for validating extracted WeChat article data",
   "type": "object",
-  "required": [
-    "title",
-    "author", 
-    "publish_date",
-    "original_url",
-    "content"
-  ],
+  "required": ["title", "author", "publish_date", "original_url", "content"],
   "properties": {
     "title": {
       "type": "string",
@@ -106,7 +100,7 @@
       "description": "Word count"
     },
     "reading_time": {
-      "type": "integer", 
+      "type": "integer",
       "minimum": 1,
       "description": "Estimated reading time in minutes"
     },
@@ -157,7 +151,7 @@
           "description": "Source language code"
         },
         "target_language": {
-          "type": "string", 
+          "type": "string",
           "pattern": "^[a-z]{2}$",
           "description": "Target language code"
         },

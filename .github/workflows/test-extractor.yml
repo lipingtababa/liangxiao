@@ -15,74 +15,74 @@ on:
 jobs:
   test-extractor:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      
-    - name: 设置Python环境
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-        
-    - name: 安装依赖
-      run: |
-        pip install -r requirements.txt
-        
-    - name: 准备测试数据
-      run: |
-        echo "准备测试数据..."
-        mkdir -p test-output
-        
-    - name: 运行内容提取器测试
-      run: |
-        echo "开始测试微信内容提取器..."
-        
-        # 使用测试URL或默认测试URL
-        if [ "${{ github.event.inputs.test_url }}" != "" ]; then
-          TEST_URL="${{ github.event.inputs.test_url }}"
-        else
-          # 从测试数据中读取第一个URL
-          TEST_URL=$(head -1 .github/test-data/sample-articles.txt || echo "")
-        fi
-        
-        echo "测试URL: $TEST_URL"
-        
-        # 这里AI开发者需要实现实际的测试脚本
-        # python scripts/extract_content.py --url "$TEST_URL" --output test-output/
-        
-        echo "内容提取测试完成"
-        
-    - name: 验证提取结果
-      run: |
-        echo "验证提取的内容..."
-        
-        # 检查输出文件是否存在
-        if [ -d "test-output" ]; then
-          echo "输出目录存在"
-          ls -la test-output/
-        else
-          echo "错误: 输出目录不存在"
-          exit 1
-        fi
-        
-        # 运行验证脚本
-        # python scripts/test/validate_extraction.py test-output/
-        
-    - name: 上传测试结果
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: extractor-test-results
-        path: |
-          test-output/
-          *.log
-        retention-days: 7
-        
-    - name: 输出测试摘要
-      if: always()
-      run: |
-        echo "## 微信内容提取器测试摘要" >> $GITHUB_STEP_SUMMARY
-        echo "- 测试URL: ${{ github.event.inputs.test_url || '默认测试URL' }}" >> $GITHUB_STEP_SUMMARY
-        echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
-        echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+
+      - name: 准备测试数据
+        run: |
+          echo "准备测试数据..."
+          mkdir -p test-output
+
+      - name: 运行内容提取器测试
+        run: |
+          echo "开始测试微信内容提取器..."
+
+          # 使用测试URL或默认测试URL
+          if [ "${{ github.event.inputs.test_url }}" != "" ]; then
+            TEST_URL="${{ github.event.inputs.test_url }}"
+          else
+            # 从测试数据中读取第一个URL
+            TEST_URL=$(head -1 .github/test-data/sample-articles.txt || echo "")
+          fi
+
+          echo "测试URL: $TEST_URL"
+
+          # 这里AI开发者需要实现实际的测试脚本
+          # python scripts/extract_content.py --url "$TEST_URL" --output test-output/
+
+          echo "内容提取测试完成"
+
+      - name: 验证提取结果
+        run: |
+          echo "验证提取的内容..."
+
+          # 检查输出文件是否存在
+          if [ -d "test-output" ]; then
+            echo "输出目录存在"
+            ls -la test-output/
+          else
+            echo "错误: 输出目录不存在"
+            exit 1
+          fi
+
+          # 运行验证脚本
+          # python scripts/test/validate_extraction.py test-output/
+
+      - name: 上传测试结果
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: extractor-test-results
+          path: |
+            test-output/
+            *.log
+          retention-days: 7
+
+      - name: 输出测试摘要
+        if: always()
+        run: |
+          echo "## 微信内容提取器测试摘要" >> $GITHUB_STEP_SUMMARY
+          echo "- 测试URL: ${{ github.event.inputs.test_url || '默认测试URL' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

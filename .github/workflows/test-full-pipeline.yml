@@ -19,230 +19,230 @@ on:
 jobs:
   test-full-pipeline:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      
-    - name: 设置Python环境
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-        
-    - name: 安装依赖
-      run: |
-        pip install -r requirements.txt
-        
-    - name: 准备测试环境
-      run: |
-        echo "准备测试环境..."
-        mkdir -p test-output/{posts,images,logs}
-        mkdir -p test-data
-        
-        # 复制测试文章列表或使用样本数据
-        if [ "${{ github.event.inputs.use_sample_data }}" = "true" ]; then
-          if [ -f ".github/test-data/sample-articles.txt" ]; then
-            head -${{ github.event.inputs.test_articles_count }} .github/test-data/sample-articles.txt > test-data/articles.txt
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+
+      - name: 准备测试环境
+        run: |
+          echo "准备测试环境..."
+          mkdir -p test-output/{posts,images,logs}
+          mkdir -p test-data
+
+          # 复制测试文章列表或使用样本数据
+          if [ "${{ github.event.inputs.use_sample_data }}" = "true" ]; then
+            if [ -f ".github/test-data/sample-articles.txt" ]; then
+              head -${{ github.event.inputs.test_articles_count }} .github/test-data/sample-articles.txt > test-data/articles.txt
+            else
+              echo "警告: 样本数据文件不存在，使用默认URL"
+              cat > test-data/articles.txt << 'EOF'
+          # 测试用微信文章URL (这些需要替换为实际可访问的URL)
+          https://mp.weixin.qq.com/s/example1
+          https://mp.weixin.qq.com/s/example2
+          EOF
+            fi
           else
-            echo "警告: 样本数据文件不存在，使用默认URL"
-            cat > test-data/articles.txt << 'EOF'
-        # 测试用微信文章URL (这些需要替换为实际可访问的URL)
-        https://mp.weixin.qq.com/s/example1
-        https://mp.weixin.qq.com/s/example2
-        EOF
+            cp articles.txt test-data/articles.txt
+            head -${{ github.event.inputs.test_articles_count }} test-data/articles.txt > temp && mv temp test-data/articles.txt
           fi
-        else
-          cp articles.txt test-data/articles.txt
-          head -${{ github.event.inputs.test_articles_count }} test-data/articles.txt > temp && mv temp test-data/articles.txt
-        fi
-        
-        echo "测试文章列表:"
-        cat test-data/articles.txt
-        
-    - name: 步骤1 - 内容提取测试
-      env:
-        DEBUG_MODE: ${{ github.event.inputs.debug_mode }}
-      run: |
-        echo "=== 步骤1: 微信内容提取 ==="
-        
-        # 处理每个URL
-        while IFS= read -r url; do
-          # 跳过注释和空行
-          if [[ "$url" =~ ^[[:space:]]*# ]] || [[ -z "$url" ]]; then
-            continue
-          fi
-          
-          echo "提取文章: $url"
-          
-          # 这里AI开发者实现内容提取逻辑
-          # python scripts/extract_content.py --url "$url" --output test-output/
-          
-          echo "内容提取完成: $url"
-          
-        done < test-data/articles.txt
-        
-        echo "✓ 内容提取阶段完成"
-        
-    - name: 步骤2 - 翻译测试
-      env:
-        GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
-        DEBUG_MODE: ${{ github.event.inputs.debug_mode }}
-      run: |
-        echo "=== 步骤2: 内容翻译 ==="
-        
-        # 查找提取的内容文件并翻译
-        for content_file in test-output/*.json; do
-          if [ -f "$content_file" ]; then
-            echo "翻译文件: $content_file"
-            
-            # 这里AI开发者实现翻译逻辑
-            # python scripts/translate.py --input "$content_file" --output test-output/
-            
-            echo "翻译完成: $content_file"
-          fi
-        done
-        
-        echo "✓ 翻译阶段完成"
-        
-    - name: 步骤3 - Markdown生成测试
-      run: |
-        echo "=== 步骤3: Markdown文件生成 ==="
-        
-        # 将翻译后的内容生成Markdown
-        for translated_file in test-output/*-translated.json; do
-          if [ -f "$translated_file" ]; then
-            echo "生成Markdown: $translated_file"
-            
-            # 这里AI开发者实现Markdown生成逻辑
-            # python scripts/generate_markdown.py --input "$translated_file" --output test-output/posts/
-            
-            echo "Markdown生成完成: $translated_file"
-          fi
-        done
-        
-        echo "✓ Markdown生成阶段完成"
-        
-    - name: 步骤4 - 图片处理测试
-      run: |
-        echo "=== 步骤4: 图片下载和处理 ==="
-        
-        # 处理文章中的图片
-        for article_data in test-output/*.json; do
-          if [ -f "$article_data" ]; then
-            echo "处理图片: $article_data"
-            
-            # 这里AI开发者实现图片下载和处理逻辑
-            # python scripts/process_images.py --input "$article_data" --output test-output/images/
-            
-            echo "图片处理完成: $article_data"
-          fi
-        done
-        
-        echo "✓ 图片处理阶段完成"
-        
-    - name: 综合验证
-      run: |
-        echo "=== 综合验证 ==="
-        
-        # 验证生成的文件
-        echo "检查生成的文件..."
-        find test-output -type f -name "*.md" | head -10
-        find test-output -type f -name "*.json" | head -10
-        find test-output -type f \( -name "*.jpg" -o -name "*.png" \) | head -5
-        
-        # 统计结果
-        MD_COUNT=$(find test-output -name "*.md" | wc -l)
-        JSON_COUNT=$(find test-output -name "*.json" | wc -l)
-        IMAGE_COUNT=$(find test-output -name "*.jpg" -o -name "*.png" | wc -l)
-        
-        echo "生成统计:"
-        echo "- Markdown文件: $MD_COUNT"
-        echo "- JSON数据文件: $JSON_COUNT" 
-        echo "- 图片文件: $IMAGE_COUNT"
-        
-        # 检查关键文件是否存在
-        if [ $MD_COUNT -eq 0 ]; then
-          echo "错误: 没有生成Markdown文件"
-          exit 1
-        fi
-        
-        # 验证Markdown文件格式
-        for md_file in test-output/posts/*.md; do
-          if [ -f "$md_file" ]; then
-            echo "验证文件: $md_file"
-            
-            # 检查frontmatter
-            if ! head -1 "$md_file" | grep -q "^---$"; then
-              echo "错误: $md_file 缺少YAML frontmatter"
-              exit 1
+
+          echo "测试文章列表:"
+          cat test-data/articles.txt
+
+      - name: 步骤1 - 内容提取测试
+        env:
+          DEBUG_MODE: ${{ github.event.inputs.debug_mode }}
+        run: |
+          echo "=== 步骤1: 微信内容提取 ==="
+
+          # 处理每个URL
+          while IFS= read -r url; do
+            # 跳过注释和空行
+            if [[ "$url" =~ ^[[:space:]]*# ]] || [[ -z "$url" ]]; then
+              continue
             fi
             
-            # 检查文件大小
-            SIZE=$(wc -c < "$md_file")
-            if [ $SIZE -lt 100 ]; then
-              echo "警告: $md_file 内容太短 ($SIZE 字节)"
+            echo "提取文章: $url"
+            
+            # 这里AI开发者实现内容提取逻辑
+            # python scripts/extract_content.py --url "$url" --output test-output/
+            
+            echo "内容提取完成: $url"
+            
+          done < test-data/articles.txt
+
+          echo "✓ 内容提取阶段完成"
+
+      - name: 步骤2 - 翻译测试
+        env:
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          DEBUG_MODE: ${{ github.event.inputs.debug_mode }}
+        run: |
+          echo "=== 步骤2: 内容翻译 ==="
+
+          # 查找提取的内容文件并翻译
+          for content_file in test-output/*.json; do
+            if [ -f "$content_file" ]; then
+              echo "翻译文件: $content_file"
+              
+              # 这里AI开发者实现翻译逻辑
+              # python scripts/translate.py --input "$content_file" --output test-output/
+              
+              echo "翻译完成: $content_file"
             fi
-          fi
-        done
-        
-        echo "✓ 综合验证完成"
-        
-    - name: 生成处理报告
-      if: always()
-      run: |
-        echo "=== 生成处理报告 ==="
-        
-        cat > test-output/pipeline-report.md << 'EOF'
-        # 完整流水线测试报告
-        
-        ## 测试配置
-        - 使用样本数据: ${{ github.event.inputs.use_sample_data }}
-        - 测试文章数量: ${{ github.event.inputs.test_articles_count }}
-        - 调试模式: ${{ github.event.inputs.debug_mode }}
-        - 测试时间: $(date)
-        
-        ## 处理结果统计
-        EOF
-        
-        # 添加文件统计
-        echo "- Markdown文件: $(find test-output -name "*.md" | wc -l)" >> test-output/pipeline-report.md
-        echo "- JSON数据文件: $(find test-output -name "*.json" | wc -l)" >> test-output/pipeline-report.md
-        echo "- 图片文件: $(find test-output -name "*.jpg" -o -name "*.png" | wc -l)" >> test-output/pipeline-report.md
-        
-        echo "" >> test-output/pipeline-report.md
-        echo "## 生成的文件列表" >> test-output/pipeline-report.md
-        
-        # 列出生成的Markdown文件
-        if find test-output -name "*.md" | grep -q .; then
-          echo "### Markdown文件" >> test-output/pipeline-report.md
-          find test-output -name "*.md" | sort | while read f; do
-            echo "- $(basename "$f")" >> test-output/pipeline-report.md
           done
-        fi
-        
-        # 显示报告
-        cat test-output/pipeline-report.md
-        
-    - name: 上传测试结果
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: full-pipeline-test-results
-        path: |
-          test-output/
-          test-data/
-          *.log
-        retention-days: 7
-        
-    - name: 输出测试摘要
-      if: always()
-      run: |
-        echo "## 完整流水线测试摘要" >> $GITHUB_STEP_SUMMARY
-        echo "- 使用样本数据: ${{ github.event.inputs.use_sample_data }}" >> $GITHUB_STEP_SUMMARY
-        echo "- 测试文章数量: ${{ github.event.inputs.test_articles_count }}" >> $GITHUB_STEP_SUMMARY
-        echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
-        echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 处理结果" >> $GITHUB_STEP_SUMMARY
-        echo "- Markdown文件: $(find test-output -name "*.md" | wc -l)" >> $GITHUB_STEP_SUMMARY
-        echo "- 图片文件: $(find test-output -name "*.jpg" -o -name "*.png" | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+          echo "✓ 翻译阶段完成"
+
+      - name: 步骤3 - Markdown生成测试
+        run: |
+          echo "=== 步骤3: Markdown文件生成 ==="
+
+          # 将翻译后的内容生成Markdown
+          for translated_file in test-output/*-translated.json; do
+            if [ -f "$translated_file" ]; then
+              echo "生成Markdown: $translated_file"
+              
+              # 这里AI开发者实现Markdown生成逻辑
+              # python scripts/generate_markdown.py --input "$translated_file" --output test-output/posts/
+              
+              echo "Markdown生成完成: $translated_file"
+            fi
+          done
+
+          echo "✓ Markdown生成阶段完成"
+
+      - name: 步骤4 - 图片处理测试
+        run: |
+          echo "=== 步骤4: 图片下载和处理 ==="
+
+          # 处理文章中的图片
+          for article_data in test-output/*.json; do
+            if [ -f "$article_data" ]; then
+              echo "处理图片: $article_data"
+              
+              # 这里AI开发者实现图片下载和处理逻辑
+              # python scripts/process_images.py --input "$article_data" --output test-output/images/
+              
+              echo "图片处理完成: $article_data"
+            fi
+          done
+
+          echo "✓ 图片处理阶段完成"
+
+      - name: 综合验证
+        run: |
+          echo "=== 综合验证 ==="
+
+          # 验证生成的文件
+          echo "检查生成的文件..."
+          find test-output -type f -name "*.md" | head -10
+          find test-output -type f -name "*.json" | head -10
+          find test-output -type f \( -name "*.jpg" -o -name "*.png" \) | head -5
+
+          # 统计结果
+          MD_COUNT=$(find test-output -name "*.md" | wc -l)
+          JSON_COUNT=$(find test-output -name "*.json" | wc -l)
+          IMAGE_COUNT=$(find test-output -name "*.jpg" -o -name "*.png" | wc -l)
+
+          echo "生成统计:"
+          echo "- Markdown文件: $MD_COUNT"
+          echo "- JSON数据文件: $JSON_COUNT" 
+          echo "- 图片文件: $IMAGE_COUNT"
+
+          # 检查关键文件是否存在
+          if [ $MD_COUNT -eq 0 ]; then
+            echo "错误: 没有生成Markdown文件"
+            exit 1
+          fi
+
+          # 验证Markdown文件格式
+          for md_file in test-output/posts/*.md; do
+            if [ -f "$md_file" ]; then
+              echo "验证文件: $md_file"
+              
+              # 检查frontmatter
+              if ! head -1 "$md_file" | grep -q "^---$"; then
+                echo "错误: $md_file 缺少YAML frontmatter"
+                exit 1
+              fi
+              
+              # 检查文件大小
+              SIZE=$(wc -c < "$md_file")
+              if [ $SIZE -lt 100 ]; then
+                echo "警告: $md_file 内容太短 ($SIZE 字节)"
+              fi
+            fi
+          done
+
+          echo "✓ 综合验证完成"
+
+      - name: 生成处理报告
+        if: always()
+        run: |
+          echo "=== 生成处理报告 ==="
+
+          cat > test-output/pipeline-report.md << 'EOF'
+          # 完整流水线测试报告
+
+          ## 测试配置
+          - 使用样本数据: ${{ github.event.inputs.use_sample_data }}
+          - 测试文章数量: ${{ github.event.inputs.test_articles_count }}
+          - 调试模式: ${{ github.event.inputs.debug_mode }}
+          - 测试时间: $(date)
+
+          ## 处理结果统计
+          EOF
+
+          # 添加文件统计
+          echo "- Markdown文件: $(find test-output -name "*.md" | wc -l)" >> test-output/pipeline-report.md
+          echo "- JSON数据文件: $(find test-output -name "*.json" | wc -l)" >> test-output/pipeline-report.md
+          echo "- 图片文件: $(find test-output -name "*.jpg" -o -name "*.png" | wc -l)" >> test-output/pipeline-report.md
+
+          echo "" >> test-output/pipeline-report.md
+          echo "## 生成的文件列表" >> test-output/pipeline-report.md
+
+          # 列出生成的Markdown文件
+          if find test-output -name "*.md" | grep -q .; then
+            echo "### Markdown文件" >> test-output/pipeline-report.md
+            find test-output -name "*.md" | sort | while read f; do
+              echo "- $(basename "$f")" >> test-output/pipeline-report.md
+            done
+          fi
+
+          # 显示报告
+          cat test-output/pipeline-report.md
+
+      - name: 上传测试结果
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: full-pipeline-test-results
+          path: |
+            test-output/
+            test-data/
+            *.log
+          retention-days: 7
+
+      - name: 输出测试摘要
+        if: always()
+        run: |
+          echo "## 完整流水线测试摘要" >> $GITHUB_STEP_SUMMARY
+          echo "- 使用样本数据: ${{ github.event.inputs.use_sample_data }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 测试文章数量: ${{ github.event.inputs.test_articles_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 调试模式: ${{ github.event.inputs.debug_mode }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 测试状态: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 处理结果" >> $GITHUB_STEP_SUMMARY
+          echo "- Markdown文件: $(find test-output -name "*.md" | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- 图片文件: $(find test-output -name "*.jpg" -o -name "*.png" | wc -l)" >> $GITHUB_STEP_SUMMARY

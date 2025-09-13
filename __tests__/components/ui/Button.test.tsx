@@ -42,10 +42,10 @@ describe('Button Component', () => {
   it('应该处理点击事件', () => {
     const handleClick = jest.fn()
     render(<Button onClick={handleClick}>点击测试</Button>)
-    
+
     const button = screen.getByRole('button')
     fireEvent.click(button)
-    
+
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 
@@ -62,7 +62,11 @@ describe('Button Component', () => {
   })
 
   it('应该传递其他HTML属性', () => {
-    render(<Button data-testid="custom-button" aria-label="测试按钮">测试</Button>)
+    render(
+      <Button data-testid="custom-button" aria-label="测试按钮">
+        测试
+      </Button>
+    )
     const button = screen.getByTestId('custom-button')
     expect(button).toHaveAttribute('aria-label', '测试按钮')
   })

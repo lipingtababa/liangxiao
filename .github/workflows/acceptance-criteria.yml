@@ -3,7 +3,7 @@ name: 验收标准检查
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'scripts/**'
       - 'posts/**'
@@ -11,206 +11,206 @@ on:
 jobs:
   acceptance:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      
-    - name: 设置Python环境
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-        
-    - name: 安装依赖
-      run: |
-        pip install -r requirements.txt
-        
-    - name: 检查必需文件存在
-      id: check_files
-      run: |
-        echo "=== 检查必需文件 ==="
-        
-        MISSING_FILES=""
-        REQUIRED_FILES=(
-          "scripts/extract_content.py"
-          "scripts/translate.py"
-          "scripts/generate_markdown.py"
-          "scripts/main_pipeline.py"
-          "requirements.txt"
-          ".github/workflows/main.yml"
-        )
-        
-        for file in "${REQUIRED_FILES[@]}"; do
-          if [ -f "$file" ]; then
-            echo "✓ $file 存在"
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+
+      - name: 检查必需文件存在
+        id: check_files
+        run: |
+          echo "=== 检查必需文件 ==="
+
+          MISSING_FILES=""
+          REQUIRED_FILES=(
+            "scripts/extract_content.py"
+            "scripts/translate.py"
+            "scripts/generate_markdown.py"
+            "scripts/main_pipeline.py"
+            "requirements.txt"
+            ".github/workflows/main.yml"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✓ $file 存在"
+            else
+              echo "✗ $file 缺失"
+              MISSING_FILES="$MISSING_FILES $file"
+            fi
+          done
+
+          if [ -n "$MISSING_FILES" ]; then
+            echo "missing_files=$MISSING_FILES" >> $GITHUB_OUTPUT
+            echo "::warning::缺失必需文件: $MISSING_FILES"
+          fi
+
+      - name: 检查脚本可执行性
+        run: |
+          echo "=== 检查脚本功能 ==="
+
+          # 检查每个脚本是否可以显示帮助
+          SCRIPTS=(
+            "scripts/extract_content.py"
+            "scripts/translate.py"
+            "scripts/generate_markdown.py"
+          )
+
+          for script in "${SCRIPTS[@]}"; do
+            if [ -f "$script" ]; then
+              echo "测试 $script --help"
+              python "$script" --help > /dev/null 2>&1 || {
+                echo "::warning::$script 不支持 --help 参数"
+              }
+            fi
+          done
+
+      - name: 运行集成测试
+        id: integration_test
+        run: |
+          echo "=== 运行集成测试 ==="
+
+          # 使用测试数据运行完整流程
+          mkdir -p test-integration
+
+          # 创建测试articles.txt
+          cat > test-integration/articles.txt << 'EOF'
+          # 集成测试URL
+          https://mp.weixin.qq.com/s/test-integration
+          EOF
+
+          # 测试主流水线
+          if [ -f "scripts/main_pipeline.py" ]; then
+            python scripts/main_pipeline.py --articles test-integration/articles.txt --output test-integration/output/ || {
+              echo "integration_failed=true" >> $GITHUB_OUTPUT
+              echo "::error::集成测试失败"
+            }
+          fi
+
+      - name: 验证输出质量
+        run: |
+          echo "=== 验证输出质量 ==="
+
+          # 使用验证脚本检查输出
+          if [ -d "test-integration/output" ]; then
+            # 验证Markdown文件
+            if [ -f "scripts/test/validate_markdown.py" ]; then
+              python scripts/test/validate_markdown.py test-integration/output/ || {
+                echo "::warning::Markdown验证失败"
+              }
+            fi
+            
+            # 验证图片
+            if [ -f "scripts/test/validate_images.py" ]; then
+              python scripts/test/validate_images.py test-integration/output/images/ || {
+                echo "::warning::图片验证失败"
+              }
+            fi
+          fi
+
+      - name: 性能基准测试
+        run: |
+          echo "=== 性能测试 ==="
+
+          # 简单的性能测试
+          python -c "
+          import time
+          import subprocess
+          import sys
+
+          # 测试单个文章处理时间
+          start = time.time()
+
+          # 模拟处理
+          result = subprocess.run([
+              sys.executable, 'scripts/extract_content.py',
+              '--url', 'https://mp.weixin.qq.com/s/test',
+              '--output', 'test-perf.json'
+          ], capture_output=True, text=True, timeout=30)
+
+          elapsed = time.time() - start
+
+          print(f'单文章处理时间: {elapsed:.2f}秒')
+
+          if elapsed > 30:
+              print('::warning::处理时间超过30秒')
+          elif elapsed < 1:
+              print('::warning::处理时间过快，可能未实际处理')
+          " || true
+
+      - name: 生成验收报告
+        if: always()
+        run: |
+          echo "=== 生成验收报告 ==="
+
+          cat > acceptance-report.md << 'EOF'
+          # 验收标准检查报告
+
+          ## 检查项目
+
+          ### 必需文件
+          EOF
+
+          # 检查结果
+          if [ -z "${{ steps.check_files.outputs.missing_files }}" ]; then
+            echo "✅ 所有必需文件存在" >> acceptance-report.md
           else
-            echo "✗ $file 缺失"
-            MISSING_FILES="$MISSING_FILES $file"
+            echo "❌ 缺失文件: ${{ steps.check_files.outputs.missing_files }}" >> acceptance-report.md
           fi
-        done
-        
-        if [ -n "$MISSING_FILES" ]; then
-          echo "missing_files=$MISSING_FILES" >> $GITHUB_OUTPUT
-          echo "::warning::缺失必需文件: $MISSING_FILES"
-        fi
-        
-    - name: 检查脚本可执行性
-      run: |
-        echo "=== 检查脚本功能 ==="
-        
-        # 检查每个脚本是否可以显示帮助
-        SCRIPTS=(
-          "scripts/extract_content.py"
-          "scripts/translate.py"
-          "scripts/generate_markdown.py"
-        )
-        
-        for script in "${SCRIPTS[@]}"; do
-          if [ -f "$script" ]; then
-            echo "测试 $script --help"
-            python "$script" --help > /dev/null 2>&1 || {
-              echo "::warning::$script 不支持 --help 参数"
-            }
+
+          echo "" >> acceptance-report.md
+          echo "### 功能测试" >> acceptance-report.md
+
+          if [ "${{ steps.integration_test.outputs.integration_failed }}" != "true" ]; then
+            echo "✅ 集成测试通过" >> acceptance-report.md
+          else
+            echo "❌ 集成测试失败" >> acceptance-report.md
           fi
-        done
-        
-    - name: 运行集成测试
-      id: integration_test
-      run: |
-        echo "=== 运行集成测试 ==="
-        
-        # 使用测试数据运行完整流程
-        mkdir -p test-integration
-        
-        # 创建测试articles.txt
-        cat > test-integration/articles.txt << 'EOF'
-        # 集成测试URL
-        https://mp.weixin.qq.com/s/test-integration
-        EOF
-        
-        # 测试主流水线
-        if [ -f "scripts/main_pipeline.py" ]; then
-          python scripts/main_pipeline.py --articles test-integration/articles.txt --output test-integration/output/ || {
-            echo "integration_failed=true" >> $GITHUB_OUTPUT
-            echo "::error::集成测试失败"
-          }
-        fi
-        
-    - name: 验证输出质量
-      run: |
-        echo "=== 验证输出质量 ==="
-        
-        # 使用验证脚本检查输出
-        if [ -d "test-integration/output" ]; then
-          # 验证Markdown文件
-          if [ -f "scripts/test/validate_markdown.py" ]; then
-            python scripts/test/validate_markdown.py test-integration/output/ || {
-              echo "::warning::Markdown验证失败"
-            }
+
+          echo "" >> acceptance-report.md
+          echo "## 验收结论" >> acceptance-report.md
+
+          # 判断是否通过
+          if [ -z "${{ steps.check_files.outputs.missing_files }}" ] && [ "${{ steps.integration_test.outputs.integration_failed }}" != "true" ]; then
+            echo "✅ **验收通过** - 代码满足基本要求" >> acceptance-report.md
+            echo "acceptance_passed=true" >> $GITHUB_ENV
+          else
+            echo "❌ **验收未通过** - 请修复上述问题" >> acceptance-report.md
+            echo "acceptance_passed=false" >> $GITHUB_ENV
           fi
-          
-          # 验证图片
-          if [ -f "scripts/test/validate_images.py" ]; then
-            python scripts/test/validate_images.py test-integration/output/images/ || {
-              echo "::warning::图片验证失败"
-            }
-          fi
-        fi
-        
-    - name: 性能基准测试
-      run: |
-        echo "=== 性能测试 ==="
-        
-        # 简单的性能测试
-        python -c "
-        import time
-        import subprocess
-        import sys
-        
-        # 测试单个文章处理时间
-        start = time.time()
-        
-        # 模拟处理
-        result = subprocess.run([
-            sys.executable, 'scripts/extract_content.py',
-            '--url', 'https://mp.weixin.qq.com/s/test',
-            '--output', 'test-perf.json'
-        ], capture_output=True, text=True, timeout=30)
-        
-        elapsed = time.time() - start
-        
-        print(f'单文章处理时间: {elapsed:.2f}秒')
-        
-        if elapsed > 30:
-            print('::warning::处理时间超过30秒')
-        elif elapsed < 1:
-            print('::warning::处理时间过快，可能未实际处理')
-        " || true
-        
-    - name: 生成验收报告
-      if: always()
-      run: |
-        echo "=== 生成验收报告 ==="
-        
-        cat > acceptance-report.md << 'EOF'
-        # 验收标准检查报告
-        
-        ## 检查项目
-        
-        ### 必需文件
-        EOF
-        
-        # 检查结果
-        if [ -z "${{ steps.check_files.outputs.missing_files }}" ]; then
-          echo "✅ 所有必需文件存在" >> acceptance-report.md
-        else
-          echo "❌ 缺失文件: ${{ steps.check_files.outputs.missing_files }}" >> acceptance-report.md
-        fi
-        
-        echo "" >> acceptance-report.md
-        echo "### 功能测试" >> acceptance-report.md
-        
-        if [ "${{ steps.integration_test.outputs.integration_failed }}" != "true" ]; then
-          echo "✅ 集成测试通过" >> acceptance-report.md
-        else
-          echo "❌ 集成测试失败" >> acceptance-report.md
-        fi
-        
-        echo "" >> acceptance-report.md
-        echo "## 验收结论" >> acceptance-report.md
-        
-        # 判断是否通过
-        if [ -z "${{ steps.check_files.outputs.missing_files }}" ] && [ "${{ steps.integration_test.outputs.integration_failed }}" != "true" ]; then
-          echo "✅ **验收通过** - 代码满足基本要求" >> acceptance-report.md
-          echo "acceptance_passed=true" >> $GITHUB_ENV
-        else
-          echo "❌ **验收未通过** - 请修复上述问题" >> acceptance-report.md
-          echo "acceptance_passed=false" >> $GITHUB_ENV
-        fi
-        
-        cat acceptance-report.md
-        
-    - name: 发布验收状态
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const passed = process.env.acceptance_passed === 'true';
-          const status = passed ? '✅ 验收通过' : '❌ 验收未通过';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `## 自动验收结果\n\n${status}\n\n查看详细报告请查看 Actions 日志。`
-          });
-          
-    - name: 上传验收报告
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: acceptance-report
-        path: |
-          acceptance-report.md
-          test-integration/
-        retention-days: 7
+
+          cat acceptance-report.md
+
+      - name: 发布验收状态
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const passed = process.env.acceptance_passed === 'true';
+            const status = passed ? '✅ 验收通过' : '❌ 验收未通过';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 自动验收结果\n\n${status}\n\n查看详细报告请查看 Actions 日志。`
+            });
+
+      - name: 上传验收报告
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acceptance-report
+          path: |
+            acceptance-report.md
+            test-integration/
+          retention-days: 7

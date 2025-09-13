@@ -21,12 +21,12 @@ describe('Format Utilities', () => {
       const result1 = formatDate('2024-12-25')
       const result2 = formatDate('2024/12/25')
       const result3 = formatDate('December 25, 2024')
-      
+
       // 所有格式应该产生相同的结果
       expect(result1).toContain('2024')
       expect(result1).toContain('12')
       expect(result1).toContain('25')
-      
+
       expect(result2).toEqual(result1)
       expect(result3).toEqual(result1)
     })
@@ -55,10 +55,20 @@ describe('Format Utilities', () => {
 
     it('应该正确显示所有月份名称', () => {
       const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
       ]
-      
+
       months.forEach((month, index) => {
         const date = `2024-${String(index + 1).padStart(2, '0')}-15`
         const result = formatDateEnglish(date)
@@ -75,7 +85,7 @@ describe('Format Utilities', () => {
       const date = '2024-06-15'
       const chineseFormat = formatDate(date)
       const englishFormat = formatDateEnglish(date)
-      
+
       expect(chineseFormat).not.toEqual(englishFormat)
       expect(englishFormat).toContain('June')
     })
