@@ -194,7 +194,7 @@ main() {
     echo "1. 提交工作流文件到GitHub"
     echo "2. 在GitHub Actions页面查看工作流状态"
     echo "3. 修改articles.txt文件测试自动触发"
-    echo "4. 配置Vercel webhook（可选）: VERCEL_DEPLOY_HOOK"
+    echo "4. 配置部署webhook（可选）: DEPLOY_HOOK"
     echo "5. 配置通知webhook（可选）: NOTIFICATION_WEBHOOK"
 }
 
