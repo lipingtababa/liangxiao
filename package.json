@@ -31,12 +31,18 @@
     ]
   },
   "dependencies": {
+    "@types/highlight.js": "^9.12.4",
     "date-fns": "^2.30.0",
     "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
     "next": "^14.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "rehype-raw": "^7.0.0",
     "remark": "^15.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.0"
   },
   "devDependencies": {
