@@ -1,7 +1,11 @@
-import { getPostData, getAllPostIds } from '@/lib/posts'
+import { getPostData, getAllPostIds, PostData } from '@/lib/posts'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import Link from 'next/link'
+import { Metadata } from 'next'
+import MarkdownRenderer from '@/components/MarkdownRenderer'
+import SocialShare from '@/components/SocialShare'
+import ImageWithFallback from '@/components/ImageWithFallback'
 
 export async function generateStaticParams() {
   const posts = getAllPostIds()
@@ -10,8 +14,32 @@ export async function generateStaticParams() {
   }))
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const postData = await getPostData(params.id)
+
+  return {
+    title: `${postData.title} | 瑞典马工`,
+    description: postData.description || postData.content?.substring(0, 160),
+    openGraph: {
+      title: postData.title,
+      description: postData.description || postData.content?.substring(0, 160),
+      type: 'article',
+      publishedTime: postData.date,
+      authors: postData.author ? [postData.author] : undefined,
+      tags: postData.tags,
+      images: postData.image ? [postData.image] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: postData.title,
+      description: postData.description || postData.content?.substring(0, 160),
+      images: postData.image ? [postData.image] : undefined,
+    },
+  }
+}
+
 export default async function PostPage({ params }: { params: { id: string } }) {
-  const postData = (await getPostData(params.id)) as any
+  const postData = await getPostData(params.id)
 
   return (
     <article className="min-h-screen bg-gray-50">
@@ -63,13 +91,49 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           )}
         </header>
 
+        {/* 封面图片 */}
+        {postData.image && (
+          <div className="mb-8">
+            <ImageWithFallback
+              src={postData.image}
+              alt={postData.title}
+              width={1200}
+              height={630}
+              className="w-full"
+              priority
+            />
+          </div>
+        )}
+
         {/* 文章内容 */}
         <div className="bg-white rounded-lg shadow-sm p-8">
-          <div
-            className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
+          {postData.content && <MarkdownRenderer content={postData.content} />}
+        </div>
+
+        {/* 社交分享 */}
+        <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
+          <SocialShare
+            title={postData.title}
+            url={typeof window !== 'undefined' ? window.location.href : ''}
           />
         </div>
+
+        {/* 原文链接 */}
+        {postData.originalUrl && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              原文链接：
+              <a
+                href={postData.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline ml-1"
+              >
+                {postData.originalUrl}
+              </a>
+            </p>
+          </div>
+        )}
 
         {/* 底部导航 */}
         <div className="mt-12 pt-8 border-t border-gray-200">
