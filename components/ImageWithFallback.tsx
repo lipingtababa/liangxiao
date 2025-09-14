@@ -27,9 +27,7 @@ export default function ImageWithFallback({
 
   return (
     <div className={`relative ${className}`}>
-      {loading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
-      )}
+      {loading && <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />}
       <Image
         src={error ? fallbackSrc : src}
         alt={alt}

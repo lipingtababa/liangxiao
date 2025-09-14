@@ -59,19 +59,13 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
               </code>
             </div>
           ) : (
-            <code
-              className="px-1 py-0.5 text-sm bg-gray-100 rounded text-gray-800"
-              {...props}
-            >
+            <code className="px-1 py-0.5 text-sm bg-gray-100 rounded text-gray-800" {...props}>
               {children}
             </code>
           )
         },
         pre: ({ node, children, ...props }) => (
-          <pre
-            className="overflow-x-auto p-4 bg-gray-50 rounded-lg my-4"
-            {...props}
-          >
+          <pre className="overflow-x-auto p-4 bg-gray-50 rounded-lg my-4" {...props}>
             {children}
           </pre>
         ),

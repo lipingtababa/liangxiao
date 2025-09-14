@@ -18,6 +18,7 @@ pip install -r requirements.txt
 ```
 
 主要依赖包括：
+
 - requests - HTTP请求
 - beautifulsoup4 - HTML解析
 - lxml - HTML解析器
@@ -33,6 +34,7 @@ python scripts/wechat_extractor.py --url "https://mp.weixin.qq.com/s/xxxxx"
 ### 2. 批量提取
 
 创建一个包含URL列表的文件 `articles.txt`：
+
 ```
 https://mp.weixin.qq.com/s/article1
 https://mp.weixin.qq.com/s/article2
@@ -40,6 +42,7 @@ https://mp.weixin.qq.com/s/article3
 ```
 
 然后运行：
+
 ```bash
 python scripts/wechat_extractor.py --input articles.txt --output results.json
 ```
@@ -47,6 +50,7 @@ python scripts/wechat_extractor.py --input articles.txt --output results.json
 ### 3. 不下载图片
 
 如果只需要文本内容，可以添加 `--no-images` 参数：
+
 ```bash
 python scripts/wechat_extractor.py --url "URL" --no-images
 ```
@@ -92,11 +96,13 @@ python scripts/wechat_extractor.py --url "URL" --image-dir ./my_images
 ## 测试
 
 运行单元测试：
+
 ```bash
 python -m pytest scripts/test/test_wechat_extractor.py -v
 ```
 
 运行本地测试：
+
 ```bash
 python scripts/test_extractor.py
 ```
@@ -124,6 +130,7 @@ python scripts/test_extractor.py
 ## 开发说明
 
 主要模块：
+
 - `wechat_extractor.py` - 主提取器
 - `extract_from_html()` - HTML内容解析
 - `extract_from_url()` - URL内容获取
@@ -132,10 +139,12 @@ python scripts/test_extractor.py
 ## 更新日志
 
 ### v2.0.0 (2025-01-13)
+
 - 完整实现微信文章提取功能
 - 添加图片下载功能
 - 改进错误处理
 - 添加单元测试
 
 ### v1.0.0 (初始版本)
+
 - 基础框架搭建
