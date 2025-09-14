@@ -6,6 +6,14 @@ import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import SocialShare from '@/components/SocialShare'
 import ImageWithFallback from '@/components/ImageWithFallback'
+import {
+  generateArticleSchema,
+  generateBreadcrumbSchema,
+  processMetaDescription,
+  generatePageUrl,
+  siteConfig,
+} from '@/lib/seo'
+import Script from 'next/script'
 
 export async function generateStaticParams() {
   const posts = getAllPostIds()
@@ -16,24 +24,54 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const postData = await getPostData(params.id)
+  const description = processMetaDescription(postData.description, postData.content)
+  const url = generatePageUrl(`/posts/${params.id}`)
+  const imageUrl = postData.image
+    ? `${siteConfig.url}${postData.image}`
+    : `${siteConfig.url}${siteConfig.ogImage}`
 
   return {
-    title: `${postData.title} | 瑞典马工`,
-    description: postData.description || postData.content?.substring(0, 160),
+    title: postData.title,
+    description: description,
+    keywords: postData.tags,
+    authors: postData.author ? [{ name: postData.author }] : [{ name: siteConfig.author }],
     openGraph: {
       title: postData.title,
-      description: postData.description || postData.content?.substring(0, 160),
+      description: description,
       type: 'article',
       publishedTime: postData.date,
-      authors: postData.author ? [postData.author] : undefined,
+      modifiedTime: postData.date,
+      authors: postData.author ? [postData.author] : [siteConfig.author],
       tags: postData.tags,
-      images: postData.image ? [postData.image] : undefined,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: postData.title,
+        },
+      ],
+      url: url,
+      siteName: siteConfig.title,
+      locale: siteConfig.locale,
     },
     twitter: {
       card: 'summary_large_image',
       title: postData.title,
-      description: postData.description || postData.content?.substring(0, 160),
-      images: postData.image ? [postData.image] : undefined,
+      description: description,
+      images: [imageUrl],
+      site: siteConfig.twitter,
+      creator: siteConfig.twitter,
+    },
+    alternates: {
+      canonical: url,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
     },
   }
 }
@@ -41,8 +79,35 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function PostPage({ params }: { params: { id: string } }) {
   const postData = await getPostData(params.id)
 
+  // 生成结构化数据
+  const articleSchema = generateArticleSchema({
+    title: postData.title,
+    description: processMetaDescription(postData.description, postData.content),
+    author: postData.author,
+    datePublished: postData.date,
+    image: postData.image,
+    url: generatePageUrl(`/posts/${params.id}`),
+    keywords: postData.tags,
+  })
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: '首页', url: '/' },
+    { name: '文章', url: '/posts' },
+    { name: postData.title, url: `/posts/${params.id}` },
+  ])
+
   return (
     <article className="min-h-screen bg-gray-50">
+      <Script
+        id="article-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* 返回按钮 */}
         <Link

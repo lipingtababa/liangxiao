@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-09-14T13:22:32.030Z",
+  "summary": {
+    "total": 6,
+    "updated": 6,
+    "unchanged": 0,
+    "errors": 0
+  },
+  "files": {
+    "updated": [
+      "stockholm-tech-scene.md",
+      "sustainable-living-sweden.md",
+      "sweden-housing-market-2024.md",
+      "swedish-education-system.md",
+      "swedish-healthcare-guide.md",
+      "swedish-work-culture.md"
+    ],
+    "unchanged": [],
+    "errors": []
+  }
+}
