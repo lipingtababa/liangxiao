@@ -1,49 +1,63 @@
 import { render, screen } from '@testing-library/react'
 import Home from '../../app/page'
 
+jest.mock('../../lib/posts', () => ({
+  getSortedPostsData: () => [
+    {
+      id: 'test-post-1',
+      title: 'Test Article 1',
+      date: '2024-01-10',
+      category: 'Culture',
+      author: '瑞典马工',
+      description: 'This is a test article description',
+    },
+    {
+      id: 'test-post-2',
+      title: 'Test Article 2',
+      date: '2024-01-09',
+      category: 'Life',
+      author: '瑞典马工',
+      description: 'Another test article description',
+    },
+  ],
+}))
+
 describe('Home Page', () => {
   it('应该渲染主页标题', () => {
     render(<Home />)
 
-    const heading = screen.getByText('欢迎来到瑞典马工')
+    const heading = screen.getByText('Articles from 瑞典马工')
     expect(heading).toBeInTheDocument()
   })
 
   it('应该显示副标题', () => {
     render(<Home />)
 
-    const subtitle = screen.getByText('分享瑞典生活经验，传递实用信息')
+    const subtitle = screen.getByText('English translations of Swedish life experiences')
     expect(subtitle).toBeInTheDocument()
   })
 
-  it('应该渲染三个功能卡片', () => {
+  it('应该显示文章列表', () => {
     render(<Home />)
 
-    expect(screen.getByText('最新文章')).toBeInTheDocument()
-    expect(screen.getByText('生活指南')).toBeInTheDocument()
-    expect(screen.getByText('关于我们')).toBeInTheDocument()
+    expect(screen.getByText('Test Article 1')).toBeInTheDocument()
+    expect(screen.getByText('Test Article 2')).toBeInTheDocument()
   })
 
-  it('应该包含正确的导航链接', () => {
+  it('应该显示文章元数据', () => {
     render(<Home />)
 
-    const postsLink = screen.getByRole('link', { name: /查看所有文章/ })
-    expect(postsLink).toHaveAttribute('href', '/posts')
-
-    const guidesLink = screen.getByRole('link', { name: /浏览指南/ })
-    expect(guidesLink).toHaveAttribute('href', '/guides')
-
-    const aboutLink = screen.getByRole('link', { name: /了解更多/ })
-    expect(aboutLink).toHaveAttribute('href', '/about')
+    expect(screen.getByText('2024-01-10')).toBeInTheDocument()
+    expect(screen.getByText('Culture')).toBeInTheDocument()
+    expect(screen.getAllByText('瑞典马工').length).toBeGreaterThan(0)
   })
 
-  it('应该显示翻译工具部分', () => {
+  it('应该包含文章链接', () => {
     render(<Home />)
 
-    expect(screen.getByText('翻译工具')).toBeInTheDocument()
-    expect(screen.getByText('使用我们的翻译工具将微信文章转换为英文版本')).toBeInTheDocument()
-
-    const translateLink = screen.getByRole('link', { name: '开始翻译' })
-    expect(translateLink).toHaveAttribute('href', '/translate')
+    const readMoreLinks = screen.getAllByText('Read more →')
+    expect(readMoreLinks).toHaveLength(2)
+    expect(readMoreLinks[0].closest('a')).toHaveAttribute('href', '/posts/test-post-1')
+    expect(readMoreLinks[1].closest('a')).toHaveAttribute('href', '/posts/test-post-2')
   })
 })
