@@ -1,0 +1,55 @@
+[
+  {
+    "title": "瑞典生活初体验：从机场到市区",
+    "author": "瑞典马工",
+    "publish_date": "2024-01-15",
+    "original_url": "https://mp.weixin.qq.com/s/sample1",
+    "content": {
+      "text": "初到瑞典，从阿兰达机场到斯德哥尔摩市区的旅程就让人印象深刻。机场快线（Arlanda Express）是最快的选择，只需20分钟就能到达中央车站。虽然票价较贵（成人票295克朗），但对于携带大量行李的新移民来说，这是最方便的选择。\n\n如果想省钱，可以选择机场巴士（Flygbussarna），票价约119克朗，车程45分钟。还有一个更经济的选择是先坐583路公交到Märsta站，再转乘通勤火车（Pendeltåg），总费用只需一张SL交通卡。\n\n抵达市区后，建议立即办理SL交通卡。月卡价格970克朗，可以无限次乘坐斯德哥尔摩地区的所有公共交通。瑞典的公共交通非常准时，Google Maps在这里非常好用，可以精确显示公交到站时间。\n\n初来乍到，语言可能是个挑战。不过不用担心，瑞典人的英语普遍很好，尤其是年轻人。在超市、餐厅、银行等场所，用英语交流完全没有问题。建议下载Google翻译离线包，以备不时之需。",
+      "html": "<p>初到瑞典，从阿兰达机场到斯德哥尔摩市区的旅程就让人印象深刻。</p>"
+    },
+    "images": [
+      {
+        "src": "https://example.com/airport.jpg",
+        "alt": "阿兰达机场",
+        "local_filename": "airport.jpg"
+      }
+    ],
+    "word_count": 358
+  },
+  {
+    "title": "瑞典超市购物指南：从ICA到Coop",
+    "author": "瑞典马工",
+    "publish_date": "2024-01-18",
+    "original_url": "https://mp.weixin.qq.com/s/sample2",
+    "content": {
+      "text": "瑞典的超市体系与国内大不相同，了解各大超市的特点能帮你更好地适应当地生活。\n\nICA是瑞典最大的连锁超市，分为四个等级：ICA Nära（便利店规模）、ICA Supermarket（标准超市）、ICA Kvantum（大型超市）和ICA Maxi（超大型超市）。ICA Maxi通常位于郊区，商品最全，价格最优惠。每周二ICA会更新促销商品，建议下载ICA app查看。\n\nCoop是第二大连锁，以环保和有机产品著称。如果你注重食品质量和可持续性，Coop是不错的选择。他们的会员制度很划算，积分可以直接当现金使用。\n\nWillys和Lidl是折扣超市，价格相对便宜。Willys经常有批量优惠，适合家庭采购。Lidl的自有品牌产品性价比很高，每周四会上新限时特价商品。\n\n瑞典超市的一大特色是自助结账系统非常普及。扫描商品、装袋、付款全部自己完成。记得自备购物袋，塑料袋需要额外付费（约7克朗）。\n\n关于退瓶系统（Pant），这是瑞典环保的一个重要体现。塑料瓶和易拉罐都有押金（1-2克朗），喝完后可以在超市的退瓶机退还押金。",
+      "html": "<p>瑞典的超市体系与国内大不相同。</p>"
+    },
+    "images": [
+      {
+        "src": "https://example.com/supermarket.jpg",
+        "alt": "瑞典超市",
+        "local_filename": "supermarket.jpg"
+      },
+      {
+        "src": "https://example.com/pant-machine.jpg",
+        "alt": "退瓶机",
+        "local_filename": "pant-machine.jpg"
+      }
+    ],
+    "word_count": 412
+  },
+  {
+    "title": "瑞典银行开户全攻略",
+    "author": "瑞典马工",
+    "publish_date": "2024-01-22",
+    "original_url": "https://mp.weixin.qq.com/s/sample3",
+    "content": {
+      "text": "在瑞典生活，银行账户是必不可少的。工资发放、房租支付、日常消费都离不开银行服务。但对于新移民来说，开户可能会遇到一些挑战。\n\n首要条件是获得人口号（Personnummer）。没有人口号，大部分银行不会受理开户申请。如果只有协调号（Samordningsnummer），可以尝试SEB或Swedbank，他们对新移民相对友好。\n\n主要银行选择：\n1. SEB - 国际业务较多，英语服务好\n2. Swedbank - 网点最多，农村地区覆盖好\n3. Handelsbanken - 服务质量高，但要求严格\n4. Nordea - 北欧最大银行，跨国业务方便\n\n开户所需材料：\n- 有效护照\n- 人口号证明（从税务局获得）\n- 工作合同或收入证明\n- 瑞典地址证明\n\n瑞典几乎是无现金社会，Swish是最常用的移动支付工具。它绑定手机号和银行账户，可以即时转账。开户后一定要激活Swish，否则很多场合会不方便。\n\nBankID是另一个重要工具，相当于电子身份证。网上购物、政府服务、签订合同都需要BankID验证。建议同时申请Mobile BankID，更加方便。",
+      "html": "<p>在瑞典生活，银行账户是必不可少的。</p>"
+    },
+    "images": [],
+    "word_count": 389
+  }
+]

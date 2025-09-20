@@ -18,3 +18,14 @@ python-slugify>=8.0.0
 
 # 日期处理
 python-dateutil>=2.8.0
+
+# 测试依赖
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+pytest-asyncio>=0.21.0
+responses>=0.23.0
+faker>=19.0.0
+
+# YAML处理
+PyYAML>=6.0
