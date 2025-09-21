@@ -1,7 +1,7 @@
 {
   "name": "magong-blog",
   "version": "1.0.0",
-  "description": "Swedish Ma Gong - Translated articles for international audience",
+  "description": "Swedish Ma Gong - 瑞典生活经验分享",
   "engines": {
     "node": "20.x"
   },
@@ -10,7 +10,6 @@
     "build": "next build",
     "start": "next start",
     "translate": "python scripts/translate.py",
-    "seo:enhance": "node scripts/enhance-seo-metadata.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

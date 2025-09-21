@@ -24,54 +24,6 @@ export const siteConfig = {
   twitterImage: '/twitter-image.jpg',
 }
 
-// 生成JSON-LD结构化数据
-export function generateArticleSchema({
-  title,
-  description,
-  author,
-  datePublished,
-  dateModified,
-  image,
-  url,
-  keywords,
-}: {
-  title: string
-  description: string
-  author?: string
-  datePublished: string
-  dateModified?: string
-  image?: string
-  url: string
-  keywords?: string[]
-}) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    description: description,
-    author: {
-      '@type': 'Person',
-      name: author || siteConfig.author,
-    },
-    datePublished: datePublished,
-    dateModified: dateModified || datePublished,
-    publisher: {
-      '@type': 'Organization',
-      name: siteConfig.title,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${siteConfig.url}/logo.png`,
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': url,
-    },
-    image: image ? `${siteConfig.url}${image}` : `${siteConfig.url}${siteConfig.ogImage}`,
-    keywords: keywords?.join(', '),
-  }
-}
-
 // 生成网站Schema
 export function generateWebSiteSchema() {
   return {

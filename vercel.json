@@ -2,12 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/posts/(.*)",
-      "destination": "/posts/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/images/(.*)",

@@ -1,7 +1,5 @@
 .vercel
 
-# 状态管理文件
-processed_articles.json
 *.tmp
 
 # Python缓存
