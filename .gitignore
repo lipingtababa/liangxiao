@@ -8,3 +8,48 @@ processed_articles.json
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Build artifacts
+.coverage
+coverage/
+htmlcov/
+*.tsbuildinfo
+.next/
+out/
+dist/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.cache
+*.bak
+*.backup
+*.old
+*.orig
+.processed_*
+
+# Test reports
+test-results/
+*.xml
+seo-enhancement-report.json
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Node modules (if accidentally committed)
+node_modules/
+
+# Miscellaneous
+articles.txt
