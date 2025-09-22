@@ -208,7 +208,7 @@ export default function PostPage({
   ])
 
   return (
-    <article className="min-h-screen bg-gray-50">
+    <article className="min-h-screen bg-white">
       <Script
         id="article-schema"
         type="application/ld+json"
@@ -219,60 +219,63 @@ export default function PostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Back button */}
-        <Link
-          href="/posts"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8"
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Back to Articles
-        </Link>
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        {/* Breadcrumb */}
+        <nav className="mb-8">
+          <Link
+            href="/posts"
+            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            ← All Articles
+          </Link>
+        </nav>
 
         {/* Article header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            {postData.category && (
-              <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-full">
-                {postData.category}
-              </span>
+        <header className="mb-12">
+          <h1 className="text-4xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}>
+            {postData.title}
+          </h1>
+
+          <div className="flex items-center gap-1 text-sm text-gray-600 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {postData.author && (
+              <>
+                <span className="font-medium text-gray-900">{postData.author}</span>
+                <span className="mx-2">·</span>
+              </>
             )}
             {postData.date && (
-              <time className="text-gray-500" dateTime={postData.date}>
+              <time dateTime={postData.date}>
                 {(() => {
                   try {
                     const date = new Date(postData.date)
                     if (isNaN(date.getTime())) {
-                      return postData.date // 返回原始字符串如果日期无效
+                      return postData.date
                     }
-                    return format(date, 'yyyy年MM月dd日')
+                    return format(date, 'MMM d, yyyy')
                   } catch {
-                    return postData.date // 如果格式化失败，返回原始字符串
+                    return postData.date
                   }
                 })()}
               </time>
             )}
+            {postData.category && (
+              <>
+                <span className="mx-2">·</span>
+                <span className="text-gray-900">{postData.category}</span>
+              </>
+            )}
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{postData.title}</h1>
-
-          {postData.author && <p className="text-gray-600">By {postData.author}</p>}
-
           {postData.tags && postData.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-2">
               {postData.tags.map((tag: string) => (
                 <span
                   key={tag}
-                  className="text-sm px-3 py-1 text-gray-600 bg-gray-100 rounded-full"
+                  className="text-xs px-2 py-1 text-gray-600 bg-gray-100 rounded"
+                  style={{ fontFamily: 'Inter, sans-serif' }}
                 >
-                  #{tag}
+                  {tag}
                 </span>
               ))}
             </div>
@@ -281,34 +284,34 @@ export default function PostPage({
 
         {/* Cover image */}
         {postData.image && (
-          <div className="mb-8">
+          <div className="mb-12 -mx-6">
             <ImageWithFallback
               src={postData.image}
               alt={postData.title}
               width={1200}
               height={630}
-              className="w-full"
+              className="w-full rounded-lg"
               priority
             />
           </div>
         )}
 
         {/* Article content */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="prose-content">
           <MarkdownRenderer content={postData.content || ''} />
         </div>
 
 
         {/* Original link */}
         {postData.originalUrl && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-600">
+          <div className="mt-12 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
               Original article:
               <a
                 href={postData.originalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline ml-1"
+                className="text-blue-600 hover:text-blue-800 ml-1"
               >
                 {postData.originalUrl}
               </a>
@@ -317,20 +320,13 @@ export default function PostPage({
         )}
 
         {/* Bottom navigation */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-16 pt-8 border-t border-gray-200">
           <Link
             href="/posts"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800"
+            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+            style={{ fontFamily: 'Inter, sans-serif' }}
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Back to Articles
+            ← Back to all articles
           </Link>
         </div>
       </div>

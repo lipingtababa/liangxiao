@@ -1,48 +1,61 @@
 import Link from 'next/link'
 import { getSortedPostsData } from '@/lib/posts'
+import { format } from 'date-fns'
 
 export default function Home() {
   const posts = getSortedPostsData()
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Swedish Ma Gong Articles</h1>
-        <p className="text-gray-600">English translations of Swedish life experiences</p>
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}>Swedish Ma Gong Articles</h1>
+        <p className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>English translations of Swedish life experiences</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {posts.length > 0 ? (
           posts.map((post) => (
-            <article key={post.id} className="bg-white rounded-lg shadow p-6">
-              <Link href={`/posts/${post.id}`}>
-                <h2 className="text-xl font-semibold mb-2 hover:text-blue-600 cursor-pointer">
+            <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
+              <Link href={`/posts/${post.id}`} className="block group">
+                <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
                   {post.title}
                 </h2>
               </Link>
-              <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                <span>{post.date}</span>
-                {post.category && (
-                  <>
-                    <span>•</span>
-                    <span>{post.category}</span>
-                  </>
-                )}
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                 {post.author && (
                   <>
-                    <span>•</span>
-                    <span>{post.author}</span>
+                    <span className="font-medium text-gray-900">{post.author}</span>
+                    <span className="text-gray-400">·</span>
+                  </>
+                )}
+                <span>
+                  {(() => {
+                    try {
+                      const date = new Date(post.date)
+                      if (isNaN(date.getTime())) {
+                        return post.date
+                      }
+                      return format(date, 'MMM d, yyyy')
+                    } catch {
+                      return post.date
+                    }
+                  })()}
+                </span>
+                {post.category && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span>{post.category}</span>
                   </>
                 )}
               </div>
               {post.description && (
-                <p className="text-gray-700 mb-3 line-clamp-3">{post.description}</p>
+                <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description}</p>
               )}
               <Link
                 href={`/posts/${post.id}`}
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-sm font-medium text-gray-500 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                Read more →
+                Continue reading →
               </Link>
             </article>
           ))
