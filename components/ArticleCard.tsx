@@ -29,7 +29,17 @@ export default function ArticleCard({
             {category}
           </span>
           <time className="text-sm text-gray-500" dateTime={date}>
-            {format(new Date(date), 'yyyy年MM月dd日', { locale: zhCN })}
+            {(() => {
+              try {
+                const dateObj = new Date(date)
+                if (isNaN(dateObj.getTime())) {
+                  return date // 返回原始字符串如果日期无效
+                }
+                return format(dateObj, 'yyyy年MM月dd日', { locale: zhCN })
+              } catch {
+                return date // 如果格式化失败，返回原始字符串
+              }
+            })()}
           </time>
         </div>
 

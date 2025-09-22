@@ -32,9 +32,14 @@ export function getSortedPostsData(): PostData[] {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const matterResult = matter(fileContents)
 
+    // 获取文件的最后修改时间作为后备日期
+    const stats = fs.statSync(fullPath)
+    const fallbackDate = stats.mtime.toISOString().split('T')[0]
+
     return {
       id,
       ...matterResult.data,
+      date: matterResult.data.date || fallbackDate,
     } as PostData
   })
 
@@ -68,11 +73,15 @@ export function getPostData(id: string): PostData {
   const fileContents = fs.readFileSync(fullPath, 'utf8')
   const matterResult = matter(fileContents)
 
+  // 获取文件的最后修改时间作为后备日期
+  const stats = fs.statSync(fullPath)
+  const fallbackDate = stats.mtime.toISOString().split('T')[0]
+
   // 直接返回结果，确保 content 字段设置正确
   return {
     id,
     title: matterResult.data.title || '',
-    date: matterResult.data.date || '',
+    date: matterResult.data.date || fallbackDate,
     author: matterResult.data.author,
     category: matterResult.data.category,
     tags: matterResult.data.tags,

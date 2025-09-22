@@ -133,9 +133,21 @@ export default async function PostPage({ params }: { params: { id: string } }) {
                 {postData.category}
               </span>
             )}
-            <time className="text-gray-500" dateTime={postData.date}>
-              {format(new Date(postData.date), 'yyyy年MM月dd日', { locale: zhCN })}
-            </time>
+            {postData.date && (
+              <time className="text-gray-500" dateTime={postData.date}>
+                {(() => {
+                  try {
+                    const date = new Date(postData.date)
+                    if (isNaN(date.getTime())) {
+                      return postData.date // 返回原始字符串如果日期无效
+                    }
+                    return format(date, 'yyyy年MM月dd日', { locale: zhCN })
+                  } catch {
+                    return postData.date // 如果格式化失败，返回原始字符串
+                  }
+                })()}
+              </time>
+            )}
           </div>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{postData.title}</h1>
