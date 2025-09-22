@@ -4,7 +4,6 @@ import { zhCN } from 'date-fns/locale'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
-import SocialShare from '@/components/SocialShare'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import {
   generateArticleSchema,
@@ -173,14 +172,6 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         {/* 文章内容 */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           {postData.content && <MarkdownRenderer content={postData.content} />}
-        </div>
-
-        {/* 社交分享 */}
-        <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
-          <SocialShare
-            title={postData.title}
-            url={typeof window !== 'undefined' ? window.location.href : ''}
-          />
         </div>
 
         {/* 原文链接 */}
