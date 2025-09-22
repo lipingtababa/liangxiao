@@ -1,6 +1,6 @@
 import { getPostData, getAllPostIds, PostData } from '@/lib/posts'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function PostPage({ params }: { params: { id: string } }) {
   const postData = getPostData(params.id)
 
-  // 生成结构化数据
+  // Generate structured data
   const articleSchema = generateArticleSchema({
     title: postData.title,
     description: processMetaDescription(postData.description, postData.content),
@@ -91,8 +91,8 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   })
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: '首页', url: '/' },
-    { name: '文章', url: '/posts' },
+    { name: 'Home', url: '/' },
+    { name: 'Articles', url: '/posts' },
     { name: postData.title, url: `/posts/${params.id}` },
   ])
 
@@ -109,7 +109,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* 返回按钮 */}
+        {/* Back button */}
         <Link
           href="/posts"
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8"
@@ -122,10 +122,10 @@ export default async function PostPage({ params }: { params: { id: string } }) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          返回文章列表
+          Back to Articles
         </Link>
 
-        {/* 文章头部 */}
+        {/* Article header */}
         <header className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             {postData.category && (
@@ -134,13 +134,13 @@ export default async function PostPage({ params }: { params: { id: string } }) {
               </span>
             )}
             <time className="text-gray-500" dateTime={postData.date}>
-              {format(new Date(postData.date), 'yyyy年MM月dd日', { locale: zhCN })}
+              {format(new Date(postData.date), 'MMM dd, yyyy', { locale: enUS })}
             </time>
           </div>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{postData.title}</h1>
 
-          {postData.author && <p className="text-gray-600">作者：{postData.author}</p>}
+          {postData.author && <p className="text-gray-600">By {postData.author}</p>}
 
           {postData.tags && postData.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
@@ -156,7 +156,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           )}
         </header>
 
-        {/* 封面图片 */}
+        {/* Cover image */}
         {postData.image && (
           <div className="mb-8">
             <ImageWithFallback
@@ -170,12 +170,12 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* 文章内容 */}
+        {/* Article content */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           <MarkdownRenderer content={postData.content || ''} />
         </div>
 
-        {/* 社交分享 */}
+        {/* Social sharing */}
         <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
           <SocialShare
             title={postData.title}
@@ -183,11 +183,11 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           />
         </div>
 
-        {/* 原文链接 */}
+        {/* Original link */}
         {postData.originalUrl && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-gray-600">
-              原文链接：
+              Original article:
               <a
                 href={postData.originalUrl}
                 target="_blank"
@@ -200,7 +200,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* 底部导航 */}
+        {/* Bottom navigation */}
         <div className="mt-12 pt-8 border-t border-gray-200">
           <Link
             href="/posts"
@@ -214,7 +214,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            返回文章列表
+            Back to Articles
           </Link>
         </div>
       </div>

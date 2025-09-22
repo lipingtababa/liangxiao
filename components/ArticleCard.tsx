@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 
 interface ArticleCardProps {
   id: string
@@ -29,7 +29,7 @@ export default function ArticleCard({
             {category}
           </span>
           <time className="text-sm text-gray-500" dateTime={date}>
-            {format(new Date(date), 'yyyy年MM月dd日', { locale: zhCN })}
+            {format(new Date(date), 'MMM dd, yyyy', { locale: enUS })}
           </time>
         </div>
 
@@ -48,7 +48,7 @@ export default function ArticleCard({
             ))}
           </div>
 
-          {author && <span className="text-sm text-gray-500">作者：{author}</span>}
+          {author && <span className="text-sm text-gray-500">By {author}</span>}
         </div>
       </Link>
     </article>

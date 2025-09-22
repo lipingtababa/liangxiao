@@ -21,19 +21,19 @@ interface PostsClientProps {
 
 export default function PostsClient({ posts }: PostsClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('全部')
+  const [selectedCategory, setSelectedCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 获取所有唯一分类
+  // Get all unique categories
   const categories = useMemo(() => {
-    const cats = new Set(['全部'])
+    const cats = new Set(['All'])
     posts.forEach((post) => {
       if (post.category) cats.add(post.category)
     })
     return Array.from(cats)
   }, [posts])
 
-  // 过滤文章
+  // Filter articles
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       const matchesSearch =
@@ -42,20 +42,20 @@ export default function PostsClient({ posts }: PostsClientProps) {
         post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 
-      const matchesCategory = selectedCategory === '全部' || post.category === selectedCategory
+      const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory
 
       return matchesSearch && matchesCategory
     })
   }, [posts, searchTerm, selectedCategory])
 
-  // 分页
+  // Pagination
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
   const paginatedPosts = filteredPosts.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   )
 
-  // 重置页码当过滤条件改变
+  // Reset page when filter conditions change
   const handleSearch = (value: string) => {
     setSearchTerm(value)
     setCurrentPage(1)
@@ -68,28 +68,28 @@ export default function PostsClient({ posts }: PostsClientProps) {
 
   return (
     <>
-      {/* 搜索和筛选栏 */}
+      {/* Search and filter bar */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* 搜索框 */}
+          {/* Search box */}
           <div>
             <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-              搜索文章
+              Search Articles
             </label>
             <input
               type="text"
               id="search"
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="输入关键词搜索..."
+              placeholder="Enter keywords to search..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             />
           </div>
 
-          {/* 分类筛选 */}
+          {/* Category filter */}
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              分类筛选
+              Filter by Category
             </label>
             <select
               id="category"
@@ -107,7 +107,7 @@ export default function PostsClient({ posts }: PostsClientProps) {
         </div>
       </div>
 
-      {/* 文章列表 */}
+      {/* Article list */}
       {paginatedPosts.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -125,7 +125,7 @@ export default function PostsClient({ posts }: PostsClientProps) {
             ))}
           </div>
 
-          {/* 分页控件 */}
+          {/* Pagination controls */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center space-x-2">
               <button
@@ -133,12 +133,12 @@ export default function PostsClient({ posts }: PostsClientProps) {
                 disabled={currentPage === 1}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                上一页
+                Previous
               </button>
 
               <div className="flex space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // 显示逻辑：始终显示第一页、最后一页、当前页及其前后页
+                  // Display logic: always show first page, last page, current page and adjacent pages
                   if (
                     page === 1 ||
                     page === totalPages ||
@@ -173,7 +173,7 @@ export default function PostsClient({ posts }: PostsClientProps) {
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                下一页
+                Next
               </button>
             </div>
           )}
@@ -181,15 +181,15 @@ export default function PostsClient({ posts }: PostsClientProps) {
       ) : (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            {searchTerm || selectedCategory !== '全部' ? '没有找到符合条件的文章' : '暂无文章'}
+            {searchTerm || selectedCategory !== 'All' ? 'No articles found matching your criteria' : 'No articles available yet'}
           </p>
         </div>
       )}
 
-      {/* 文章统计信息 */}
+      {/* Article statistics */}
       <div className="mt-8 text-center text-sm text-gray-500">
-        共 {filteredPosts.length} 篇文章
-        {filteredPosts.length !== posts.length && ` (总计 ${posts.length} 篇)`}
+        Total {filteredPosts.length} articles
+        {filteredPosts.length !== posts.length && ` (out of ${posts.length} total)`}
       </div>
     </>
   )
