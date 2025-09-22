@@ -1,6 +1,6 @@
 import { getPostData, getAllPostIds, PostData } from '@/lib/posts'
 import { format } from 'date-fns'
-import { enUS } from 'date-fns/locale'
+import { enUS, zhCN } from 'date-fns/locale'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
