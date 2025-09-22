@@ -23,8 +23,6 @@ export default function SocialShare({ title, url }: SocialShareProps) {
 
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-gray-600 font-medium">分享到:</span>
-
       <a
         href={shareLinks.twitter}
         target="_blank"
