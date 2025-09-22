@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const postData = await getPostData(params.id)
+  const postData = getPostData(params.id)
   const description = processMetaDescription(postData.description, postData.content)
   const url = generatePageUrl(`/posts/${params.id}`)
   const imageUrl = postData.image
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function PostPage({ params }: { params: { id: string } }) {
-  const postData = await getPostData(params.id)
+  const postData = getPostData(params.id)
 
   // 生成结构化数据
   const articleSchema = generateArticleSchema({
@@ -172,7 +172,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
 
         {/* 文章内容 */}
         <div className="bg-white rounded-lg shadow-sm p-8">
-          {postData.content && <MarkdownRenderer content={postData.content} />}
+          <MarkdownRenderer content={postData.content || ''} />
         </div>
 
         {/* 社交分享 */}

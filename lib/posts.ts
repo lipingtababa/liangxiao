@@ -63,14 +63,24 @@ export function getAllPostIds() {
   })
 }
 
-export async function getPostData(id: string): Promise<PostData> {
+export function getPostData(id: string): PostData {
   const fullPath = path.join(postsDirectory, `${id}.md`)
   const fileContents = fs.readFileSync(fullPath, 'utf8')
   const matterResult = matter(fileContents)
 
+  // 直接返回结果，确保 content 字段设置正确
   return {
     id,
-    content: matterResult.content,
-    ...matterResult.data,
-  } as PostData
+    title: matterResult.data.title || '',
+    date: matterResult.data.date || '',
+    author: matterResult.data.author,
+    category: matterResult.data.category,
+    tags: matterResult.data.tags,
+    description: matterResult.data.description,
+    image: matterResult.data.image,
+    originalUrl: matterResult.data.originalUrl,
+    // 重要：确保 content 和 contentHtml 都设置为 markdown 内容
+    content: matterResult.content || '',
+    contentHtml: matterResult.content || '',
+  }
 }
