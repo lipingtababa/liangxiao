@@ -3,8 +3,10 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
-import SocialShare from '@/components/SocialShare'
 import ImageWithFallback from '@/components/ImageWithFallback'
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
 import {
   generateArticleSchema,
   generateBreadcrumbSchema,
@@ -21,10 +23,60 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const postData = getPostData(params.id)
+export async function generateMetadata({
+  params
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  const { id } = params
+  console.log('[generateMetadata] Called with id:', id)
+
+  // Load the post data directly
+  let postData: PostData
+  try {
+    const postsDirectory = path.join(process.cwd(), 'posts')
+    const fullPath = path.join(postsDirectory, `${id}.md`)
+
+    if (fs.existsSync(fullPath)) {
+      const fileContents = fs.readFileSync(fullPath, 'utf8')
+      const matterResult = matter(fileContents)
+
+      const stats = fs.statSync(fullPath)
+      const fallbackDate = stats.mtime.toISOString().split('T')[0]
+
+      postData = {
+        id,
+        title: matterResult.data.title || '',
+        date: matterResult.data.date || fallbackDate,
+        author: matterResult.data.author,
+        category: matterResult.data.category,
+        tags: matterResult.data.tags,
+        description: matterResult.data.description,
+        image: matterResult.data.image,
+        originalUrl: matterResult.data.originalUrl,
+        content: matterResult.content || '',
+        contentHtml: matterResult.content || '',
+      }
+    } else {
+      postData = {
+        id,
+        title: 'Post Not Found',
+        date: new Date().toISOString().split('T')[0],
+        content: 'The post you are looking for does not exist.',
+      }
+    }
+  } catch (error) {
+    postData = {
+      id,
+      title: 'Error Loading Post',
+      date: new Date().toISOString().split('T')[0],
+      content: `Error: ${error}`,
+    }
+  }
+
+  console.log('[generateMetadata] Got postData:', { title: postData?.title })
   const description = processMetaDescription(postData.description, postData.content)
-  const url = generatePageUrl(`/posts/${params.id}`)
+  const url = generatePageUrl(`/posts/${id}`)
   const imageUrl = postData.image
     ? `${siteConfig.url}${postData.image}`
     : `${siteConfig.url}${siteConfig.ogImage}`
@@ -75,8 +127,68 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function PostPage({ params }: { params: { id: string } }) {
-  const postData = getPostData(params.id)
+export default function PostPage({
+  params
+}: {
+  params: { id: string }
+}) {
+  const { id } = params
+  console.log('[PostPage] Rendering post with id:', id)
+  console.log('[PostPage] getPostData function:', typeof getPostData)
+
+  // Load the post data directly
+  let postData: PostData
+  try {
+    console.log('[PostPage] Loading post directly with id:', id)
+
+    const postsDirectory = path.join(process.cwd(), 'posts')
+    const fullPath = path.join(postsDirectory, `${id}.md`)
+
+    if (fs.existsSync(fullPath)) {
+      const fileContents = fs.readFileSync(fullPath, 'utf8')
+      const matterResult = matter(fileContents)
+
+      const stats = fs.statSync(fullPath)
+      const fallbackDate = stats.mtime.toISOString().split('T')[0]
+
+      postData = {
+        id,
+        title: matterResult.data.title || '',
+        date: matterResult.data.date || fallbackDate,
+        author: matterResult.data.author,
+        category: matterResult.data.category,
+        tags: matterResult.data.tags,
+        description: matterResult.data.description,
+        image: matterResult.data.image,
+        originalUrl: matterResult.data.originalUrl,
+        content: matterResult.content || '',
+        contentHtml: matterResult.content || '',
+      }
+
+      console.log('[PostPage] Post loaded successfully:', {
+        title: postData.title,
+        contentLength: postData.content?.length
+      })
+    } else {
+      console.error('[PostPage] Post file not found:', fullPath)
+      postData = {
+        id,
+        title: 'Post Not Found',
+        date: new Date().toISOString().split('T')[0],
+        content: 'The post you are looking for does not exist.',
+      }
+    }
+  } catch (error) {
+    console.error('[PostPage] Error loading post:', error)
+    postData = {
+      id,
+      title: 'Error Loading Post',
+      date: new Date().toISOString().split('T')[0],
+      content: `Error: ${error}`,
+    }
+  }
+
+  console.log('[PostPage] PostData loaded:', { title: postData.title, hasContent: !!postData.content, contentLength: postData.content?.length })
 
   // Generate structured data
   const articleSchema = generateArticleSchema({
@@ -85,14 +197,14 @@ export default async function PostPage({ params }: { params: { id: string } }) {
     author: postData.author,
     datePublished: postData.date,
     image: postData.image,
-    url: generatePageUrl(`/posts/${params.id}`),
+    url: generatePageUrl(`/posts/${id}`),
     keywords: postData.tags,
   })
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: 'Articles', url: '/posts' },
-    { name: postData.title, url: `/posts/${params.id}` },
+    { name: postData.title, url: `/posts/${id}` },
   ])
 
   return (
@@ -186,13 +298,6 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           <MarkdownRenderer content={postData.content || ''} />
         </div>
 
-        {/* Social sharing */}
-        <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
-          <SocialShare
-            title={postData.title}
-            url={typeof window !== 'undefined' ? window.location.href : ''}
-          />
-        </div>
 
         {/* Original link */}
         {postData.originalUrl && (
