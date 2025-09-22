@@ -1,6 +1,5 @@
 import { getPostData, getAllPostIds, PostData } from '@/lib/posts'
 import { format } from 'date-fns'
-import { enUS, zhCN } from 'date-fns/locale'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
@@ -141,7 +140,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
                     if (isNaN(date.getTime())) {
                       return postData.date // 返回原始字符串如果日期无效
                     }
-                    return format(date, 'yyyy年MM月dd日', { locale: zhCN })
+                    return format(date, 'yyyy年MM月dd日')
                   } catch {
                     return postData.date // 如果格式化失败，返回原始字符串
                   }
