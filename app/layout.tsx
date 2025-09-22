@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
-    template: '%s | 瑞典马工',
+    template: '%s | Swedish Ma Gong',
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
@@ -60,8 +60,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteConfig.url,
     languages: {
-      'zh-CN': siteConfig.url,
-      'en-US': `${siteConfig.url}/en`,
+      'en-US': siteConfig.url,
     },
   },
 }
@@ -71,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const organizationSchema = generateOrganizationSchema()
 
   return (
-    <html lang="zh">
+    <html lang="en">
       <head>
         <Script
           id="website-schema"
@@ -89,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex items-center">
-                <h1 className="text-xl font-semibold">瑞典马工</h1>
+                <h1 className="text-xl font-semibold">Swedish Ma Gong</h1>
               </div>
             </div>
           </div>
@@ -97,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="min-h-screen bg-gray-50">{children}</main>
         <footer className="bg-white border-t mt-auto">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-gray-500 text-sm">© 2024 瑞典马工. 保留所有权利。</p>
+            <p className="text-center text-gray-500 text-sm">© 2024 Swedish Ma Gong. All rights reserved.</p>
           </div>
         </footer>
       </body>

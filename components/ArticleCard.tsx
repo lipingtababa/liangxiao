@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 
 interface ArticleCardProps {
   id: string
@@ -29,17 +29,7 @@ export default function ArticleCard({
             {category}
           </span>
           <time className="text-sm text-gray-500" dateTime={date}>
-            {(() => {
-              try {
-                const dateObj = new Date(date)
-                if (isNaN(dateObj.getTime())) {
-                  return date // 返回原始字符串如果日期无效
-                }
-                return format(dateObj, 'yyyy年MM月dd日', { locale: zhCN })
-              } catch {
-                return date // 如果格式化失败，返回原始字符串
-              }
-            })()}
+            {format(new Date(date), 'MMM dd, yyyy', { locale: enUS })}
           </time>
         </div>
 
@@ -58,7 +48,7 @@ export default function ArticleCard({
             ))}
           </div>
 
-          {author && <span className="text-sm text-gray-500">作者：{author}</span>}
+          {author && <span className="text-sm text-gray-500">By {author}</span>}
         </div>
       </Link>
     </article>

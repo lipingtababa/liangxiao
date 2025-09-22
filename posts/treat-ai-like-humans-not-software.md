@@ -1,11 +1,11 @@
 ---
 title: "Treat AI Like Humans, Not Software"
-date: "2025-09-22"
-author: "瑞典马工"
-category: "AI思考"
-tags: ["AI", "人工智能", "管理", "软件工程", "认知模型"]
+date: "2024-12-22"
+author: "Swedish Ma Gong"
+category: "AI Thinking"
+tags: ["AI", "Artificial Intelligence", "Management", "Software Engineering", "Cognitive Models"]
 description: >
-  当AI未能达到我们的预期时，我们常常责怪它"有bug"或"不可靠"。但也许问题不在于AI——而在于我们的心智模型。我们一直试图像使用软件一样使用AI，而它的行为更像人类同事。
+  When AI fails to meet our expectations, we often blame it for being "buggy" or "unreliable". But perhaps the problem isn't with AI - it's with our mental model. We keep trying to use AI like software, when it behaves much more like a human colleague.
 ---
 
 When AI fails to deliver what we expect, we often blame it for being "buggy" or "unreliable." But perhaps the problem isn't with AI - it's with our mental model. We keep trying to use AI like software, when it behaves much more like a human colleague.
