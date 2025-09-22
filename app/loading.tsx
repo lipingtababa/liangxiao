@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="flex items-center justify-center min-h-[50vh]">
       <div className="space-y-4 text-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <p className="text-gray-600">加载中...</p>
+        <p className="text-gray-600">Loading...</p>
       </div>
     </div>
   )
