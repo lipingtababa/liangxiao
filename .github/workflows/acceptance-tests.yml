@@ -1,0 +1,142 @@
+name: 验收测试 (Acceptance Tests)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  acceptance-tests:
+    name: 运行BDD验收测试
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test-suite:
+          - extraction
+          - translation
+          - publishing
+          - e2e
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🔧 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 安装 Node.js 依赖
+        run: |
+          npm ci
+          npx playwright install chromium
+
+      - name: 📦 安装 Python 依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🗂️ 创建测试目录
+        run: |
+          mkdir -p test-results
+          mkdir -p test-results/screenshots
+          mkdir -p test-results/data
+          mkdir -p posts
+          mkdir -p public/images
+
+      - name: 🏗️ 构建应用
+        run: npm run build
+
+      - name: 🚀 启动应用服务器
+        run: |
+          npm start &
+          sleep 5
+          curl -I http://localhost:3000 || exit 1
+        env:
+          NODE_ENV: test
+
+      - name: 🧪 运行验收测试 - ${{ matrix.test-suite }}
+        run: |
+          if [ "${{ matrix.test-suite }}" = "extraction" ]; then
+            npm run test:acceptance -- --tags "@extraction or not @wip" features/01_article_extraction.feature
+          elif [ "${{ matrix.test-suite }}" = "translation" ]; then
+            npm run test:acceptance -- --tags "@translation or not @wip" features/02_translation.feature
+          elif [ "${{ matrix.test-suite }}" = "publishing" ]; then
+            npm run test:acceptance -- --tags "@publishing or not @wip" features/03_publishing.feature
+          elif [ "${{ matrix.test-suite }}" = "e2e" ]; then
+            npm run test:acceptance -- --tags "@e2e or @critical" features/04_end_to_end_workflow.feature
+          fi
+        env:
+          BASE_URL: http://localhost:3000
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          HEADLESS: true
+
+      - name: 📊 生成测试报告
+        if: always()
+        run: |
+          if [ -f test-results/cucumber-report.json ]; then
+            npx cucumber-html-reporter --input test-results/cucumber-report.json --output test-results/cucumber-report.html
+          fi
+
+      - name: 📸 上传测试结果
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: acceptance-test-results-${{ matrix.test-suite }}
+          path: |
+            test-results/
+          retention-days: 7
+
+      - name: 📸 上传失败截图
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: failure-screenshots-${{ matrix.test-suite }}
+          path: |
+            test-results/screenshots/
+          retention-days: 3
+
+  test-summary:
+    name: 测试汇总
+    runs-on: ubuntu-latest
+    needs: acceptance-tests
+    if: always()
+
+    steps:
+      - name: 📥 下载所有测试结果
+        uses: actions/download-artifact@v3
+        with:
+          path: all-test-results
+
+      - name: 📊 生成汇总报告
+        run: |
+          echo "# 验收测试汇总报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 测试套件结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          for suite in extraction translation publishing e2e; do
+            if [ -d "all-test-results/acceptance-test-results-$suite" ]; then
+              echo "- ✅ $suite: 完成" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- ❌ $suite: 失败或未运行" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 测试报告" >> $GITHUB_STEP_SUMMARY
+          echo "查看详细报告请下载 artifacts" >> $GITHUB_STEP_SUMMARY
