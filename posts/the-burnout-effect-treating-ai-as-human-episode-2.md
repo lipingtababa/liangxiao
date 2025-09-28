@@ -1,4 +1,13 @@
-# Burnout Prevention: Treating AI as Human (Episode 2)
+---
+title: "The Burnout Effect: Treating AI as Human (Episode 2)"
+date: "2024-11-28"
+author: "Liping Ma"
+category: "AI Engineering"
+tags: ["AI", "Software Engineering", "Memory", "BMAD", "Documentation"]
+description: "AI's memory degradation mirrors human cognitive fatigue. Understanding this paradox is key to building reliable AI-assisted systems."
+---
+
+# The Burnout Effect: Treating AI as Human (Episode 2)
 
 AI gets tired. Not physically, but functionally. Load Claude or GPT-4 with 100k tokens and watch it forget things from the beginning. It's not a bug - it's the same performance degradation pattern you see in overloaded humans.
 
