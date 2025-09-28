@@ -4,15 +4,16 @@ AI gets tired. Not physically, but functionally. Load Claude or GPT-4 with 100k 
 
 ## The Problem
 
-A fintech company loaded 200-page regulatory documents into GPT-4's 128k context window. The AI correctly processed compliance rules from pages 1-20. By page 180, it was inconsistently applying or completely missing those early rules.
+Work with Claude Code for 3+ hours on a complex refactoring. At first, it's sharp - makes clean edits, understands your architecture. By hour 4, it starts exhibiting bizarre behavior:
 
-This isn't random failure. It's predictable degradation based on context load:
-- 1,000 tokens: 95% accuracy
-- 10,000 tokens: 78% accuracy  
-- 50,000 tokens: 61% accuracy
-- 100,000 tokens: 52% accuracy
+- Proposes solution A, implements it, then immediately suggests reverting to solution B
+- Implements B, then bounces back to A, claiming it's "better after all"
+- Forgets key constraints you established 2 hours ago
+- Makes the same mistake it already fixed, multiple times
 
-The pattern matches human cognitive overload exactly.
+Then Claude hits its context limit and compacts the conversation. Suddenly it's lost critical context about your codebase structure, why certain decisions were made, what approaches already failed. Performance degrades catastrophically.
+
+This isn't random. It's predictable context exhaustion that mirrors human mental fatigue.
 
 ## Why It Happens
 
