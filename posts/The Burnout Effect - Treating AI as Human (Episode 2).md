@@ -131,13 +131,6 @@ A real-world example: The polyv-live-cli project (https://github.com/terryso/pol
 
 The key insight: In AI-driven development, documentation isn't just recording what was built—it's the persistent memory that enables consistent building. BMAD recognizes that we're not fixing AI's memory limitations; we're engineering systems that thrive within them.
 
-## Implementation Checklist
-
-- [ ] Never exceed x tokens for critical accuracy tasks <!-- x = model-specific token limit -->
-- [ ] Implement chunking for documents over y tokens <!-- y = model-specific chunking threshold -->  
-- [ ] Maintain external state for critical information
-- [ ] Build redundancy into important prompts
-
 The future isn't about fixing AI's memory limitations. It's about engineering systems that work within them.
 
 ---
