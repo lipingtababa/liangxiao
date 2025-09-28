@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import ArticleCard from '@/components/ArticleCard'
+import Link from 'next/link'
+import { format } from 'date-fns'
 
-const POSTS_PER_PAGE = 6
+const POSTS_PER_PAGE = 10
 
 interface Post {
   id: string
@@ -11,7 +12,8 @@ interface Post {
   date: string
   category: string
   tags?: string[]
-  excerpt: string
+  description?: string
+  excerpt?: string
   author?: string
 }
 
@@ -21,41 +23,42 @@ interface PostsClientProps {
 
 export default function PostsClient({ posts }: PostsClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('全部')
+  const [selectedCategory, setSelectedCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 获取所有唯一分类
+  // Get all unique categories
   const categories = useMemo(() => {
-    const cats = new Set(['全部'])
+    const cats = new Set(['All'])
     posts.forEach((post) => {
       if (post.category) cats.add(post.category)
     })
     return Array.from(cats)
   }, [posts])
 
-  // 过滤文章
+  // Filter articles
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       const matchesSearch =
         searchTerm === '' ||
         post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 
-      const matchesCategory = selectedCategory === '全部' || post.category === selectedCategory
+      const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory
 
       return matchesSearch && matchesCategory
     })
   }, [posts, searchTerm, selectedCategory])
 
-  // 分页
+  // Pagination
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
   const paginatedPosts = filteredPosts.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   )
 
-  // 重置页码当过滤条件改变
+  // Reset page when filter conditions change
   const handleSearch = (value: string) => {
     setSearchTerm(value)
     setCurrentPage(1)
@@ -68,34 +71,30 @@ export default function PostsClient({ posts }: PostsClientProps) {
 
   return (
     <>
-      {/* 搜索和筛选栏 */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+      {/* Search and filter bar */}
+      <div className="mb-8 pb-8 border-b border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* 搜索框 */}
+          {/* Search box */}
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-              搜索文章
-            </label>
             <input
               type="text"
               id="search"
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="输入关键词搜索..."
+              placeholder="Search articles..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             />
           </div>
 
-          {/* 分类筛选 */}
+          {/* Category filter */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              分类筛选
-            </label>
             <select
               id="category"
               value={selectedCategory}
               onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -107,38 +106,72 @@ export default function PostsClient({ posts }: PostsClientProps) {
         </div>
       </div>
 
-      {/* 文章列表 */}
+      {/* Article list */}
       {paginatedPosts.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="space-y-8">
             {paginatedPosts.map((post) => (
-              <ArticleCard
-                key={post.id}
-                id={post.id}
-                title={post.title}
-                date={post.date}
-                category={post.category}
-                tags={post.tags}
-                excerpt={post.excerpt}
-                author={post.author}
-              />
+              <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
+                <Link href={`/posts/${post.id}`} className="block group">
+                  <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
+                    {post.title}
+                  </h2>
+                </Link>
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {post.author && (
+                    <>
+                      <span className="font-medium text-gray-900">{post.author}</span>
+                      <span className="text-gray-400">·</span>
+                    </>
+                  )}
+                  <span>
+                    {(() => {
+                      try {
+                        const date = new Date(post.date)
+                        if (isNaN(date.getTime())) {
+                          return post.date
+                        }
+                        return format(date, 'MMM d, yyyy')
+                      } catch {
+                        return post.date
+                      }
+                    })()}
+                  </span>
+                  {post.category && (
+                    <>
+                      <span className="text-gray-400">·</span>
+                      <span>{post.category}</span>
+                    </>
+                  )}
+                </div>
+                {(post.description || post.excerpt) && (
+                  <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description || post.excerpt}</p>
+                )}
+                <Link
+                  href={`/posts/${post.id}`}
+                  className="text-sm font-medium text-gray-500 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Continue reading →
+                </Link>
+              </article>
             ))}
           </div>
 
-          {/* 分页控件 */}
+          {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center space-x-2">
+            <div className="flex justify-center items-center space-x-2 mt-12">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                上一页
+                Previous
               </button>
 
               <div className="flex space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // 显示逻辑：始终显示第一页、最后一页、当前页及其前后页
+                  // Display logic: always show first page, last page, current page and adjacent pages
                   if (
                     page === 1 ||
                     page === totalPages ||
@@ -150,16 +183,17 @@ export default function PostsClient({ posts }: PostsClientProps) {
                         onClick={() => setCurrentPage(page)}
                         className={`px-3 py-1 text-sm font-medium rounded-lg transition ${
                           currentPage === page
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-gray-900 text-white'
                             : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
                         }`}
+                        style={{ fontFamily: 'Inter, sans-serif' }}
                       >
                         {page}
                       </button>
                     )
                   } else if (page === currentPage - 2 || page === currentPage + 2) {
                     return (
-                      <span key={page} className="px-2 py-1 text-gray-500">
+                      <span key={page} className="px-2 py-1 text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                         ...
                       </span>
                     )
@@ -172,24 +206,25 @@ export default function PostsClient({ posts }: PostsClientProps) {
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                下一页
+                Next
               </button>
             </div>
           )}
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">
-            {searchTerm || selectedCategory !== '全部' ? '没有找到符合条件的文章' : '暂无文章'}
+          <p className="text-gray-500 text-lg" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {searchTerm || selectedCategory !== 'All' ? 'No articles found matching your criteria' : 'No articles available yet'}
           </p>
         </div>
       )}
 
-      {/* 文章统计信息 */}
-      <div className="mt-8 text-center text-sm text-gray-500">
-        共 {filteredPosts.length} 篇文章
-        {filteredPosts.length !== posts.length && ` (总计 ${posts.length} 篇)`}
+      {/* Article statistics */}
+      <div className="mt-8 text-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+        Total {filteredPosts.length} articles
+        {filteredPosts.length !== posts.length && ` (out of ${posts.length} total)`}
       </div>
     </>
   )

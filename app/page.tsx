@@ -1,48 +1,67 @@
 import Link from 'next/link'
+import { getSortedPostsData } from '@/lib/posts'
+import { format } from 'date-fns'
 
 export default function Home() {
+  const posts = getSortedPostsData()
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">欢迎来到瑞典马工</h2>
-        <p className="text-lg text-gray-600">分享瑞典生活经验，传递实用信息</p>
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}>Swedish Ma Gong Articles</h1>
+        <p className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>English translations of Swedish life experiences</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-semibold mb-2">最新文章</h3>
-          <p className="text-gray-600 mb-4">浏览最新发布的文章和资讯</p>
-          <Link href="/posts" className="text-blue-600 hover:text-blue-800">
-            查看所有文章 →
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-semibold mb-2">生活指南</h3>
-          <p className="text-gray-600 mb-4">瑞典生活实用信息和建议</p>
-          <Link href="/guides" className="text-blue-600 hover:text-blue-800">
-            浏览指南 →
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-semibold mb-2">关于我们</h3>
-          <p className="text-gray-600 mb-4">了解瑞典马工的故事</p>
-          <Link href="/about" className="text-blue-600 hover:text-blue-800">
-            了解更多 →
-          </Link>
-        </div>
-      </div>
-
-      <div className="mt-12 bg-blue-50 rounded-lg p-8">
-        <h3 className="text-2xl font-semibold mb-4">翻译工具</h3>
-        <p className="text-gray-700 mb-4">使用我们的翻译工具将微信文章转换为英文版本</p>
-        <Link
-          href="/translate"
-          className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-        >
-          开始翻译
-        </Link>
+      <div className="space-y-8">
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
+              <Link href={`/posts/${post.id}`} className="block group">
+                <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
+                  {post.title}
+                </h2>
+              </Link>
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                {post.author && (
+                  <>
+                    <span className="font-medium text-gray-900">{post.author}</span>
+                    <span className="text-gray-400">·</span>
+                  </>
+                )}
+                <span>
+                  {(() => {
+                    try {
+                      const date = new Date(post.date)
+                      if (isNaN(date.getTime())) {
+                        return post.date
+                      }
+                      return format(date, 'MMM d, yyyy')
+                    } catch {
+                      return post.date
+                    }
+                  })()}
+                </span>
+                {post.category && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span>{post.category}</span>
+                  </>
+                )}
+              </div>
+              {post.description && (
+                <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description}</p>
+              )}
+              <Link
+                href={`/posts/${post.id}`}
+                className="text-sm font-medium text-gray-500 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Continue reading →
+              </Link>
+            </article>
+          ))
+        ) : (
+          <p className="text-gray-600">No articles available yet.</p>
+        )}
       </div>
     </div>
   )

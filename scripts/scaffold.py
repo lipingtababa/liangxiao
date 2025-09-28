@@ -22,7 +22,6 @@ def create_directory_structure():
         'lib/translators',
         'lib/generators',
         'lib/utils',
-        '.github/workflows',
         'test-output'
     ]
     

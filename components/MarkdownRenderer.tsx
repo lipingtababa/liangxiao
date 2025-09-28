@@ -21,7 +21,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             src={src}
             alt={alt}
             loading="lazy"
-            className="rounded-lg shadow-md max-w-full h-auto"
+            className="rounded-lg max-w-full h-auto my-8"
             {...props}
           />
         ),
@@ -30,7 +30,6 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             href={href}
             target={href?.startsWith('http') ? '_blank' : undefined}
             rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-            className="text-blue-600 hover:text-blue-800 underline"
             {...props}
           >
             {children}
@@ -38,7 +37,6 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         ),
         blockquote: ({ node, children, ...props }) => (
           <blockquote
-            className="border-l-4 border-gray-300 pl-4 italic text-gray-700 my-4"
             {...props}
           >
             {children}

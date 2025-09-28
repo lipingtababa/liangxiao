@@ -1,30 +1,30 @@
-// SEO配置和工具函数
+// SEO configuration and utility functions
 
 export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://magong.se',
-  title: '瑞典马工 - Swedish Ma Gong',
-  description: '瑞典生活经验分享，为海外华人提供实用的瑞典生活指南、文化介绍和经验分享',
-  author: '瑞典马工',
-  language: 'zh-CN',
-  locale: 'zh_CN',
+  title: 'Swedish Ma Gong - Life in Sweden',
+  description: 'Practical Swedish living guide with cultural insights and experience sharing for expats and international readers',
+  author: 'Swedish Ma Gong',
+  language: 'en-US',
+  locale: 'en_US',
   twitter: '@magong_se',
   keywords: [
-    '瑞典生活',
-    '瑞典工作',
-    '瑞典移民',
-    '瑞典留学',
-    '斯德哥尔摩',
-    '北欧生活',
-    '海外华人',
-    '瑞典文化',
     'Swedish life',
     'Living in Sweden',
+    'Working in Sweden',
+    'Sweden immigration',
+    'Study in Sweden',
+    'Stockholm',
+    'Nordic lifestyle',
+    'Expat life Sweden',
+    'Swedish culture',
+    'Sweden guide',
   ],
   ogImage: '/og-image.jpg',
   twitterImage: '/twitter-image.jpg',
 }
 
-// 生成JSON-LD结构化数据
+// Generate JSON-LD structured data
 export function generateArticleSchema({
   title,
   description,
@@ -72,7 +72,7 @@ export function generateArticleSchema({
   }
 }
 
-// 生成网站Schema
+// Generate Website Schema
 export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
@@ -92,7 +92,7 @@ export function generateWebSiteSchema() {
   }
 }
 
-// 生成BreadcrumbList Schema
+// Generate BreadcrumbList Schema
 export function generateBreadcrumbSchema(items: { name: string; url: string }[]) {
   return {
     '@context': 'https://schema.org',
@@ -106,7 +106,7 @@ export function generateBreadcrumbSchema(items: { name: string; url: string }[])
   }
 }
 
-// 生成组织Schema
+// Generate Organization Schema
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
@@ -127,26 +127,26 @@ export function generateOrganizationSchema() {
   }
 }
 
-// 处理和优化元描述
+// Process and optimize meta description
 export function processMetaDescription(description?: string, content?: string): string {
   if (description) {
     return description.substring(0, 160)
   }
   if (content) {
-    // 移除Markdown语法并截取
+    // Remove Markdown syntax and truncate
     const cleanContent = content
-      .replace(/#{1,6}\s/g, '') // 移除标题
-      .replace(/\*\*/g, '') // 移除粗体
-      .replace(/\*/g, '') // 移除斜体
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // 移除链接
-      .replace(/\n+/g, ' ') // 替换换行
+      .replace(/#{1,6}\s/g, '') // Remove headings
+      .replace(/\*\*/g, '') // Remove bold
+      .replace(/\*/g, '') // Remove italic
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+      .replace(/\n+/g, ' ') // Replace line breaks
       .trim()
     return cleanContent.substring(0, 160)
   }
   return siteConfig.description
 }
 
-// 生成完整的页面URL
+// Generate complete page URL
 export function generatePageUrl(path: string): string {
   const cleanPath = path.startsWith('/') ? path : `/${path}`
   return `${siteConfig.url}${cleanPath}`
