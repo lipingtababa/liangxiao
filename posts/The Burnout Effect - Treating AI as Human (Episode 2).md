@@ -22,11 +22,6 @@ AI context windows aren't databases. They're attention mechanisms that must allo
 
 The transformer attention formula: softmax(QK^T/√d_k)V shows why. As context grows, attention weights get diluted. Critical information competes with noise for the same limited attention budget.
 
-### Cross-Contamination 
-Feed an AI multiple API documentations simultaneously. It starts hallucinating plausible-but-fake methods like `array.contains()` in JavaScript or `React.createComponent()`. 
-
-Same thing happens to developers. After reading Java, JavaScript, and Python docs back-to-back, you'll write `len(array)` in JavaScript or `array.length` in Python. The mechanisms are identical: pattern interference under cognitive load.
-
 ## Burnout Prevention
 
 To prevent AI burnout, we need to manage their cognitive load like we would for a human team member.
