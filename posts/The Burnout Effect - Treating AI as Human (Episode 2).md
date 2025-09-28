@@ -1,4 +1,4 @@
-# The Burnout Effect: Treating AI as Human (Episode 2)
+# Burnout Prevention: Treating AI as Human (Episode 2)
 
 AI gets tired. Not physically, but functionally. Load Claude or GPT-4 with 100k tokens and watch it forget things from the beginning. It's not a bug - it's the same performance degradation pattern you see in overloaded humans.
 
@@ -27,36 +27,43 @@ Feed an AI multiple API documentations simultaneously. It starts hallucinating p
 
 Same thing happens to developers. After reading Java, JavaScript, and Python docs back-to-back, you'll write `len(array)` in JavaScript or `array.length` in Python. The mechanisms are identical: pattern interference under cognitive load.
 
-## Engineering Solutions
+## Burnout Prevention
 
-### Chunk Processing
-Don't dump entire documents. Process in overlapping 5-10k token chunks:
+To prevent AI burnout, we need to manage their cognitive load like we would for a human team member.
+
+### Instruct AI to Document Progress
+Tell Claude to write documentation as it goes:
+- "After each major change, summarize what you did and why"
+- "Keep a running list of decisions made and constraints discovered"
+- "Before proposing a solution, list what we've already tried"
+
+This creates external memory that survives context compaction.
+
+### Break Complex Tasks into Sessions
+Instead of one marathon session, structure work like this:
 ```
-1. Extract key rules from chunk A
-2. Pass extracted rules + chunk B
-3. Update rules, continue
+Session 1: "Analyze the codebase and document the architecture"
+Session 2: "Based on your docs from session 1, implement feature X"
+Session 3: "Review implementation against original requirements"
 ```
 
-This maintains consistency without overload.
+Each session starts fresh but informed by previous documentation.
 
-### Retrieval-Augmented Generation (RAG)
-Instead of loading all documentation upfront, implement dynamic retrieval:
-```
-1. AI identifies what it needs
-2. Fetch specific documentation
-3. Process with focused context
-4. Discard when done
-```
+### Use Explicit State Management
+Instruct the AI to maintain state explicitly:
+- "Keep a DECISIONS.md file with all architectural choices"
+- "Update TODO.md after completing each task"
+- "Write down assumptions before starting implementation"
 
-Like a developer using IDE autocomplete instead of memorizing every API.
+When context resets, these files become the AI's "notes" from earlier work.
 
-### Redundancy Strategy
-Critical information must appear multiple times:
-- State important constraints at beginning AND near usage
-- Repeat key definitions when context exceeds 20k tokens
-- Use different phrasings to reinforce the same concept
+### Implement Checkpoint Patterns
+Every 30-45 minutes of coding:
+- "Stop and write a summary of current progress"
+- "List any unresolved issues or questions"
+- "Document the next steps before continuing"
 
-Not because AI is stupid. Because attention mechanisms naturally degrade with scale.
+This prevents the solution-bouncing behavior when memory degrades.
 
 ## Production Patterns
 
