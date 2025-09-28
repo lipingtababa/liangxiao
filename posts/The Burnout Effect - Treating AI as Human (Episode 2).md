@@ -94,14 +94,48 @@ Perfect recall and pattern recognition are mutually exclusive. You get one or th
 
 Choose your architecture accordingly.
 
+## The BMAD Method: Documents as Memory Architecture
+
+The Breakthrough Method for Agile AI-Driven Development (BMAD) directly addresses AI's memory paradox through systematic documentation. BMAD recognizes that AI's degrading context window isn't a bug to fix—it's a constraint to architect around.
+
+### Why Documents Are Critical in BMAD
+
+The BMAD methodology solves two fundamental problems that emerge from AI's hybrid memory nature:
+
+1. **Planning Inconsistency**: Without persistent documentation, AI agents make different architectural decisions in each session. An AI might choose REST APIs on Monday and GraphQL on Tuesday, not from evolving requirements but from probabilistic drift. BMAD's agentic planning phase creates definitive architectural documents that anchor all subsequent decisions.
+
+2. **Context Loss**: As we've established, AI performance degrades catastrophically with context length. BMAD addresses this through "Context-Engineered Development"—transforming sprawling requirements into hyper-detailed, self-contained story files. Each story contains complete context without requiring the AI to hold entire system architecture in its degrading memory.
+
+### The Architecture of Memory
+
+BMAD employs specialized AI agents (Analyst, PM, Architect) that collaborate to create comprehensive documentation before any code is written. This isn't bureaucracy—it's memory architecture. Consider what happens without it:
+
+- A developer AI asked to "add user authentication" might implement OAuth in one session, JWT in another
+- Error handling patterns drift between exceptions, error codes, and Result types across different files
+- Database schemas evolve inconsistently as different sessions interpret requirements differently
+
+With BMAD's documentation-first approach, each development agent opens a story file with:
+- Complete understanding of what to build
+- Explicit instructions on how to build it
+- Clear context for why these decisions were made
+
+### Documents as Semantic Checkpoints
+
+In human cognition, sleep consolidates short-term memory into long-term storage. In AI systems, documents serve this consolidation function. They're semantic checkpoints that prevent the "burnout effect"—where an overloaded AI begins hallucinating plausible but incorrect solutions.
+
+The BMAD method transforms documentation from a post-development chore into the primary development artifact. Code becomes the implementation of documented decisions rather than the source of truth itself. This inversion is critical: code can be regenerated from good documentation, but documentation reverse-engineered from code loses crucial context about intent and constraints.
+
+### Practical Impact
+
+A real-world example: The polyv-live-cli project (https://github.com/terryso/polyv-live-cli) demonstrates BMAD in action. Every feature is developed from a detailed story document. Instead of feeding the AI massive code context, each story provides focused, complete context for that specific feature. The AI's consistency improves dramatically—not because it remembers better, but because it needs to remember less.
+
+The key insight: In AI-driven development, documentation isn't just recording what was built—it's the persistent memory that enables consistent building. BMAD recognizes that we're not fixing AI's memory limitations; we're engineering systems that thrive within them.
+
 ## Implementation Checklist
 
-- [ ] Never exceed 50k tokens for critical accuracy tasks
-- [ ] Implement chunking for documents over 10k tokens  
-- [ ] Use RAG for multi-source documentation tasks
+- [ ] Never exceed x tokens for critical accuracy tasks <!-- x = model-specific token limit -->
+- [ ] Implement chunking for documents over y tokens <!-- y = model-specific chunking threshold -->  
 - [ ] Maintain external state for critical information
-- [ ] Design for graceful degradation, not perfect recall
-- [ ] Test AI performance at different context loads
 - [ ] Build redundancy into important prompts
 
 The future isn't about fixing AI's memory limitations. It's about engineering systems that work within them.
