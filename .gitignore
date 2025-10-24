@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Large source files (downloaded examples)
+Examples/
+style.html
+style_files/
+
+# User-generated articles
+articles/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
