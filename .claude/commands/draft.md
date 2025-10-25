@@ -34,6 +34,12 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
 
 3. **Write the draft** following these critical requirements:
 
+   **CONCISE & PROFESSIONAL:**
+   - **Get to the point** - No unnecessary verbosity or redundancy
+   - **One strong example > multiple weak ones** - Choose quality over quantity
+   - **Tight, efficient prose** - Every sentence should add value
+   - **Professional tone** - Not rambling or unfocused like casual speech
+
    **Tone & Voice:**
    - Conversational and casual (like talking to a colleague)
    - Highly opinionated with strong stances

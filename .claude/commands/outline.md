@@ -83,6 +83,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
    - Conclusion approach
 
 5. **Follow style guide principles**:
+   - **Plan for CONCISE writing** - Outline should support tight, focused prose (not verbose rambling)
    - Be specific (name companies, products, people)
    - Use vivid language and analogies
    - Balance theory and practice

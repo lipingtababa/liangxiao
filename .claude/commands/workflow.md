@@ -78,6 +78,7 @@ Work with Claude to write the article section by section
 8. Continue section by section through the outline
 
 Each section follows the style guide:
+- **CONCISE & PROFESSIONAL** - Get to the point, no verbosity
 - Conversational, opinionated tone
 - Specific company/product names
 - Memorable analogies

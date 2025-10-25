@@ -38,6 +38,7 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] Acknowledged nuance or limitations where appropriate
 
 ## Style Check
+- [ ] **CONCISE & PROFESSIONAL** - No verbosity, gets to the point, every sentence adds value
 - [ ] At least one memorable analogy or metaphor
 - [ ] Conversational tone (not academic or corporate)
 - [ ] Mix of Chinese and English terminology
@@ -62,6 +63,7 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] No vague corporate jargon (unless ironic)
 - [ ] No unsupported claims
 - [ ] No emoji
+- [ ] **No verbosity or redundancy** - Not rambling like Trump
 - [ ] Not too short/superficial
 - [ ] Hasn't accepted hype uncritically
 - [ ] Named names when relevant (didn't hedge unnecessarily)
