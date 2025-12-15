@@ -829,49 +829,74 @@ Before publishing, verify:
 
 ## Lessons Learned from Published Articles
 
-### Common Pitfalls to Avoid
+### Best Practices (Positive Examples)
 
-Based on feedback from the FDE/Palantir article (Dec 2025):
+Based on FDE/Palantir article feedback (Dec 2025):
 
-**1. 过度使用英文 (Too Much English)**
-- ❌ **Bad**: 频繁切换英文术语散落全文
-  - Example: "这个scalable的lock-in模式会导致groupthink"
-- ✅ **Good**: 首次双语，后续只用中文
-  - First use: "Forward Deployed Engineer (前置部署工程师，FDE)"
-  - After: 只说"前置部署工程师"
-- **Only keep English for**:
-  - 专有名词: 公司名 (Palantir, OpenAI), 产品名
-  - 成熟缩写: CEO, CFO, SaaS, API, AWS
-  - 技术术语首次出现时标注中文
-- **Translate these**: scalable → 可扩展, lock-in → 锁定, groupthink → 从众心理
+**1. 英文使用原则 (English Usage)**
 
-**2. 篇幅控制失败 (Article Too Long)**
-- ❌ **Bad**: 想面面俱到，6000字覆盖所有论点
-  - 试图证明每个观点，堆砌大量例子
-  - 过度展开次要论点
-- ✅ **Good**: 聚焦2-3个最强论点，控制在3000字左右
-  - 每个论点 = 一段核心陈述 + 一个数据/例子
-  - 删除铺垫和过渡语，直击要害
-  - 放弃次要论点，只保留最有冲击力的
-- **Rule of thumb**: 一个section不超过3-4段，一段不超过150字
+✅ **Follow this pattern**:
+- **首次双语介绍**: "Forward Deployed Engineer (前置部署工程师，FDE)"
+- **后续只用中文**: "前置部署工程师认为..."，"FDE模式的问题..."
+- **专有名词保留英文**: Palantir, OpenAI, NHS
+- **成熟缩写保留**: CEO, CFO, SaaS, API, AWS
+- **技术术语优先中文**: 可扩展 (scalable), 锁定 (lock-in), 从众心理 (groupthink)
 
-**3. 引用过多 (Too Many Quotes)**
-- ❌ **Bad**: 10+处blockquote，读起来像研究报告
-  - 引用Palantir官方定义（长段落）
-  - 引用多个类似的员工描述
-  - 用引用来解释概念
-- ✅ **Good**: 只保留2-3处最震撼的引用
-  - CFO批评: "lighting equity on fire"
-  - 用户生动比喻: "华为也不能对中石油说..."
-  - 反讽评论: "这是哪门子的软件公司？"
-- **其余用自己的话转述**: 引用是为了punch，不是为了解释
+**Example (good)**:
+> "Forward Deployed Engineer (前置部署工程师，FDE) 是Palantir推出的岗位。这种前置部署工程师需要常驻客户现场，与传统的驻场实施本质相同。"
 
-**4. 结构臃肿 (Too Many Sections)**
-- ❌ **Bad**: 11个section，每个都想详细展开
-- ✅ **Good**: 5-6个section，快速推进论点
-  - 合并相关论点
-  - 删除次要分析
-  - 保持节奏紧凑
+**2. 篇幅控制 (Length Control)**
+
+✅ **Target**: 2500-3500字
+✅ **Structure**: 5-6个section，每个3-4段
+✅ **Focus**: 选择2-3个最强论点深入，放弃次要论点
+
+**How to achieve**:
+- 每个论点 = 核心陈述 (1段) + 数据/例子 (1-2段)
+- 直击要害，删除铺垫和过渡语
+- 一段不超过150字
+- 问自己: "这段删掉会影响核心论点吗？" 不影响就删
+
+**Example (good)**:
+> **Section**: "为什么FDE只能在国防行业生存？"
+> - 段1: 陈述观点 (50字)
+> - 段2: 数据支撑 "672 Pentagon官员..." (100字)
+> - 段3: 生动例子 "华为/中石油..." (120字)
+> - 完成！进入下一section
+
+**3. 引用策略 (Quote Usage)**
+
+✅ **Maximum 2-3 blockquotes** per article
+✅ **Only quote when**: 语言本身有冲击力/无法用自己的话更好地表达
+
+**What to quote**:
+- Shocking statements: CFO说 "lighting equity on fire"
+- Vivid user quotes: "华为也不能对中石油说..."
+- Self-contradictions: 官方定义 vs 实际表现
+
+**What to paraphrase**:
+- 普通的描述性内容
+- 数据和统计（直接陈述即可）
+- 多个类似的例子（选最强的一个quote，其余转述）
+
+**Example (good)**:
+> Palantir的前CFO批评FDE模式是"lighting equity on fire"。他观察到大量重复浪费的工作和失败项目。
+>
+> [后续用自己的话分析，不需要更多quote]
+
+**4. 结构紧凑 (Tight Structure)**
+
+✅ **Ideal flow**: 5-6 sections
+- 开场: 现象 + 核心观点
+- 论点1: 最强的论据 (独特视角)
+- 论点2: 数据支撑
+- 论点3: 案例/对比
+- 结论: 预测 + 讨论邀请
+
+**How to merge sections**:
+- 相关的论点合并
+- 数据和案例放在同一section
+- 避免单独的"背景介绍"section
 
 ---
 
