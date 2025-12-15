@@ -827,6 +827,107 @@ Before publishing, verify:
 
 ---
 
+## Lessons Learned from Published Articles
+
+### Common Pitfalls to Avoid
+
+Based on feedback from the FDE/Palantir article (Dec 2025):
+
+**1. 过度使用英文 (Too Much English)**
+- ❌ **Bad**: 频繁切换英文术语散落全文
+  - Example: "这个scalable的lock-in模式会导致groupthink"
+- ✅ **Good**: 首次双语，后续只用中文
+  - First use: "Forward Deployed Engineer (前置部署工程师，FDE)"
+  - After: 只说"前置部署工程师"
+- **Only keep English for**:
+  - 专有名词: 公司名 (Palantir, OpenAI), 产品名
+  - 成熟缩写: CEO, CFO, SaaS, API, AWS
+  - 技术术语首次出现时标注中文
+- **Translate these**: scalable → 可扩展, lock-in → 锁定, groupthink → 从众心理
+
+**2. 篇幅控制失败 (Article Too Long)**
+- ❌ **Bad**: 想面面俱到，6000字覆盖所有论点
+  - 试图证明每个观点，堆砌大量例子
+  - 过度展开次要论点
+- ✅ **Good**: 聚焦2-3个最强论点，控制在3000字左右
+  - 每个论点 = 一段核心陈述 + 一个数据/例子
+  - 删除铺垫和过渡语，直击要害
+  - 放弃次要论点，只保留最有冲击力的
+- **Rule of thumb**: 一个section不超过3-4段，一段不超过150字
+
+**3. 引用过多 (Too Many Quotes)**
+- ❌ **Bad**: 10+处blockquote，读起来像研究报告
+  - 引用Palantir官方定义（长段落）
+  - 引用多个类似的员工描述
+  - 用引用来解释概念
+- ✅ **Good**: 只保留2-3处最震撼的引用
+  - CFO批评: "lighting equity on fire"
+  - 用户生动比喻: "华为也不能对中石油说..."
+  - 反讽评论: "这是哪门子的软件公司？"
+- **其余用自己的话转述**: 引用是为了punch，不是为了解释
+
+**4. 结构臃肿 (Too Many Sections)**
+- ❌ **Bad**: 11个section，每个都想详细展开
+- ✅ **Good**: 5-6个section，快速推进论点
+  - 合并相关论点
+  - 删除次要分析
+  - 保持节奏紧凑
+
+---
+
+### What Worked Well (Validate in Future Articles)
+
+From FDE article success - **keep doing these**:
+
+**独特视角 (Unique Angle)**:
+- 中台对比 (Zhongtai parallel) - 别人想不到的角度
+- 跨文化观察 - 中美对比，而非单纯批评美国
+- Pattern recognition - "我见过这个电影"
+
+**真实数据 (Real Data)**:
+- 672 Pentagon官员 (有来源的统计)
+- CFO原话 "lighting equity on fire"
+- NHS 25%采用率失败
+- 政府收入从46.5% → 55%增长
+
+**生动比喻 (Vivid Analogies)**:
+- 华为/中石油例子 - 接地气且有力
+- The Spreadsheet Test - 可记忆的框架
+- "美国的中科红旗" - 一句话点破本质
+
+**强烈观点 (Strong Opinions)**:
+- 直接判断: "这是哪门子的软件公司？"
+- 预测: "3-5年后会成为笑话"
+- 不回避争议
+
+---
+
+### Updated Writing Checklist
+
+Add these to pre-publish checks:
+
+**English usage**:
+- [ ] 英文术语首次出现已标注中文
+- [ ] 后续段落只用中文，不反复切换
+- [ ] 只保留专有名词和成熟缩写的英文
+
+**Length control**:
+- [ ] 总字数在2500-3500之间
+- [ ] 每个section不超过4段
+- [ ] 删除了次要论点和重复例子
+
+**Quote discipline**:
+- [ ] Blockquote不超过3处
+- [ ] 每个quote都有冲击力（shocking或生动）
+- [ ] 其余内容用自己的话转述
+
+**Focus**:
+- [ ] 只保留2-3个最强论点
+- [ ] 有独特角度（不是人云亦云）
+- [ ] 每个论点有真实数据支撑
+
+---
+
 ## Quick Reference: Favorite Phrases
 
 **Opening patterns:**
