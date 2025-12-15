@@ -8,8 +8,8 @@ export default function Home() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}>Swedish Ma Gong Articles</h1>
-        <p className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>English translations of Swedish life experiences</p>
+        <h1 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}>MaGong</h1>
+        <p className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Insights on AI, coding, and tech from a software engineer perspective</p>
       </div>
 
       <div className="space-y-8">

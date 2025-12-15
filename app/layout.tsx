@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
-    template: '%s | Swedish Ma Gong',
+    template: '%s | MaGong',
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
@@ -86,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
-                <a href="/" className="text-xl font-semibold text-gray-900 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Swedish Ma Gong</a>
+                <a href="/" className="text-xl font-semibold text-gray-900 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>MaGong</a>
               </div>
               <nav className="flex items-center space-x-6">
                 <a href="/posts" className="text-gray-600 hover:text-gray-900 text-sm font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>Articles</a>
@@ -97,7 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="min-h-screen bg-white">{children}</main>
         <footer className="bg-white border-t border-gray-200 mt-24">
           <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-gray-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>© 2024 Swedish Ma Gong. All rights reserved.</p>
+            <p className="text-center text-gray-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>© 2024 MaGong. All rights reserved.</p>
           </div>
         </footer>
       </body>

@@ -1,7 +1,7 @@
 ---
 title: "Treat AI Like Humans, Not Software"
 date: "2024-12-22"
-author: "Swedish Ma Gong"
+author: "MaGong"
 category: "AI Thinking"
 tags: []
 description: >
