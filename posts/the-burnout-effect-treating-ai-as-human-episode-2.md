@@ -1,6 +1,11 @@
 ---
 title: "The Burnout Effect: Treating AI as Human (Episode 2)"
 date: "2024-11-28"
+author: "MaGong"
+category: "AI Thinking"
+tags: []
+description: >
+  AI gets tired. Not physically, but functionally. Understanding this burnout effect is key to working effectively with LLMs.
 ---
 
 # The Burnout Effect: Treating AI as Human (Episode 2)
