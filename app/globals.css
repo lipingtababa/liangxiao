@@ -133,3 +133,19 @@ hr {
   height: auto;
   border-radius: 0.5rem;
 }
+
+/* 继续阅读横幅滑入动画 */
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out forwards;
+}

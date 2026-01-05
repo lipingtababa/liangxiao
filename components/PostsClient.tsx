@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 
@@ -25,6 +25,25 @@ export default function PostsClient({ posts }: PostsClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
+  const [readingProgress, setReadingProgress] = useState<{ [key: string]: number }>({})
+
+  // 从 localStorage 加载所有文章的阅读进度
+  useEffect(() => {
+    const progress: { [key: string]: number } = {}
+    posts.forEach((post) => {
+      const storageKey = `reading-progress-${post.id}`
+      const savedData = localStorage.getItem(storageKey)
+      if (savedData) {
+        const { percentage, timestamp } = JSON.parse(savedData)
+        // 只显示7天内的阅读记录
+        const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
+        if (timestamp > sevenDaysAgo) {
+          progress[post.id] = Math.round(percentage)
+        }
+      }
+    })
+    setReadingProgress(progress)
+  }, [posts])
 
   // Get all unique categories
   const categories = useMemo(() => {
@@ -110,51 +129,75 @@ export default function PostsClient({ posts }: PostsClientProps) {
       {paginatedPosts.length > 0 ? (
         <>
           <div className="space-y-8">
-            {paginatedPosts.map((post) => (
-              <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
-                <Link href={`/posts/${post.id}`} className="block group">
-                  <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
-                    {post.title}
-                  </h2>
-                </Link>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {post.author && (
-                    <>
-                      <span className="font-medium text-gray-900">{post.author}</span>
-                      <span className="text-gray-400">·</span>
-                    </>
-                  )}
-                  <span>
-                    {(() => {
-                      try {
-                        const date = new Date(post.date)
-                        if (isNaN(date.getTime())) {
+            {paginatedPosts.map((post) => {
+              const progress = readingProgress[post.id]
+              const hasProgress = progress && progress > 10 && progress < 95
+
+              return (
+                <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
+                  <Link href={`/posts/${post.id}`} className="block group">
+                    <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
+                      {post.title}
+                    </h2>
+                  </Link>
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {post.author && (
+                      <>
+                        <span className="font-medium text-gray-900">{post.author}</span>
+                        <span className="text-gray-400">·</span>
+                      </>
+                    )}
+                    <span>
+                      {(() => {
+                        try {
+                          const date = new Date(post.date)
+                          if (isNaN(date.getTime())) {
+                            return post.date
+                          }
+                          return format(date, 'MMM d, yyyy')
+                        } catch {
                           return post.date
                         }
-                        return format(date, 'MMM d, yyyy')
-                      } catch {
-                        return post.date
-                      }
-                    })()}
-                  </span>
-                  {post.category && (
-                    <>
-                      <span className="text-gray-400">·</span>
-                      <span>{post.category}</span>
-                    </>
+                      })()}
+                    </span>
+                    {post.category && (
+                      <>
+                        <span className="text-gray-400">·</span>
+                        <span>{post.category}</span>
+                      </>
+                    )}
+                  </div>
+                  {(post.description || post.excerpt) && (
+                    <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description || post.excerpt}</p>
                   )}
-                </div>
-                {(post.description || post.excerpt) && (
-                  <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description || post.excerpt}</p>
-                )}
-                <Link
-                  href={`/posts/${post.id}`}
-                  className="text-sm font-medium text-gray-500 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}
-                >
-                  Continue reading →
-                </Link>
-              </article>
-            ))}
+
+                  {/* 阅读进度指示器 */}
+                  {hasProgress && (
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-blue-500 h-1.5 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {progress}% 已读
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <Link
+                    href={`/posts/${post.id}`}
+                    className={`text-sm font-medium ${hasProgress ? 'text-blue-600 hover:text-blue-700' : 'text-gray-500 hover:text-gray-700'}`}
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {hasProgress ? '继续阅读 →' : '开始阅读 →'}
+                  </Link>
+                </article>
+              )
+            })}
           </div>
 
           {/* Pagination controls */}
