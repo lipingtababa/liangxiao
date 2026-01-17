@@ -9,6 +9,9 @@ style_files/
 # User-generated articles
 articles/
 
+# Source materials (external references)
+source-materials/
+
 # Python
 __pycache__/
 *.py[cod]

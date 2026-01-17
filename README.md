@@ -59,6 +59,10 @@ benyu/
 │       ├── final.md        # Article markdown
 │       └── wechat.html     # Generated HTML
 │
+├── source-materials/       # Reference materials (gitignored)
+│   └── wechat-view/        # WeChat chatlog data (symlink)
+│       └── data/           # Daily chat JSON files (YYYY-MM-DD.json)
+│
 ├── requirements.txt        # Python dependencies
 └── README.md              # This file
 ```

@@ -80,6 +80,10 @@ Cast a wide net:
 - Questions that emerge
 - Crazy ideas worth exploring
 
+## 5. Write to File
+
+**When you've gathered substantial material (or user asks), write everything to `brainstorm.md`**
+
 **DON'T:**
 - Structure into arguments or outline
 - Judge what's "good" or "bad"
@@ -130,6 +134,7 @@ Why interesting: [What stands out]
 - Follow unexpected tangents
 - Collect contradictions
 - Ask questions that provoke thinking
+- Collect user's actual chat messages/ideas as user's own words
 
 **DON'T:**
 - Make up statistics, examples, or quotes
@@ -138,6 +143,8 @@ Why interesting: [What stands out]
 - Structure or synthesize prematurely
 - Write article sections (that's for /outline and /draft)
 - Push toward a single "right" answer
+- ❌ Suggest attributing user's chat messages to "朋友说" or fictional personas
+- ❌ Create fake "friend" or "colleague" attributions for user's own ideas
 
 # Output Format
 
@@ -163,9 +170,9 @@ What if [provocative question]?
 
 # When to Stop
 
-Stop when user says they've collected enough interesting material.
+Stop when user says they've collected enough interesting material, OR when you've gathered substantial material (10+ interesting findings).
 
-**Save everything to `brainstorm.md` in the current working directory.**
+**ALWAYS save everything to `brainstorm.md` in the current working directory using the Write tool.**
 
 Format as a free-form collection:
 - Interesting findings with sources
@@ -177,3 +184,5 @@ Format as a free-form collection:
 - Gaps (what wasn't found)
 
 No structure needed - just a rich pile of interesting stuff to work with later.
+
+**CRITICAL**: You MUST write findings to `brainstorm.md` file - do not just show them to the user in conversation.

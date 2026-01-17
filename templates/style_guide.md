@@ -602,6 +602,19 @@ Solutions throughout article:
 - Don't use emoji (articles analyzed have ZERO emoji)
 - Don't be dry or boring
 
+**Avoid teacher-like explanations (教师爷 voice):**
+- Avoid: "不是X，而是Y" format - sounds preachy and mechanical
+  - ❌ "但我要说的是：这些平台注定失败，不是因为做得不够好，而是因为这种方式本身就是错的。"
+  - ✅ "多数公司都有运维平台。投入不低、系统不少。但运维仍然是瓶颈。"
+
+- Avoid: Explaining "why" things happen (sounds like 教师爷)
+  - ❌ "为什么？因为他的控制点在'资源申请'这个后期环节，而开发团队可以在'项目设计'这个前期环节绕过他。"
+  - ✅ "管理员有完整的批核权。开发改名重新申请机器。管理员的权力形同虚设。"
+
+- **The pattern**: Tell the story → readers see the contradiction → they understand on their own
+- Don't explain "why" - show the pattern and let smart readers connect the dots
+- Write as if talking to a peer who already gets it, not teaching someone who needs everything spelled out
+
 **Accepting hype uncritically:**
 - Don't repeat vendor marketing claims
 - Don't accept "because everyone does it" as reasoning

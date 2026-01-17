@@ -18,9 +18,11 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] All statistics have verifiable sources
 - [ ] All company/product names are real (not made up)
 - [ ] All pricing/cost comparisons use real data
-- [ ] No "某公司", "我的朋友说", or vague invented scenarios
+- [ ] No "某公司", vague invented scenarios
+- [ ] **NO fake "朋友" attributions** - User's own chat messages must NOT be attributed to fictional "朋友说" or "我朋友"
+- [ ] User's ideas stated directly in first person, NOT through fake third-person personas
 
-**If ANY data appears fabricated, FAIL the review immediately and list all violations.**
+**If ANY data appears fabricated OR fake attributions found, FAIL the review immediately and list all violations.**
 
 ## Specificity Check
 - [ ] Named at least 3-5 specific companies/products

@@ -10,6 +10,17 @@ This guide explains the complete workflow for creating articles in the establish
 
 You have a complete workflow for writing, reviewing, and publishing 微信公众号 articles that match your established voice and style.
 
+## ⚠️ CRITICAL: Data Authenticity Rule
+
+**Before starting ANY article work, remember:**
+
+- ❌ NEVER fabricate data, examples, quotes, or statistics
+- ❌ NEVER attribute your own chat messages to fictional "朋友说" or "我朋友"
+- ✅ Use only real data from actual work/sessions or published sources
+- ✅ State your own ideas directly in first person
+
+**All slash commands enforce this rule. Violations will fail review.**
+
 ## The Components
 
 ### 1. Style Guide
