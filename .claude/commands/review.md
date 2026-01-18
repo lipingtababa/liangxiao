@@ -6,7 +6,9 @@ You are reviewing a 微信公众号 article against the established style guide.
 
 # Instructions
 
-1. **Read the style guide**: First, read `/Users/Shared/code/benyu/templates/style_guide.md` to understand all requirements.
+1. **Read the principles and style guide**:
+   - First, read `/Users/Shared/code/benyu/templates/article-structures/PRINCIPLES.md` for the 6 core principles
+   - Then read `/Users/Shared/code/benyu/templates/style_guide.md` for detailed requirements
 
 2. **Ask for the article**: Request the article text or file path to review.
 
@@ -39,6 +41,14 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] Offered alternatives/solutions, not just criticism
 - [ ] Acknowledged nuance or limitations where appropriate
 
+## 6 Principles Check (CRITICAL)
+- [ ] **标题即半篇文章** - 读者看了会不会想反驳？具体、刺痛、不是公式化
+- [ ] **首段必须抓人** - 前两句有冲突/张力吗？还是"今天我们聊聊X"？
+- [ ] **具体数字触发情绪** - 有"四千多人"、"$3"这样的数字吗？还是"很多"、"一些"？
+- [ ] **听起来可操作** - 有"怎么办"部分吗？还是只有批评？
+- [ ] **打大公司/权威** - 点名批评了哪个大公司？还是"某些公司"？
+- [ ] **读者焦虑** - 读者的焦虑是什么？文章有没有回应？
+
 ## Style Check
 - [ ] **CONCISE & PROFESSIONAL** - No verbosity, gets to the point, every sentence adds value
 - [ ] At least one memorable analogy or metaphor
@@ -47,7 +57,6 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] At least one rhetorical question
 - [ ] Personal voice evident ("我", experience references)
 - [ ] Sarcastic or vivid language for bad practices
-- [ ] Strong opening hook (recent event, specific observation)
 
 ## Structure Check
 - [ ] Sufficient depth (doesn't skim surface)

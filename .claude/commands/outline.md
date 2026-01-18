@@ -19,6 +19,17 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 **This rule overrides all other instructions.**
 
+# Core Principles (MUST READ FIRST)
+
+**Read `/Users/Shared/code/benyu/templates/article-structures/PRINCIPLES.md` for the 6 principles that apply to ALL articles:**
+
+1. **标题即半篇文章** - Title must provoke. 具体、刺痛、让人想反驳
+2. **首段必须抓人** - Hook in first paragraph. 制造冲突或张力
+3. **用具体事实和数字触发情绪** - Abstract opinions are forgettable
+4. **听起来可操作** - Not just "this is wrong" but "here's what to do"
+5. **打大公司/权威** - Readers love seeing giants challenged
+6. **读者焦虑且不安全** - Know their fear, address it directly
+
 # Outline Principles
 
 **An outline is a FRAMEWORK, not detailed content:**
@@ -71,15 +82,18 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
    - The target audience
    - What type of article it should be (debunking, industry critique, true vs false problems, etc.)
 
-3. **Select the appropriate template**: Based on the topic, choose one of these patterns from the style guide:
-   - Template 1: Debunking Article (永动机模式) - for debunking popular but flawed ideas
-   - Template 2: Industry Critique with Deep Analysis (云厂商模式) - for systematic industry analysis
-   - Template 3: True vs False Problems (伪问题模式) - for distinguishing real from fake problems
-   - Template 4: Systematic Deconstruction (基础架构部模式) - for analyzing organizational/structural issues
+3. **Select the appropriate article structure**: Based on the topic, choose one from `templates/article-structures/`:
+   - **Debunking (驳斥)** - X is widely believed → X is wrong → here's reality
+   - **Raising a Valuable Question (提出问题)** - Reframe definition → challenge assumptions → open new perspective
+   - **Case and Product Study (案例与产品研究)** - Here's what happened → what it reveals → the lesson
+   - **Exploration & Hypothesis (探索与假说)** - Here's a problem → my experiment/thinking → tentative framework
+   - **Prediction/Trend Analysis (趋势预测)** - Current state → forces driving change → where it's heading
+
+   Read examples in the corresponding folder for reference.
 
 4. **Generate a detailed outline** that includes:
-   - Article title (provocative and specific)
-   - Opening hook (following the style guide patterns)
+   - Article title - Ask: "读者看了会不会想反驳？" If not, rewrite.
+   - Opening hook - Ask: "前两句能不能让人停下来？" Must have conflict/tension.
    - Main sections with bullet points
    - Specific examples to include (companies, products, people - with placeholders if user needs to fill in)
    - Technical concepts to reference
@@ -87,13 +101,13 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
    - URLs or references to include (if known)
    - Conclusion approach
 
-5. **Follow style guide principles**:
-   - **Plan for CONCISE writing** - Outline should support tight, focused prose (not verbose rambling)
+5. **Apply the 6 principles**:
+   - **具体数字** - Plan for concrete facts/numbers in each section, not vague claims
+   - **点名大公司** - Identify which companies/authorities to challenge
+   - **可操作** - Include "what to do" sections, not just criticism
+   - **读者焦虑** - Identify the audience's fear and how to address it
    - Be specific (name companies, products, people)
-   - Use vivid language and analogies
-   - Balance theory and practice
    - Include rhetorical devices (questions, imagined dialogue, etc.)
-   - Plan for engagement at the end
 
 6. **Output the outline** in a clear, structured format
 
@@ -103,6 +117,6 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 - Always reference the style guide at `/Users/Shared/code/benyu/templates/style_guide.md`
 - Don't create vague outlines - be specific about what examples and references to include
-- Ensure the outline follows one of the proven article templates
+- Ensure the outline follows one of the 5 article structures in `templates/article-structures/`
 - The outline should be detailed enough that drafting becomes straightforward
 - **CRITICAL**: You MUST write the outline to `outline.md` file - do not just show it to the user
