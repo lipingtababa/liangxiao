@@ -615,6 +615,14 @@ Solutions throughout article:
 - Don't explain "why" - show the pattern and let smart readers connect the dots
 - Write as if talking to a peer who already gets it, not teaching someone who needs everything spelled out
 
+**Avoid AI-style cliché transitions:**
+- Avoid: "这让我意识到一个问题" - sounds like AI trying to be conversational
+- Avoid: "我最近做了一件...的事" as hook - overused and predictable
+- Avoid: "具体怎么变？" as transition - too formulaic
+- ❌ "这让我意识到一个问题：几乎所有工程问题都可以换成造价问题。"
+- ✅ "几乎所有工程问题都可以换成造价问题。"（直接说，不要铺垫）
+- **The pattern**: State your point directly. Don't narrate your thought process.
+
 **Accepting hype uncritically:**
 - Don't repeat vendor marketing claims
 - Don't accept "because everyone does it" as reasoning

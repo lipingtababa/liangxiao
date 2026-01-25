@@ -63,3 +63,24 @@ python utils/html_converter.py articles/my-article/final.md articles/my-article/
 - The conversion applies WeChat-specific styling automatically
 - Images in markdown will be included (but verify paths)
 - The HTML is optimized for copying into WeChat editor, not for direct web hosting
+
+# Link Extraction (REQUIRED)
+
+**WeChat doesn't support hyperlinks in article body.** Before conversion:
+
+1. **Extract all markdown links** from the article: `[text](url)`
+2. **Collect them into a 引用来源 section** at the end of the article
+3. **Replace inline links with plain text** (keep the link text, remove the URL)
+4. **Format the 引用来源 section** as a numbered list with full URLs:
+
+```markdown
+---
+
+**引用来源**
+
+1. Article Title: https://example.com/article
+2. Book Name: https://goodreads.com/book/xxx
+3. GitHub Repo: https://github.com/org/repo
+```
+
+This ensures readers can still access the references even though WeChat doesn't render clickable links.

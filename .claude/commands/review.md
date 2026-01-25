@@ -79,6 +79,9 @@ You are reviewing a 微信公众号 article against the established style guide.
 - [ ] Hasn't accepted hype uncritically
 - [ ] Named names when relevant (didn't hedge unnecessarily)
 
+## Link Check
+- [ ] **《》symbols converted to links** - For each 《term》, search for a Wikipedia or other authoritative reference link and convert to markdown format: [term](url). For example, 《一人公司》should become [一人公司](https://www.goodreads.com/book/show/37570605-company-of-one)
+
 4. **Provide detailed feedback** in this format:
 
 ### ✅ Strengths
