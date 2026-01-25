@@ -100,6 +100,7 @@ TO对技术实现负责，他/她带领一群不同角色的AI Agent写出正确
 不同任务类型需要不同的工作流。Bug fix流程不同于新功能流程，绿地项目不同于棕地项目。Tech Owner负责选择和调整正确的工作流。
 
 在此之外，Tech Owner负责解决过程中的任何异常。比如在我们的一个集成项目中，合作方没有提供API，TO不得不想尽办法去拼凑出一个openapi.yaml。
+
 ---
 
 ## Quality Owner owns whether we build it correctly
@@ -131,17 +132,16 @@ NASA在挑战者号灾难后建立了独立验证与确认（IV&V）项目，核
 
 ---
 
-# 超音速开发速度
+# 每天完成一个功能
 就节奏来说，Tri-Ownership框架应该能做到**一天完成一个Story**。
 
 这个速度有多快？看看[Claude Code](https://github.com/anthropics/claude-code)的发布节奏——10天内发布了10个版本，有些天甚至发布2-3个版本。不能满足这个速度的团队，是低于业界平均水平的。
 
-```
-上午：PO写完User Story，QO同步定义验收标准
-中午：Tech Owner完成详细设计，触发AI开发流程
-下午：AI完成代码+测试，Tech Owner审核Code Review报告
-傍晚：Github Action自动触发E2E验收，通过即合并上线
-```
+正常的节奏应该是：
+- 上午：PO写完User Story，QO同步定义验收标准
+- 中午：Tech Owner完成详细设计，触发AI开发流程
+- 下午：AI完成代码+测试，Tech Owner审核Code Review报告
+- 傍晚：Github Action自动触发E2E验收，通过即合并上线
 
 为什么能这么快？
 - PO和QO同时工作，不是串行等待
