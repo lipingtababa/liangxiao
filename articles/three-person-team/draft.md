@@ -1,5 +1,7 @@
 # 超越PingCAP，打造你公司的AI原生开发团队
 
+**作者：瑞典马工** | 2026年1月25日
+
 本文是对黄东旭（PingCAP CTO）最近的文章[《Vibe Engineering 2026.1》](https://mp.weixin.qq.com/s/YQ-GuDfqDW0yhtghjKK8Rg) 的一个回应。如果你还没有读过他这篇文章，我强烈推荐你去读一遍。
 
 黄东旭的核心观点：
