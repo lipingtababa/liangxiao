@@ -59,7 +59,7 @@ PTO框架把超级个体的工作拆开：
 
 答案很直接：施工方就是AI Agent。它们按指令写代码、跑测试、生成文档，就像施工方按图纸砌墙。它们不配有署名权。
 
-## Product Owner owns what we should build
+## Product Owner：负责做什么
 
 Tri-Ownership的PO是一个扩展的角色，合并了传统PM和PO的职责：
 
@@ -76,7 +76,7 @@ PO对**产出的价值负责（accountable for outcomes）**，而不是对产�
 
 ---
 
-## Tech Owner：owns 怎么做
+## Tech Owner：负责怎么做
 
 TO对技术实现负责，他/她带领一群不同角色的AI Agent写出正确的软件。
 负责详细设计、代码review报告（不是代码本身）和工具选型，但最重要的职责是**编排多个Agent的工作流**。
@@ -103,7 +103,7 @@ TO对技术实现负责，他/她带领一群不同角色的AI Agent写出正确
 
 ---
 
-## Quality Owner owns whether we build it correctly
+## Quality Owner：负责做得对不对
 
 QO对交付质量负责，不同于建筑行业的监理，QO要设计质量流程，全流程管理质量。
 
