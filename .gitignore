@@ -6,8 +6,9 @@ Examples/
 style.html
 style_files/
 
-# User-generated articles
-articles/
+# Large generated files
+*.pdf
+*.html
 
 # Source materials (external references)
 source-materials/
