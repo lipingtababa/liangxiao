@@ -23,7 +23,9 @@ def inline_styles_to_html(html_content: str, css_styles: Dict[str, str]) -> str:
     # Map CSS selectors to inline styles
     style_mapping = {
         'p': f"text-align: left; line-height: 1.75; font-family: {css_styles['font_family']}; font-size: 16px; margin: 1.5em 8px; letter-spacing: 0.1em; color: rgb(63, 63, 63);",
-        'h2': "text-align: center; line-height: 1.75; font-size: 19.2px; display: table; padding: 0px 0.2em; margin: 4em auto 2em; color: rgb(255, 255, 255); background: rgb(15, 76, 129); font-weight: bold;",
+        'h1': "text-align: center; line-height: 1.75; font-size: 24px; display: table; padding: 0.2em 0.5em; margin: 2em auto 1em; color: rgb(255, 255, 255); background: rgb(15, 76, 129); font-weight: bold;",
+        'h2': "text-align: left; line-height: 1.75; font-size: 18px; margin: 2em 8px 1em; color: rgb(15, 76, 129); font-weight: bold; border-bottom: 2px solid rgb(15, 76, 129); padding-bottom: 0.3em;",
+        'h3': "text-align: left; line-height: 1.75; font-size: 16px; margin: 1.5em 8px 0.8em; color: rgb(15, 76, 129); font-weight: bold;",
         'blockquote': "padding: 1em; border-left: 4px solid rgb(15, 76, 129); border-radius: 6px; color: rgba(0, 0, 0, 0.5); background: rgb(247, 247, 247); margin-bottom: 1em; margin-top: 0px;",
         'code': "font-size: 90%; color: rgb(221, 17, 68); background: rgba(27, 31, 35, 0.05); padding: 3px 5px; border-radius: 4px;",
         'ul': f"list-style: circle; padding-left: 1em; margin-left: 0px; color: rgb(63, 63, 63); line-height: 1.75; font-family: {css_styles['font_family']}; font-size: 16px;",

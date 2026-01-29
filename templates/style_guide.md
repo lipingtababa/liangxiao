@@ -1011,4 +1011,65 @@ Add these to pre-publish checks:
 
 ---
 
+### Lessons from Three-Person-Team Article (Jan 2026)
+
+**5. 列表转段落 (Lists to Paragraphs)**
+
+❌ **Avoid choppy bullet lists**:
+```
+- 不动组织结构
+- 他定制skills/agents/workflows
+- 实施团队按流程执行
+- 用便宜的模型降低成本门槛
+```
+
+✅ **Convert to flowing prose**:
+> 他不动组织结构，自己定制skills、agents和workflows，然后让实施团队按流程执行，用便宜的模型降低成本门槛。
+
+**When to keep lists**:
+- Technical workflows with clear steps (code blocks OK)
+- Tables comparing multiple items side-by-side
+- Reference sections (引用来源)
+
+**When to convert to paragraphs**:
+- Explanatory content that reads like scattered thoughts
+- Lists under 5 items that could flow naturally
+- Any list where items are short phrases, not complete concepts
+
+**6. 引用原文要服务论点 (Quotes Must Serve Your Argument)**
+
+❌ **Don't dump source material**:
+```
+黄东旭的核心观点：
+- AI编程工具已经跨过临界点...
+- 顶级模型能写出比大多数工程师更好的代码...
+- 人的瓶颈在验收...
+- Token消耗呈二八分布...
+```
+
+✅ **Distill to what matters for YOUR thesis**:
+> 黄东旭的核心观点：顶级模型配合主流工具，已经能超越大多数资深工程师的水平。但人的瓶颈在验收——他90%的时间花在评估AI的工作成果。
+
+**Principle**: Read the source → identify 1-2 points that support your argument → summarize in your own words → only blockquote the most impactful line.
+
+**7. 标题要准确不要标题党 (Accurate Titles Over Clickbait)**
+
+❌ **Overclaiming**: "超越PingCAP，打造你公司的AI原生开发团队"
+✅ **Accurate**: "学习PingCAP，打造你公司的AI原生软件开发团队"
+
+**Why**: 文章内容是"补充和扩展"，不是"超越"。标题党会损害可信度。
+
+**8. 避免中文破折号 (Avoid Chinese Em Dashes)**
+
+❌ **Overused**: "建筑行业早已解决了类似的问题——他们不依赖超级个体"
+✅ **Natural**: "建筑行业早已解决了类似的问题。他们不依赖超级个体"
+
+**Alternatives**:
+- `——` → `。` (句号分隔)
+- `——` → `，` (逗号延续)
+- `——` → `：` (冒号引出)
+- `——` → `，因为` (因果连接)
+
+---
+
 **Note for slash commands**: This guide is now fully active and packed with examples. Use it as the primary reference for all outline and draft generation. The guide contains extensive quotes and patterns extracted from 4 published articles to ensure consistency in style, tone, structure, and argumentation.

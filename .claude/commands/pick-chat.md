@@ -30,15 +30,19 @@ Parse the argument to get the target date(s):
 
 ## Step 2: Find and Read Summary Files
 
-Chat summaries are in `aichat/` with directory names like:
-- `387714869_AI_Coding/` - AI Coding群
-- `372565316_构建之法/` - 构建之法群
+Chat summaries are `.md` files next to the raw `.json` files in each chatroom directory.
 
-Files may be named as:
-- `{date}.md` (e.g., `2026-01-17.md`)
-- `{datetime}.md` (e.g., `2026-01-17T14-30-00.md`)
+**Structure** (symlink `aichat/` → `/Users/Shared/code/aichat`):
+- `aichat/chats/87714869_AI_Coding/{date}.json` - AI Coding群 raw data
+- `aichat/chats/87714869_AI_Coding/{date}.md` - AI Coding群 summary
+- `aichat/chats/72565316_构建之法/{date}.json` - 构建之法群 raw data
+- `aichat/chats/72565316_构建之法/{date}.md` - 构建之法群 summary
 
-Use Glob to find files matching `aichat/*AI_Coding/{date}*.md` and `aichat/*构建之法/{date}*.md`.
+**If no summary exists for the date**, generate it first:
+1. Run `/pick-brain {date}` in the aichat repo (at `/Users/Shared/code/aichat`)
+2. This generates summaries as `{date}.md` next to the raw `{date}.json`
+
+Use Glob to find summary files: `aichat/chats/*/{date}.md`
 
 **Actually read the files using the Read tool. Do not assume or fabricate content.**
 
