@@ -1,235 +1,303 @@
-# Project Instructions for Claude Code
+# CLAUDE.md
 
-## Article Writing Rules (CRITICAL - READ FIRST)
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-### NEVER Fabricate Data
+## Project Overview
 
-**This is the most important rule. Violating it invalidates all work.**
+This is a **微信公众号 (WeChat Official Account) article writing system** - a monorepo with **two author personas** sharing infrastructure but with completely separate styles and voices.
 
-**NEVER fabricate:**
-- ❌ Examples, quotes, statistics, or comparisons
-- ❌ Company pricing or quotes ("某翻译公司报价¥36,000")
-- ❌ "Friend told me" scenarios unless real
-- ❌ **Attributing user's own chat messages to fictional "朋友说" or "我朋友"**
-- ❌ Invented dialogue or conversations
-- ❌ Made-up metrics or cost comparisons
-- ❌ Estimated numbers presented as facts
+The system enforces **strict data authenticity** - never fabricate examples, quotes, statistics, or attributions. All data must be real, sourced, and verifiable.
 
-**ONLY use:**
-- ✅ Real data from user's actual work/sessions
-- ✅ Published statistics with source URLs
-- ✅ User-provided examples and experiences
-- ✅ Documented facts from codebase/files
+## Two Personas
 
-**If you lack real data:**
-1. **ASK the user for it**
+### Benyu (笨鱼) - Provocative Voice
+- **Directory**: `benyu/`
+- **Style guide**: `benyu/style_guide.md`
+- **Tone**: Confrontational, sarcastic, opinionated, challenges authority
+- **Companies**: Named to challenge and attack
+- **Analogies**: Vivid, everyday, mocking (永动机, 农贸市场卖豆腐)
+- **Conclusions**: Provocative reversal, "来骂我吧" energy
+
+### Vannevar - Serious/Analytical Voice
+- **Directory**: `vannevar/`
+- **Style guide**: `vannevar/style_guide.md`
+- **Tone**: Analytical, measured, evidence-first, forward-looking
+- **Companies**: Named to cite and analyse (not attack)
+- **Analogies**: Structural, scientific, from engineering/economics
+- **Conclusions**: Synthesis + open questions, "一起研究" energy
+- **Named after**: Vannevar Bush, who wrote "As We May Think" (1945)
+
+## Monorepo Architecture
+
+### How Commands Work
+
+Commands are **layered** - Claude Code walks up the directory tree, with nested commands taking precedence over root commands.
+
+**Shared commands** (work from anywhere):
+- `/brainstorm` - Research and material discovery
+- `/convert` - Markdown to WeChat HTML conversion
+- `/pick-chat` - Extract topics from WeChat chat data
+
+**Persona-specific commands** (activated by working directory):
+- `cd benyu && /outline` → benyu's provocative outline command
+- `cd benyu && /draft` → benyu's provocative draft command
+- `cd benyu && /review` → benyu's provocative review checklist
+- `cd vannevar && /outline` → vannevar's analytical outline command
+- `cd vannevar && /draft` → vannevar's analytical draft command
+- `cd vannevar && /review` → vannevar's analytical review checklist
+
+### Directory Structure
+
+```
+benyu/                              # repo root
+├── .claude/
+│   ├── CLAUDE.md                   # THIS FILE - shared project instructions
+│   └── commands/
+│       ├── brainstorm.md           # shared - material discovery
+│       ├── convert.md              # shared - HTML conversion
+│       └── pick-chat.md            # shared - chat topic extraction
+│
+├── templates/                      # SHARED
+│   ├── article-structures/         # 5 structure types + PRINCIPLES.md
+│   │   ├── PRINCIPLES.md           # 6 universal writing principles
+│   │   ├── debunking/
+│   │   ├── raising-valuable-question/
+│   │   ├── case-and-product-study/
+│   │   ├── exploration-and-hypothesis/
+│   │   └── prediction-and-trend/
+│   ├── wechat_styles.css
+│   └── wechat_template.html
+│
+├── scripts/                        # SHARED
+│   ├── html_converter.py           # Markdown → WeChat HTML
+│   ├── prepare_chat.py             # Chat JSON → text
+│   ├── analyze_topics.py
+│   ├── analyze_daily_messages.py
+│   └── extract_style.py
+│
+├── benyu/                          # PROVOCATIVE persona
+│   ├── .claude/
+│   │   └── commands/
+│   │       ├── outline.md          # provocative outline
+│   │       ├── draft.md            # provocative draft
+│   │       └── review.md           # provocative review checklist
+│   ├── style_guide.md              # ⭐ benyu style reference
+│   └── articles/
+│       ├── three-person-team/
+│       ├── you_write_bugs_again/
+│       └── ... (all provocative articles)
+│
+├── vannevar/                       # SERIOUS persona
+│   ├── .claude/
+│   │   └── commands/
+│   │       ├── outline.md          # analytical outline
+│   │       ├── draft.md            # analytical draft
+│   │       └── review.md           # analytical review checklist
+│   ├── style_guide.md              # ⭐ vannevar style reference
+│   └── articles/
+│       └── e2e-testing/
+│
+├── Examples/                       # SHARED - original published articles (HTML)
+├── requirements.txt                # markdown>=3.5, beautifulsoup4>=4.12.0
+└── .gitignore
+```
+
+## Critical Rules
+
+### 1. NEVER Fabricate Data (Highest Priority)
+
+**This rule overrides ALL other instructions.**
+
+NEVER invent:
+- Examples, quotes, statistics, comparisons
+- Company pricing ("某翻译公司报价¥36,000")
+- "Friend told me" scenarios
+- Attributing user's chat messages to fictional "朋友说" or "我朋友"
+- Dialogue, metrics, cost comparisons, estimated numbers presented as facts
+
+ONLY use:
+- Real data from user's actual work/sessions
+- Published statistics with source URLs
+- User-provided examples
+- Documented facts from codebase files
+
+If data is missing:
+1. ASK the user for it
 2. Leave clear placeholders: `[需要真实例子: 翻译公司报价]`
-3. **DO NOT** invent examples to fill gaps
-4. **Better to have NO example than a FAKE example**
+3. **Better NO example than FAKE example**
 
-**When in doubt:**
-- Verify the source with the user
-- Check session history for actual data
-- Read actual files rather than assuming content
+### 2. Article Writing Workflow
 
-### Examples of Violations:
+**Standard sequence** (same for both personas):
+1. `/brainstorm` - Research topic using WebSearch, collect 10+ interesting findings
+2. `/outline` - Select article structure, generate detailed framework
+3. `/draft` - Write following the active persona's style_guide.md
+4. `/review` - Check against the active persona's checklist
+5. `/convert` - Generate WeChat-compatible HTML
 
-**❌ BAD** (Fabricated):
+**All commands MUST write output to files:**
+- `brainstorm.md` - Research findings
+- `outline.md` - Article structure
+- `draft.md` or `final.md` - Article content
+- `wechat.html` - HTML for publishing
+
+### 3. Persona-Aware Style Enforcement
+
+**Determine the active persona from working directory:**
+- Working in `benyu/` or `benyu/articles/*` → read `benyu/style_guide.md`
+- Working in `vannevar/` or `vannevar/articles/*` → read `vannevar/style_guide.md`
+
+**Six universal principles** (from `templates/article-structures/PRINCIPLES.md`) apply to BOTH personas, but interpreted differently:
+
+| Principle | Benyu | Vannevar |
+|-----------|-------|----------|
+| 标题即半篇文章 | Provocative, makes you want to argue | Precise, states the thesis |
+| 首段必须抓人 | Conflict, tension | Paradox, surprising observation |
+| 具体事实和数字 | Trigger emotions | Support analysis |
+| 听起来可操作 | "Here's what's wrong AND what to do" | "Here's a framework to think about this" |
+| 打大公司/权威 | Challenge and attack | Cite and analyse |
+| 读者焦虑 | Poke the wound | Offer honest analysis |
+
+### 4. Article Structure Types
+
+Choose from 5 patterns in `templates/article-structures/`:
+
+1. **Debunking (驳斥)** - X is believed → X is wrong → here's reality
+2. **Raising Valuable Question (提出问题)** - Reframe definition → challenge assumptions
+3. **Case and Product Study (案例与产品研究)** - What happened → what it reveals
+4. **Exploration & Hypothesis (探索与假说)** - Problem → experiment → framework
+5. **Prediction/Trend Analysis (趋势预测)** - Current state → forces → future
+
+### 5. WeChat Conversion Requirements
+
+**Before running `/convert`:**
+1. Extract all markdown links `[text](url)` from article
+2. Replace inline links with plain text (WeChat doesn't support hyperlinks in body)
+3. Add **引用来源** section at end with numbered list of URLs
+
+**Conversion process:**
+```bash
+python scripts/html_converter.py benyu/articles/[name]/final.md
+# or
+python scripts/html_converter.py vannevar/articles/[name]/final.md
 ```
-某翻译公司A报价：¥0.18/字，总价¥36,000
-朋友在某出版社透露：版权费$8,000，翻译费¥38,000
-某用户反馈说："这个工具太难用了"
+
+## Common Development Tasks
+
+### Write a New Benyu Article
+
+```bash
+cd benyu
+mkdir -p articles/my-new-article
+cd articles/my-new-article
+
+/brainstorm [topic]    # shared command, works everywhere
+/outline               # picks up benyu/.claude/commands/outline.md
+/draft                 # picks up benyu/.claude/commands/draft.md
+/review                # picks up benyu/.claude/commands/review.md
+/convert               # shared command
 ```
 
-**❌ VERY BAD** (Fake Attribution - User's Own Messages as "Friend"):
-```
-我朋友说过一个很生动的比喻："中国最强关系华为公司，也不能对着中石油说..."
-我朋友还有个讽刺性的观察："中国军工信息化公司又没有把军代表岗位..."
+### Write a New Vannevar Article
 
-(These are the user's OWN WeChat messages, NOT a friend's!)
-```
+```bash
+cd vannevar
+mkdir -p articles/my-new-article
+cd articles/my-new-article
 
-**✅ GOOD** (Real Data):
-```
-从我的session中：
-- 315页PDF
-- 成本$3（Google Cloud APIs）
-- 611条对话消息
-- 实际运行时间37分钟
-
-或者明确标注需要补充：
-[用户：请提供实际翻译公司报价]
+/brainstorm [topic]    # shared command, works everywhere
+/outline               # picks up vannevar/.claude/commands/outline.md
+/draft                 # picks up vannevar/.claude/commands/draft.md
+/review                # picks up vannevar/.claude/commands/review.md
+/convert               # shared command
 ```
 
-**✅ GOOD** (Direct Attribution of User's Ideas):
+### Extract Topics from WeChat Chats
+
+```bash
+python scripts/prepare_chat.py <chatroom_dir> [date]
+/pick-chat
 ```
-中国最强关系华为公司，也不能对着中石油说...
-(State the observation directly, no need for fake "friend" attribution)
+
+## Key Implementation Patterns
+
+### 1. Outline Generation
+
+**Good outline** = Concise framework for logical argument:
+- Section headings + 2-3 bullet points max per section
+- Framework only, no detailed text or examples
+
+### 2. 理实一线 (Theory-Practice Integration)
+
+Both personas must integrate theory and practice:
+- **理** (Theory): Shannon theorem, Goodhart's Law, CAP theorem, first principles
+- **实** (Practice): Real companies, concrete metrics, named people
+
+### 3. Data Authenticity Verification
+
+All statistics must be verified with URLs. Flag placeholders for missing data.
+
+### 4. Brainstorming as Material Discovery
+
+`/brainstorm` is persona-agnostic exploratory research:
+- Cast wide net with WebSearch
+- Follow tangents and rabbit holes
+- Collect contradictions and paradoxes
+- Write ALL findings to `brainstorm.md`
+
+## Working with WeChat Chat Data
+
+**aichat repo**: `aichat/` is a symlink to a separate repo that syncs WeChat chat data. Structure:
+- `aichat/chats/<id>_<name>/` - each chatroom has a directory with daily JSON files and `_metadata.json`
+- `_metadata.json` contains `media_dir` pointing to Google Drive path where images are stored
+- Images path pattern: `/Users/machi/Library/CloudStorage/GoogleDrive-hellomarch@gmail.com/My Drive/wechat-images/<chatroom_name>/`
+
+**During /brainstorm**: Always search aichat for relevant chatroom data, including images from Google Drive.
+
+**CRITICAL**: User's own chat messages are their OWN ideas - NEVER attribute to fictional "朋友说" or "我朋友"
+
+## Git and Permissions
+
+When making commits:
+- Use British spelling in all written output
+- Follow project commit message conventions (short, concise)
+- Add co-credit in commit messages:
+  ```
+  <main commit message>
+
+  Generated with [Claude Code](https://claude.ai/code)
+  via [Happy](https://happy.engineering)
+
+  Co-Authored-By: Claude <noreply@anthropic.com>
+  Co-Authored-By: Happy <yesreply@happy.engineering>
+  ```
+
+## Python Dependencies
+
+```bash
+pip install -r requirements.txt
 ```
 
----
+Required: `markdown>=3.5`, `beautifulsoup4>=4.12.0`
 
-## Lessons Learned: MySQL vs PostgreSQL Article (Dec 2024)
+## Important Notes
 
-### Core Discovery: Tech Suite Evolution
+- **Style guide is persona-specific**: `benyu/style_guide.md` or `vannevar/style_guide.md`
+- **File output is mandatory**: All slash commands MUST write to files
+- **Article directory context**: Commands assume you're in `{persona}/articles/[name]/`
+- **No emoji policy**: Zero emoji in published articles for both personas
+- **Data authenticity overrides everything**: Better to ask user or leave placeholder than fabricate
 
-**Critical Insight**: Database adoption mechanisms changed fundamentally between 2000s and 2010s-2020s.
+## Quick Reference
 
-**Two Forms of Tech Suite:**
+**Benyu style guide**: `benyu/style_guide.md`
+**Vannevar style guide**: `vannevar/style_guide.md`
+**Shared principles**: `templates/article-structures/PRINCIPLES.md`
 
-1. **Named Stack Bundling (2000s - LAMP era)**
-   - Explicit acronym: LAMP, WAMP, MAMP
-   - Complete stack includes OS layer: Linux + Apache + MySQL + PHP
-   - Distribution: Shared hosting cPanel one-click installers (70% of hosts)
-   - Developer awareness: HIGH - "We're a LAMP shop"
-   - **Active choice**: Developer explicitly chose "LAMP stack"
+**Standard workflow**: `/brainstorm` → `/outline` → `/draft` → `/review` → `/convert`
 
-2. **Platform Defaults (2010s-2020s - Cloud era)**
-   - **No acronym needed**: Rails uses PostgreSQL, but not called "RHP Stack"
-   - No OS layer: Infrastructure abstracted (cloud characteristic)
-   - Distribution: Platform defaults + starter templates
-   - Developer awareness: LOW - Say "I use Next.js" (database implicit)
-   - **Passive inheritance**: Choose framework/platform → database follows automatically
+**Article length target**: 2500-3500 characters (Chinese) for both personas
 
-**Why Platform Defaults is MORE POWERFUL than Named Stack Bundling:**
-- Lower friction: No active choice needed, reduces decision fatigue
-- Stronger lock-in: Platform optimizations favor default database
-- No branding needed: Invisible standardization more powerful than explicit branding
-- Framework-first identity: Developer says "I use Next.js" (not database name)
+**Conversion**: `python scripts/html_converter.py {persona}/articles/[name]/final.md`
 
-**Examples:**
-- LAMP (2000s): Active choice "LAMP stack" → MySQL comes with it
-- Heroku (2010s): Passive inheritance - Choose Rails + Heroku → PostgreSQL auto-provisioned (Heroku only offered PostgreSQL initially)
-- Vercel (2020s): Invisible binding - Use `create-next-app` → PostgreSQL already configured via Prisma
-
-### Three-Factor Theory for Database Dominance
-
-**Theory**: Database market dominance determined by three factors, NOT features or courage:
-
-**Factor 1: Tech Suite** - Deep technology stack binding
-- Framework + database integration: native drivers, ORM optimizations, type mapping
-- Platform + database integration: deployment scripts, monitoring tools
-- Changing database ≈ changing entire tech stack
-- Database fate determined by which suite/platform bundles it
-
-**Factor 2: Role Models** - Success cases eliminate decision friction
-- Not just technical problem, but organizational politics and risk management
-- Three roles:
-  1. Technical feasibility proof (Facebook → MySQL can scale)
-  2. Lower decision cost ("industry standard" is enough justification)
-  3. Talent supply guarantee (engineers learn what big companies use)
-- Pattern matching psychology: "If it works for Facebook, it works for us" = rational heuristic
-- Political wisdom: Failure = "we followed best practice" (blame distributed), Success = my credit (credit concentrated)
-
-**Factor 3: Ecosystem** - Knowledge and tool network effects
-- Quality of database << quality of surrounding ecosystem
-- Four layers:
-  - Knowledge: Stack Overflow, blogs, books, courses
-  - Tools: Monitoring, backup, migration, GUI clients
-  - Commercial: Cloud managed services, support contracts, consulting
-  - Community: Forums, bug fixes, extensions/plugins
-- Network effect: More users → problems already solved → solutions online → more users
-- Ecosystem makes technical debt tolerable (MySQL's charset/replication issues have workarounds everywhere)
-
-**Three factors reinforce each other** forming positive feedback loop:
-Tech suite brings users → users create role models → role models attract more users → users contribute to ecosystem → ecosystem lowers barrier → attracts more users → cycle continues
-
-### Key Research Finding: Distribution Mechanism Shift
-
-**LAMP Era (2000s):**
-- Channel: Shared hosting providers (Bluehost, HostGator)
-- Tool: cPanel one-click installers (Softaculous, Fantastico)
-- Buyer: Often non-technical website owners
-- Decision: "Host recommends LAMP → use LAMP"
-
-**Cloud Era (2010s-2020s):**
-- Channel: Platform-as-a-Service (Heroku, Vercel, Netlify)
-- Tool: CLI generators (`create-next-app`), GitHub templates, platform integrations
-- Buyer: Developers choosing frameworks first
-- Decision: "Framework docs/templates use PostgreSQL → use PostgreSQL"
-
-**Key Shift**: From infrastructure-first (choose OS → choose stack) to framework-first (choose framework → inherit stack)
-
-### Forward-Looking: AI Coding Suite Opportunity
-
-**Not Vector Database** (that's for AI application data, pgvector already exists)
-
-**But Database for AI Coding Workflow:**
-- Problem reframing: AI coder writes code daily, what data can't LLM manage well?
-- LLM good at: Code generation, text processing, pattern matching
-- LLM bad at: Structured data persistence, transactional consistency, complex relational queries, schema evolution tracking, data integrity constraints
-- **Database should complement LLM**, managing data LLM shouldn't touch
-
-**Potential AI Coding Suite:**
-- AI coding assistant (Claude Code, Cursor, etc.)
-- + Database optimized for AI-human collaboration
-- + Tools for managing session state, user preferences, structured configs, audit logs
-
-**Why this is real opportunity:**
-- AI coding is paradigm shift (not incremental like Rust)
-- Current databases designed for human coders
-- AI + human collaboration workflow needs different data management patterns
-- First-mover advantage building this suite = next PostgreSQL
-
-### Writing Process Lessons
-
-**Title Evolution:**
-- Started: "MySQL vs PostgreSQL: 无聊的饭圈文化"
-- Final: "数据库选型的三要素，兼驳斥PG vs MySQL的饭圈文化"
-- Reason: Positive contribution (三要素) + critique, more substantive
-
-**Outline Structure:**
-- Opening: State three-factor theory concisely
-- Part 1 (MySQL): Prove with three factors, explain Named Stack Bundling in detail
-- Part 2 (PostgreSQL): Prove with three factors, explain Platform Defaults in detail, compare two mechanisms
-- Part 3 (China): Validate theory with Oracle compatibility strategy
-- Part 4 (Future): Apply theory to predict winners, include AI Coding Suite opportunity
-- Conclusion: Summarize three factors, call to action
-
-**Key Decision: Detail Level in Opening**
-- Wrong: Put detailed comparison of two mechanisms in opening (overwhelms reader)
-- Right: Simple examples in opening, detailed comparison in Part 2 when proving PostgreSQL's success
-- Principle: Theory → Evidence 1 → Evidence 2 (with comparison) → Validation → Application
-
-**Voice and Tone:**
-- User preference: Serious, not cliche
-- Avoid套路phrases like "远没有你想象的那么独立"
-- Direct statements: "大多数数据库'选择'不是独立决策，而是技术栈的附属品"
-- Chinese over English: "理性的启发式策略" instead of "rational heuristic"
-- Keep English only when necessary or natural in tech context
-
-### Data Sources and Attribution
-
-**Real Article Referenced:**
-- Friend's article: 《MySQL：互联网行业的服从测试》by 老冯
-- Used screenshot as concrete hook
-- Properly attributed to avoid fabrication
-
-**Research Data (All Verified):**
-- Heroku: 2M+ PostgreSQL databases, founded 2007, PostgreSQL as default
-- Vercel Postgres: Launched May 2023, powered by Neon
-- Stack Overflow: PostgreSQL 58% developers, "most admired"
-- Salary gap: PostgreSQL DBAs $133k vs MySQL DBAs $73k
-- Migration: 17% on-time, 30% overrun, 4hr downtime = $28k
-- WordPress: 40% of web (MySQL-only)
-- PostgreSQL streaming replication: 2010 (version 9.0) - 10 year gap vs MySQL
-
-### Files Generated
-
-- `brainstorm.md`: Alternative perspectives on MySQL vs PostgreSQL (10 different angles)
-- `brainstorm-reasons.md`: Suite theory with detailed analysis
-- `outline.md`: Complete article structure with three-factor framework
-- `draft.md`: Opening section (in progress)
-
-### Next Steps for Continuation
-
-1. Complete Part 1: Why MySQL Won (explain Named Stack Bundling mechanism)
-2. Complete Part 2: Why PostgreSQL Winning (explain Platform Defaults, compare mechanisms)
-3. Complete Part 3: China Oracle compatibility validation
-4. Complete Part 4: Future prediction with AI Coding Suite
-5. Conclusion: Three factors summary
-6. Review against style guide (2500-3500 characters target)
-7. Convert to WeChat format using `/convert`
-
----
-
+**Publishing**: Open `wechat.html` in browser → Select all → Copy → Paste into WeChat editor

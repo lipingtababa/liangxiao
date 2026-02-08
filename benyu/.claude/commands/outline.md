@@ -21,7 +21,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Core Principles (MUST READ FIRST)
 
-**Read `/Users/Shared/code/benyu/templates/article-structures/PRINCIPLES.md` for the 6 principles that apply to ALL articles:**
+**Read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 principles that apply to ALL articles:**
 
 1. **标题即半篇文章** - Title must provoke. 具体、刺痛、让人想反驳
 2. **首段必须抓人** - Hook in first paragraph. 制造冲突或张力
@@ -75,7 +75,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Instructions
 
-1. **Read the style guide**: First, read `/Users/Shared/code/benyu/templates/style_guide.md` to understand the writing style, tone, and structure patterns.
+1. **Read the style guide**: First, read `benyu/style_guide.md` (from repo root) to understand the writing style, tone, and structure patterns.
 
 2. **Ask the user for the topic**: Ask what they want to write about. Get enough context to understand:
    - The main argument or thesis
@@ -115,7 +115,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Important
 
-- Always reference the style guide at `/Users/Shared/code/benyu/templates/style_guide.md`
+- Always reference the style guide at `benyu/style_guide.md` (from repo root)
 - Don't create vague outlines - be specific about what examples and references to include
 - Ensure the outline follows one of the 5 article structures in `templates/article-structures/`
 - The outline should be detailed enough that drafting becomes straightforward
