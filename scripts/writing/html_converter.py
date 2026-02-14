@@ -174,8 +174,8 @@ def convert_markdown_to_wechat_html(md_path: Path, output_path: Path = None):
     )
 
     # Load CSS styles
-    project_dir = Path(__file__).parent.parent
-    css_path = project_dir / "templates" / "wechat_styles.css"
+    project_dir = Path(__file__).parent.parent.parent
+    css_path = project_dir / "writing" / "templates" / "wechat_styles.css"
 
     if not css_path.exists():
         print(f"Warning: CSS file not found at {css_path}")

@@ -7,8 +7,8 @@ You are reviewing a 微信公众号 article against the **Vannevar** persona sty
 # Instructions
 
 1. **Read the style guide**:
-   - First, read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 core principles
-   - Then read `vannevar/style_guide.md` (from repo root) for the Vannevar persona requirements
+   - First, read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 core principles
+   - Then read `writing/vannevar/style_guide.md` (from repo root) for the Vannevar persona requirements
 
 2. **Ask for the article**: Request the article text or file path to review.
 

@@ -12,7 +12,7 @@ You are helping convert a markdown article to WeChat-compatible HTML format.
 
 3. **Run the conversion**:
    ```bash
-   python scripts/html_converter.py <path/to/article.md>
+   python scripts/writing/html_converter.py <path/to/article.md>
    ```
 
 4. **Explain the output**:
@@ -36,17 +36,17 @@ You are helping convert a markdown article to WeChat-compatible HTML format.
 6. **Troubleshooting**: If conversion fails:
    - Check if markdown file exists
    - Verify dependencies are installed: `pip install -r requirements.txt`
-   - Check if templates/wechat_styles.css exists
+   - Check if writing/templates/wechat_styles.css exists
    - Look for markdown syntax errors
 
 # Example Usage
 
-For an article at `benyu/articles/my-article/final.md` or `vannevar/articles/my-article/final.md`:
+For an article at `writing/benyu/articles/my-article/final.md` or `writing/vannevar/articles/my-article/final.md`:
 
 ```bash
-python scripts/html_converter.py benyu/articles/my-article/final.md
+python scripts/writing/html_converter.py writing/benyu/articles/my-article/final.md
 # or
-python scripts/html_converter.py vannevar/articles/my-article/final.md
+python scripts/writing/html_converter.py writing/vannevar/articles/my-article/final.md
 ```
 
 This creates `wechat.html` in the same directory as the markdown file.
@@ -56,7 +56,7 @@ This creates `wechat.html` in the same directory as the markdown file.
 You can specify a custom output path:
 
 ```bash
-python scripts/html_converter.py benyu/articles/my-article/final.md benyu/articles/my-article/custom.html
+python scripts/writing/html_converter.py writing/benyu/articles/my-article/final.md writing/benyu/articles/my-article/custom.html
 ```
 
 # Important

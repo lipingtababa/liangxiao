@@ -21,7 +21,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Core Principles (MUST READ FIRST)
 
-**Read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 principles that apply to ALL articles:**
+**Read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 principles that apply to ALL articles:**
 
 1. **标题即半篇文章** - Title must provoke. 具体、刺痛、让人想反驳
 2. **首段必须抓人** - Hook in first paragraph. 制造冲突或张力
@@ -75,14 +75,14 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Instructions
 
-1. **Read the style guide**: First, read `benyu/style_guide.md` (from repo root) to understand the writing style, tone, and structure patterns.
+1. **Read the style guide**: First, read `writing/benyu/style_guide.md` (from repo root) to understand the writing style, tone, and structure patterns.
 
 2. **Ask the user for the topic**: Ask what they want to write about. Get enough context to understand:
    - The main argument or thesis
    - The target audience
    - What type of article it should be (debunking, industry critique, true vs false problems, etc.)
 
-3. **Select the appropriate article structure**: Based on the topic, choose one from `templates/article-structures/`:
+3. **Select the appropriate article structure**: Based on the topic, choose one from `writing/templates/article-structures/`:
    - **Debunking (驳斥)** - X is widely believed → X is wrong → here's reality
    - **Raising a Valuable Question (提出问题)** - Reframe definition → challenge assumptions → open new perspective
    - **Case and Product Study (案例与产品研究)** - Here's what happened → what it reveals → the lesson
@@ -115,8 +115,8 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Important
 
-- Always reference the style guide at `benyu/style_guide.md` (from repo root)
+- Always reference the style guide at `writing/benyu/style_guide.md` (from repo root)
 - Don't create vague outlines - be specific about what examples and references to include
-- Ensure the outline follows one of the 5 article structures in `templates/article-structures/`
+- Ensure the outline follows one of the 5 article structures in `writing/templates/article-structures/`
 - The outline should be detailed enough that drafting becomes straightforward
 - **CRITICAL**: You MUST write the outline to `outline.md` file - do not just show it to the user

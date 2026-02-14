@@ -25,7 +25,7 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
 
 # Core Principles (MUST READ FIRST)
 
-**Read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 principles:**
+**Read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 principles:**
 
 1. **标题即半篇文章** - 具体、刺痛、让人想反驳
 2. **首段必须抓人** - 制造冲突或张力，前两句让人停下来
@@ -36,7 +36,7 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
 
 # Instructions
 
-1. **Read the style guide**: First, read `benyu/style_guide.md` (from repo root) to fully understand:
+1. **Read the style guide**: First, read `writing/benyu/style_guide.md` (from repo root) to fully understand:
    - Tone and voice
    - Language patterns and favorite phrases
    - Argumentation style
@@ -114,7 +114,7 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
    - Short superficial treatment
    - PPT-style bullet points with bold labels (use natural paragraphs)
 
-4. **Write the full article** in Chinese, following the selected article structure from `templates/article-structures/`
+4. **Write the full article** in Chinese, following the selected article structure from `writing/templates/article-structures/`
 
 5. **End with engagement**:
    - "有兴趣研究这个问题的同好，欢迎在公众号给我留言，我们一起交流讨论。"

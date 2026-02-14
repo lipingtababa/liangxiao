@@ -21,7 +21,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Core Principles (MUST READ FIRST)
 
-**Read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 universal principles.** Apply them with Vannevar's analytical tone:
+**Read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 universal principles.** Apply them with Vannevar's analytical tone:
 
 1. **标题即半篇文章** - Title must be precise and state the question/thesis clearly (not provocative clickbait)
 2. **首段必须抓人** - Hook with intellectual tension: paradox, surprising observation, unresolved question
@@ -32,7 +32,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Vannevar Outline Principles
 
-**Read the style guide**: First, read `vannevar/style_guide.md` (from repo root) to understand the Vannevar voice.
+**Read the style guide**: First, read `writing/vannevar/style_guide.md` (from repo root) to understand the Vannevar voice.
 
 **An outline is a FRAMEWORK, not detailed content:**
 
@@ -73,14 +73,14 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Instructions
 
-1. **Read the style guide**: First, read `vannevar/style_guide.md` (from repo root) to understand the analytical, measured tone.
+1. **Read the style guide**: First, read `writing/vannevar/style_guide.md` (from repo root) to understand the analytical, measured tone.
 
 2. **Ask the user for the topic**: Get enough context to understand:
    - The core question or observation
    - What data/evidence is available
    - The target audience
 
-3. **Select the appropriate article structure** from `templates/article-structures/`:
+3. **Select the appropriate article structure** from `writing/templates/article-structures/`:
    - **Debunking (驳斥)** - Reframe as: widespread belief is incomplete, here's a more complete picture
    - **Raising a Valuable Question (提出问题)** - Perfect fit for Vannevar: reframe and deepen the question
    - **Case and Product Study (案例与产品研究)** - Analyse what happened and extract patterns
@@ -109,7 +109,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Important
 
-- Always reference the Vannevar style guide at `vannevar/style_guide.md` (from repo root)
+- Always reference the Vannevar style guide at `writing/vannevar/style_guide.md` (from repo root)
 - Tone: analytical and measured, NOT provocative or sarcastic
 - Every section should have a theoretical anchor
 - Don't create vague outlines - be specific about evidence and frameworks

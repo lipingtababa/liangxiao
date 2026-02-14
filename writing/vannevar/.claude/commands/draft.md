@@ -25,11 +25,11 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
 
 # Core Principles (MUST READ FIRST)
 
-**Read `templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 universal principles.** Apply with Vannevar's analytical voice.
+**Read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 universal principles.** Apply with Vannevar's analytical voice.
 
 # Instructions
 
-1. **Read the style guide**: First, read `vannevar/style_guide.md` (from repo root) to fully understand the Vannevar voice:
+1. **Read the style guide**: First, read `writing/vannevar/style_guide.md` (from repo root) to fully understand the Vannevar voice:
    - Analytical, measured tone
    - Evidence-first argumentation
    - Theoretical grounding mandatory
@@ -91,7 +91,7 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
    - Over-formality or academic tone ("本文将探讨...")
    - Vague statements without evidence
 
-4. **Write the full article** in Chinese, following the selected article structure from `templates/article-structures/`
+4. **Write the full article** in Chinese, following the selected article structure from `writing/templates/article-structures/`
 
 5. **End with synthesis and invitation**:
    - Summarise what we know and what remains open
