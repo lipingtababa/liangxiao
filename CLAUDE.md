@@ -14,14 +14,29 @@
 
 ### 2. 项目目标 / Project Goal
 
-这个项目是为了将"瑞典马工"微信公众号的文章翻译成英文并发布到 magong.se 网站。
+这是一个合并的 monorepo，包含两个系统：
+
+1. **magong.se 网站** — Next.js 英文博客，翻译微信文章给国际读者
+2. **写作系统** — 双人格微信文章工厂（benyu 犀利 + vannevar 分析），位于 `writing/` 目录
+
+流水线：**写作（中文）** → **翻译** → **发布（英文）**
 
 ### 3. 工作流程 / Workflow
 
+**网站发布流程：**
 1. 用户手动提供微信文章URL
 2. 系统自动提取文章内容和图片
 3. 将中文翻译成英文（为国际读者调整内容）
 4. 发布到 magong.se
+
+**文章写作流程（writing/ 目录）：**
+1. `/brainstorm` — 研究话题
+2. `/outline` — 生成大纲
+3. `/draft` — 撰写草稿
+4. `/review` — 审查校对
+5. `/convert` — 转换为微信HTML
+
+**关键规则：绝对不能伪造数据。** 所有数据必须真实、有来源、可验证。
 
 ### 4. 技术栈 / Tech Stack
 
@@ -50,12 +65,20 @@
 
 ```
 liangxiao/
-├── scripts/          # Python 翻译脚本
-├── posts/           # Markdown 文章
-├── public/          # 静态资源
-├── pages/           # Next.js 页面
-├── lib/             # 工具函数
-└── docs/            # 项目文档
+├── app/              # Next.js 页面
+├── components/       # React 组件
+├── lib/              # 工具函数
+├── posts/            # 已发布英文文章
+├── public/           # 静态资源
+├── docs/             # 项目文档
+├── writing/          # 文章写作系统
+│   ├── benyu/        # 犀利人格
+│   ├── vannevar/     # 分析人格
+│   └── templates/    # 文章结构模板
+├── scripts/
+│   ├── website/      # 网站脚本（提取、SEO）
+│   └── writing/      # 写作脚本（HTML转换、聊天分析）
+└── aichat -> ...     # 符号链接（gitignored）
 ```
 
 ### 8. 开发原则 / Development Principles

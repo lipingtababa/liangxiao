@@ -53,3 +53,17 @@ node_modules/
 
 # Miscellaneous
 articles.txt
+
+# Writing system (benyu/vannevar)
+aichat
+writing/**/*.html
+writing/**/*.pdf
+Examples/
+source-materials/
+style.html
+style_files/
+
+# Virtual environments
+venv/
+env/
+ENV/

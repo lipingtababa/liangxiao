@@ -33,31 +33,31 @@
 #### 1. 处理单个文章
 
 ```bash
-python scripts/extract_content_with_state.py --url https://mp.weixin.qq.com/s/xxx
+python scripts/website/extract_content_with_state.py --url https://mp.weixin.qq.com/s/xxx
 ```
 
 #### 2. 批量处理文章
 
 ```bash
-python scripts/extract_content_with_state.py --input articles.txt
+python scripts/website/extract_content_with_state.py --input articles.txt
 ```
 
 #### 3. 强制更新所有文章
 
 ```bash
-python scripts/extract_content_with_state.py --input articles.txt --force-update
+python scripts/website/extract_content_with_state.py --input articles.txt --force-update
 ```
 
 #### 4. 跳过状态管理（传统模式）
 
 ```bash
-python scripts/extract_content_with_state.py --url https://... --skip-state
+python scripts/website/extract_content_with_state.py --url https://... --skip-state
 ```
 
 #### 5. 查看处理统计
 
 ```bash
-python scripts/extract_content_with_state.py --stats
+python scripts/website/extract_content_with_state.py --stats
 ```
 
 ### 状态管理器命令
@@ -65,26 +65,26 @@ python scripts/extract_content_with_state.py --stats
 #### 查看统计信息
 
 ```bash
-python scripts/state_manager.py --status
+python scripts/website/state_manager.py --status
 ```
 
 #### 检查特定URL状态
 
 ```bash
-python scripts/state_manager.py --check https://mp.weixin.qq.com/s/xxx
+python scripts/website/state_manager.py --check https://mp.weixin.qq.com/s/xxx
 ```
 
 #### 列出所有已处理文章
 
 ```bash
-python scripts/state_manager.py --list
+python scripts/website/state_manager.py --list
 ```
 
 #### 清理旧记录
 
 ```bash
 # 清理30天前的记录
-python scripts/state_manager.py --cleanup 30
+python scripts/website/state_manager.py --cleanup 30
 ```
 
 ## 状态文件格式
@@ -171,7 +171,7 @@ python scripts/state_manager.py --cleanup 30
 
 ```bash
 # 每月清理一次，保留最近30天的记录
-python scripts/state_manager.py --cleanup 30
+python scripts/website/state_manager.py --cleanup 30
 ```
 
 ### 2. 备份状态文件
@@ -188,10 +188,10 @@ cp processed_articles.json processed_articles.backup.json
 
 ```bash
 # 查看所有文章状态
-python scripts/state_manager.py --list
+python scripts/website/state_manager.py --list
 
 # 强制重新处理特定文章
-python scripts/extract_content_with_state.py --url https://... --force-update
+python scripts/website/extract_content_with_state.py --url https://... --force-update
 ```
 
 ### 4. Git忽略

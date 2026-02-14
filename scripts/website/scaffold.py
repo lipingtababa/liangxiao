@@ -94,7 +94,7 @@ if __name__ == '__main__':
     main()
 '''
     
-    file_path = Path('scripts/extract_content.py')
+    file_path = Path('scripts/website/extract_content.py')
     file_path.write_text(content)
     print(f"✓ 创建文件: {file_path}")
 
@@ -327,7 +327,7 @@ def main():
     
     print("\n=== 脚手架创建完成 ===")
     print("\n现在AI开发者可以:")
-    print("1. 运行 python scripts/scaffold.py 初始化项目结构")
+    print("1. 运行 python scripts/website/scaffold.py 初始化项目结构")
     print("2. 编辑生成的Python文件实现具体功能")
     print("3. 使用测试工作流验证实现")
     print("\n提示: 所有骨架代码都包含TODO注释指导实现步骤")
