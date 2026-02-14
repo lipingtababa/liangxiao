@@ -54,7 +54,7 @@ node_modules/
 # Miscellaneous
 articles.txt
 
-# Writing system (benyu/vannevar)
+# Writing system (benyu/胡适)
 aichat
 writing/**/*.html
 writing/**/*.pdf

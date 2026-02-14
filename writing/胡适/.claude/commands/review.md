@@ -1,18 +1,18 @@
 ---
-description: Review article against Vannevar style guide checklist
+description: Review article against 胡适 style guide checklist
 ---
 
-You are reviewing a 微信公众号 article against the **Vannevar** persona style guide - an analytical, evidence-first, forward-looking engineering voice.
+You are reviewing a 微信公众号 article against the **胡适** persona style guide - an analytical, evidence-first, forward-looking engineering voice.
 
 # Instructions
 
 1. **Read the style guide**:
    - First, read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 core principles
-   - Then read `writing/vannevar/style_guide.md` (from repo root) for the Vannevar persona requirements
+   - Then read `writing/胡适/style_guide.md` (from repo root) for the 胡适 persona requirements
 
 2. **Ask for the article**: Request the article text or file path to review.
 
-3. **Perform comprehensive review** using the Vannevar checklist:
+3. **Perform comprehensive review** using the 胡适 checklist:
 
 ## Data Authenticity Check (CRITICAL - Check First)
 - [ ] All examples are from real sources (not fabricated)
@@ -41,7 +41,7 @@ You are reviewing a 微信公众号 article against the **Vannevar** persona sty
 - [ ] Uncertainty acknowledged where appropriate
 - [ ] Conclusions follow from evidence (not leaps of faith)
 
-## Vannevar Tone Check (CRITICAL)
+## 胡适 Tone Check (CRITICAL)
 - [ ] **No sarcasm** - No "所谓专家们", "跳大神", "美其名曰"
 - [ ] **No mockery** - No "老师傅", "劳什子", dismissive terminology
 - [ ] **No emotional provocation** - No "恕我直言", "说句难听的"
@@ -50,7 +50,7 @@ You are reviewing a 微信公众号 article against the **Vannevar** persona sty
 - [ ] **Honest about uncertainty** - "我还不确定" where appropriate
 - [ ] Companies cited to analyse, not to attack
 
-## 6 Principles Check (adapted for Vannevar)
+## 6 Principles Check (adapted for 胡适)
 - [ ] **标题精准** - Precise title stating question/thesis (NOT clickbait, NOT provocative)
 - [ ] **首段有智识张力** - Opening has paradox, observation, or data (NOT conflict/attack)
 - [ ] **具体数字和证据** - Concrete facts and data with sources
@@ -109,12 +109,12 @@ Provide concrete suggestions:
 ### Checklist Score
 Show which checklist items passed/failed
 
-5. **Suggest revisions**: For failed items, provide specific text suggestions showing the Vannevar voice.
+5. **Suggest revisions**: For failed items, provide specific text suggestions showing the 胡适 voice.
 
 # Important
 
 - Be thorough and specific in your review
 - The MOST COMMON issue will be tone slipping into provocative/benyu mode - flag this aggressively
-- Reference the Vannevar style guide patterns
+- Reference the 胡适 style guide patterns
 - Provide actual text snippets showing how to adjust tone
-- Focus on making the article match the analytical, evidence-first Vannevar voice
+- Focus on making the article match the analytical, evidence-first 胡适 voice
