@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ### 1. 提取单个文章
 
 ```bash
-python scripts/wechat_extractor.py --url "https://mp.weixin.qq.com/s/xxxxx"
+python scripts/website/wechat_extractor.py --url "https://mp.weixin.qq.com/s/xxxxx"
 ```
 
 ### 2. 批量提取
@@ -44,7 +44,7 @@ https://mp.weixin.qq.com/s/article3
 然后运行：
 
 ```bash
-python scripts/wechat_extractor.py --input articles.txt --output results.json
+python scripts/website/wechat_extractor.py --input articles.txt --output results.json
 ```
 
 ### 3. 不下载图片
@@ -52,13 +52,13 @@ python scripts/wechat_extractor.py --input articles.txt --output results.json
 如果只需要文本内容，可以添加 `--no-images` 参数：
 
 ```bash
-python scripts/wechat_extractor.py --url "URL" --no-images
+python scripts/website/wechat_extractor.py --url "URL" --no-images
 ```
 
 ### 4. 指定图片保存目录
 
 ```bash
-python scripts/wechat_extractor.py --url "URL" --image-dir ./my_images
+python scripts/website/wechat_extractor.py --url "URL" --image-dir ./my_images
 ```
 
 ## 输出格式

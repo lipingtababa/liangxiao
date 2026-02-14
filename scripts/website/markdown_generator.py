@@ -538,7 +538,7 @@ def main():
                 # 如果需要验证
                 if args.validate and result['file_path']:
                     log("运行格式验证...")
-                    from scripts.test.validate_markdown import validate_single_markdown_file
+                    from scripts.website.test.validate_markdown import validate_single_markdown_file
                     validation_result = validate_single_markdown_file(Path(result['file_path']))
                     if validation_result['valid']:
                         log("✓ 格式验证通过", "SUCCESS")

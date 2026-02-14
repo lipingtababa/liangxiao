@@ -41,7 +41,7 @@ def run_extraction(url):
 
     try:
         result = subprocess.run([
-            "python", "scripts/wechat_extractor.py", "--url", url
+            "python", "scripts/website/wechat_extractor.py", "--url", url
         ], capture_output=True, text=True, timeout=60)
 
         if result.returncode == 0:

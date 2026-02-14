@@ -35,22 +35,22 @@ Markdown生成器 (`scripts/markdown_generator.py`) 将提取和翻译的文章�
 
 ```bash
 # 单个文件处理
-python scripts/markdown_generator.py --input article.json --output-dir posts
+python scripts/website/markdown_generator.py --input article.json --output-dir posts
 
 # 批量处理
-python scripts/markdown_generator.py --input articles.json --output-dir posts
+python scripts/website/markdown_generator.py --input articles.json --output-dir posts
 
 # 干运行（只显示内容，不创建文件）
-python scripts/markdown_generator.py --input article.json --dry-run
+python scripts/website/markdown_generator.py --input article.json --dry-run
 
 # 生成后验证格式
-python scripts/markdown_generator.py --input article.json --validate
+python scripts/website/markdown_generator.py --input article.json --validate
 ```
 
 ### Python API
 
 ```python
-from markdown_generator import generate_markdown
+from scripts.website.markdown_generator import generate_markdown
 
 # 准备文章数据
 article_data = {
