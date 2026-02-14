@@ -36,7 +36,7 @@ You are helping write a full article draft for a 微信公众号 (WeChat Officia
 
 # Instructions
 
-1. **Read the style guide**: First, read `writing/benyu/style_guide.md` (from repo root) to fully understand:
+1. **Read the style guide**: First, read `writing/戚本禹/style_guide.md` (from repo root) to fully understand:
    - Tone and voice
    - Language patterns and favorite phrases
    - Argumentation style

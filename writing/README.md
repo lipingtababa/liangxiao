@@ -30,7 +30,7 @@ This system helps you write 微信公众号 articles that match the style, tone,
 ## Directory Structure
 
 ```
-benyu/
+戚本禹/
 ├── .claude/
 │   └── commands/           # Slash commands
 │       ├── outline.md      # Generate article outline
@@ -355,4 +355,4 @@ This is a personal writing workflow system. All example articles are copyrighted
 **For complete workflow details, use**: `/workflow`
 **For style guide**: Read `templates/style_guide.md`
 **To start writing**: Use `/outline`
-# benyu
+# 戚本禹

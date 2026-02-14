@@ -75,7 +75,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Instructions
 
-1. **Read the style guide**: First, read `writing/benyu/style_guide.md` (from repo root) to understand the writing style, tone, and structure patterns.
+1. **Read the style guide**: First, read `writing/戚本禹/style_guide.md` (from repo root) to understand the writing style, tone, and structure patterns.
 
 2. **Ask the user for the topic**: Ask what they want to write about. Get enough context to understand:
    - The main argument or thesis
@@ -115,7 +115,7 @@ You are helping create an article outline for a 微信公众号 (WeChat Official
 
 # Important
 
-- Always reference the style guide at `writing/benyu/style_guide.md` (from repo root)
+- Always reference the style guide at `writing/戚本禹/style_guide.md` (from repo root)
 - Don't create vague outlines - be specific about what examples and references to include
 - Ensure the outline follows one of the 5 article structures in `writing/templates/article-structures/`
 - The outline should be detailed enough that drafting becomes straightforward

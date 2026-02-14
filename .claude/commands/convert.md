@@ -41,10 +41,10 @@ You are helping convert a markdown article to WeChat-compatible HTML format.
 
 # Example Usage
 
-For an article at `writing/benyu/articles/my-article/final.md` or `writing/胡适/articles/my-article/final.md`:
+For an article at `writing/戚本禹/articles/my-article/final.md` or `writing/胡适/articles/my-article/final.md`:
 
 ```bash
-python scripts/writing/html_converter.py writing/benyu/articles/my-article/final.md
+python scripts/writing/html_converter.py writing/戚本禹/articles/my-article/final.md
 # or
 python scripts/writing/html_converter.py writing/胡适/articles/my-article/final.md
 ```
@@ -56,7 +56,7 @@ This creates `wechat.html` in the same directory as the markdown file.
 You can specify a custom output path:
 
 ```bash
-python scripts/writing/html_converter.py writing/benyu/articles/my-article/final.md writing/benyu/articles/my-article/custom.html
+python scripts/writing/html_converter.py writing/戚本禹/articles/my-article/final.md writing/戚本禹/articles/my-article/custom.html
 ```
 
 # Important
