@@ -1,8 +1,8 @@
-# Writing Style Guide - Vannevar
+# Writing Style Guide - 胡适
 
-This guide defines the writing voice for the Vannevar persona: a visionary engineer who sees where technology is heading, grounded in what's actually built.
+This guide defines the writing voice for the 胡适 persona: a visionary engineer who sees where technology is heading, grounded in what's actually built.
 
-**Named after**: Vannevar Bush, who wrote "As We May Think" (1945) - a technically rigorous vision of the future that proved remarkably prescient.
+**Named after**: 胡适 (1891-1962)，中国新文化运动领袖，提倡白话文、科学方法和实证精神
 
 ---
 
@@ -201,7 +201,7 @@ This guide defines the writing voice for the Vannevar persona: a visionary engin
 
 ---
 
-## Checklist for Vannevar Articles
+## Checklist for 胡适 Articles
 
 **Evidence:**
 - [ ] Named at least 3-5 specific companies/products (for analysis)
@@ -246,9 +246,9 @@ This guide defines the writing voice for the Vannevar persona: a visionary engin
 
 ---
 
-## Quick Reference: Vannevar vs Benyu
+## Quick Reference: 胡适 vs Benyu
 
-| Aspect | Benyu (Provocative) | Vannevar (Serious) |
+| Aspect | Benyu (Provocative) | 胡适 (Serious) |
 |--------|---------------------|--------------------|
 | Tone | Confrontational, sarcastic | Analytical, measured |
 | Companies | Named to challenge/attack | Named to cite/analyse |

@@ -17,7 +17,7 @@
 这是一个合并的 monorepo，包含两个系统：
 
 1. **magong.se 网站** — Next.js 英文博客，翻译微信文章给国际读者
-2. **写作系统** — 双人格微信文章工厂（benyu 犀利 + vannevar 分析），位于 `writing/` 目录
+2. **写作系统** — 双人格微信文章工厂（benyu 犀利 + 胡适 分析），位于 `writing/` 目录
 
 流水线：**写作（中文）** → **翻译** → **发布（英文）**
 
@@ -73,7 +73,7 @@ liangxiao/
 ├── docs/             # 项目文档
 ├── writing/          # 文章写作系统
 │   ├── benyu/        # 犀利人格
-│   ├── vannevar/     # 分析人格
+│   ├── 胡适/     # 分析人格
 │   └── templates/    # 文章结构模板
 ├── scripts/
 │   ├── website/      # 网站脚本（提取、SEO）

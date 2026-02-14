@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **combined monorepo** with two systems:
 
 1. **magong.se website** — Next.js English blog translating WeChat articles for international readers
-2. **Writing system** — Dual-persona WeChat article factory (benyu provocative + vannevar analytical)
+2. **Writing system** — Dual-persona WeChat article factory (benyu provocative + 胡适 analytical)
 
 The pipeline: **write (Chinese)** → **translate** → **publish (English)**
 
@@ -23,14 +23,14 @@ The writing system enforces **strict data authenticity** — never fabricate exa
 - **Analogies**: Vivid, everyday, mocking (永动机, 农贸市场卖豆腐)
 - **Conclusions**: Provocative reversal, "来骂我吧" energy
 
-### Vannevar - Serious/Analytical Voice
-- **Directory**: `writing/vannevar/`
-- **Style guide**: `writing/vannevar/style_guide.md`
+### 胡适 - Serious/Analytical Voice
+- **Directory**: `writing/胡适/`
+- **Style guide**: `writing/胡适/style_guide.md`
 - **Tone**: Analytical, measured, evidence-first, forward-looking
 - **Companies**: Named to cite and analyse (not attack)
 - **Analogies**: Structural, scientific, from engineering/economics
 - **Conclusions**: Synthesis + open questions, "一起研究" energy
-- **Named after**: Vannevar Bush, who wrote "As We May Think" (1945)
+- **Named after**: 胡适 (1891-1962)，中国新文化运动领袖，提倡白话文、科学方法和实证精神
 
 ## Monorepo Architecture
 
@@ -47,9 +47,9 @@ Commands are **layered** — Claude Code walks up the directory tree, with neste
 - `cd writing/benyu && /outline` → benyu's provocative outline command
 - `cd writing/benyu && /draft` → benyu's provocative draft command
 - `cd writing/benyu && /review` → benyu's provocative review checklist
-- `cd writing/vannevar && /outline` → vannevar's analytical outline command
-- `cd writing/vannevar && /draft` → vannevar's analytical draft command
-- `cd writing/vannevar && /review` → vannevar's analytical review checklist
+- `cd writing/胡适 && /outline` → 胡适's analytical outline command
+- `cd writing/胡适 && /draft` → 胡适's analytical draft command
+- `cd writing/胡适 && /review` → 胡适's analytical review checklist
 
 ### Directory Structure
 
@@ -76,7 +76,7 @@ liangxiao/                          # repo root
 │   │   ├── style_guide.md
 │   │   ├── brainstorm.md
 │   │   └── articles/
-│   ├── vannevar/                   # SERIOUS persona
+│   ├── 胡适/                   # SERIOUS persona
 │   │   ├── .claude/commands/       # /outline, /draft, /review
 │   │   ├── style_guide.md
 │   │   └── articles/
@@ -136,11 +136,11 @@ If data is missing:
 
 **Determine the active persona from working directory:**
 - Working in `writing/benyu/` or `writing/benyu/articles/*` → read `writing/benyu/style_guide.md`
-- Working in `writing/vannevar/` or `writing/vannevar/articles/*` → read `writing/vannevar/style_guide.md`
+- Working in `writing/胡适/` or `writing/胡适/articles/*` → read `writing/胡适/style_guide.md`
 
 **Six universal principles** (from `writing/templates/article-structures/PRINCIPLES.md`) apply to BOTH personas, but interpreted differently:
 
-| Principle | Benyu | Vannevar |
+| Principle | Benyu | 胡适 |
 |-----------|-------|----------|
 | 标题即半篇文章 | Provocative, makes you want to argue | Precise, states the thesis |
 | 首段必须抓人 | Conflict, tension | Paradox, surprising observation |
@@ -170,7 +170,7 @@ Choose from 5 patterns in `writing/templates/article-structures/`:
 ```bash
 python scripts/writing/html_converter.py writing/benyu/articles/[name]/final.md
 # or
-python scripts/writing/html_converter.py writing/vannevar/articles/[name]/final.md
+python scripts/writing/html_converter.py writing/胡适/articles/[name]/final.md
 ```
 
 ## Common Development Tasks
@@ -189,17 +189,17 @@ cd articles/my-new-article
 /convert               # shared command
 ```
 
-### Write a New Vannevar Article
+### Write a New 胡适 Article
 
 ```bash
-cd writing/vannevar
+cd writing/胡适
 mkdir -p articles/my-new-article
 cd articles/my-new-article
 
 /brainstorm [topic]    # shared command, works everywhere
-/outline               # picks up writing/vannevar/.claude/commands/outline.md
-/draft                 # picks up writing/vannevar/.claude/commands/draft.md
-/review                # picks up writing/vannevar/.claude/commands/review.md
+/outline               # picks up writing/胡适/.claude/commands/outline.md
+/draft                 # picks up writing/胡适/.claude/commands/draft.md
+/review                # picks up writing/胡适/.claude/commands/review.md
 /convert               # shared command
 ```
 
@@ -271,7 +271,7 @@ pip install -r requirements.txt
 
 ## Important Notes
 
-- **Style guide is persona-specific**: `writing/benyu/style_guide.md` or `writing/vannevar/style_guide.md`
+- **Style guide is persona-specific**: `writing/benyu/style_guide.md` or `writing/胡适/style_guide.md`
 - **File output is mandatory**: All slash commands MUST write to files
 - **Article directory context**: Commands assume you're in `writing/{persona}/articles/[name]/`
 - **No emoji policy**: Zero emoji in published articles for both personas
@@ -280,7 +280,7 @@ pip install -r requirements.txt
 ## Quick Reference
 
 **Benyu style guide**: `writing/benyu/style_guide.md`
-**Vannevar style guide**: `writing/vannevar/style_guide.md`
+**胡适 style guide**: `writing/胡适/style_guide.md`
 **Shared principles**: `writing/templates/article-structures/PRINCIPLES.md`
 
 **Standard workflow**: `/brainstorm` → `/outline` → `/draft` → `/review` → `/convert`
