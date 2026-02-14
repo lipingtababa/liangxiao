@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Image handling utilities for benyu article writing.
+Image handling utilities for 戚本禹 article writing.
 
 This module provides functions to:
 - Copy/organize images for articles
@@ -353,7 +353,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Image handling utilities for benyu articles'
+        description='Image handling utilities for 戚本禹 articles'
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Command to run')

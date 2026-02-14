@@ -114,7 +114,7 @@ Show which checklist items passed/failed
 # Important
 
 - Be thorough and specific in your review
-- The MOST COMMON issue will be tone slipping into provocative/benyu mode - flag this aggressively
+- The MOST COMMON issue will be tone slipping into provocative/戚本禹 mode - flag this aggressively
 - Reference the 胡适 style guide patterns
 - Provide actual text snippets showing how to adjust tone
 - Focus on making the article match the analytical, evidence-first 胡适 voice

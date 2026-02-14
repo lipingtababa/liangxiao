@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **combined monorepo** with two systems:
 
 1. **magong.se website** — Next.js English blog translating WeChat articles for international readers
-2. **Writing system** — Dual-persona WeChat article factory (benyu provocative + 胡适 analytical)
+2. **Writing system** — Dual-persona WeChat article factory (戚本禹 provocative + 胡适 analytical)
 
 The pipeline: **write (Chinese)** → **translate** → **publish (English)**
 
@@ -15,13 +15,14 @@ The writing system enforces **strict data authenticity** — never fabricate exa
 
 ## Two Personas (Writing System)
 
-### Benyu (笨鱼) - Provocative Voice
-- **Directory**: `writing/benyu/`
-- **Style guide**: `writing/benyu/style_guide.md`
+### 戚本禹 - Provocative Voice
+- **Directory**: `writing/戚本禹/`
+- **Style guide**: `writing/戚本禹/style_guide.md`
 - **Tone**: Confrontational, sarcastic, opinionated, challenges authority
 - **Companies**: Named to challenge and attack
 - **Analogies**: Vivid, everyday, mocking (永动机, 农贸市场卖豆腐)
 - **Conclusions**: Provocative reversal, "来骂我吧" energy
+- **Named after**: 戚本禹 (1931-2016)，毛泽东时代政论家，中央文革小组成员，以犀利的政论文章闻名，被编辑黎澍称赞为"能成为新中国的梁启超，笔端常带感情"
 
 ### 胡适 - Serious/Analytical Voice
 - **Directory**: `writing/胡适/`
@@ -44,9 +45,9 @@ Commands are **layered** — Claude Code walks up the directory tree, with neste
 - `/pick-chat` — Extract topics from WeChat chat data
 
 **Persona-specific commands** (activated by working directory):
-- `cd writing/benyu && /outline` → benyu's provocative outline command
-- `cd writing/benyu && /draft` → benyu's provocative draft command
-- `cd writing/benyu && /review` → benyu's provocative review checklist
+- `cd writing/戚本禹 && /outline` → 戚本禹's provocative outline command
+- `cd writing/戚本禹 && /draft` → 戚本禹's provocative draft command
+- `cd writing/戚本禹 && /review` → 戚本禹's provocative review checklist
 - `cd writing/胡适 && /outline` → 胡适's analytical outline command
 - `cd writing/胡适 && /draft` → 胡适's analytical draft command
 - `cd writing/胡适 && /review` → 胡适's analytical review checklist
@@ -71,7 +72,7 @@ liangxiao/                          # repo root
 │
 ├── writing/                        # Article writing system
 │   ├── README.md
-│   ├── benyu/                      # PROVOCATIVE persona
+│   ├── 戚本禹/                      # PROVOCATIVE persona
 │   │   ├── .claude/commands/       # /outline, /draft, /review
 │   │   ├── style_guide.md
 │   │   ├── brainstorm.md
@@ -135,12 +136,12 @@ If data is missing:
 ### 3. Persona-Aware Style Enforcement
 
 **Determine the active persona from working directory:**
-- Working in `writing/benyu/` or `writing/benyu/articles/*` → read `writing/benyu/style_guide.md`
+- Working in `writing/戚本禹/` or `writing/戚本禹/articles/*` → read `writing/戚本禹/style_guide.md`
 - Working in `writing/胡适/` or `writing/胡适/articles/*` → read `writing/胡适/style_guide.md`
 
 **Six universal principles** (from `writing/templates/article-structures/PRINCIPLES.md`) apply to BOTH personas, but interpreted differently:
 
-| Principle | Benyu | 胡适 |
+| Principle | 戚本禹 | 胡适 |
 |-----------|-------|----------|
 | 标题即半篇文章 | Provocative, makes you want to argue | Precise, states the thesis |
 | 首段必须抓人 | Conflict, tension | Paradox, surprising observation |
@@ -168,24 +169,24 @@ Choose from 5 patterns in `writing/templates/article-structures/`:
 
 **Conversion process:**
 ```bash
-python scripts/writing/html_converter.py writing/benyu/articles/[name]/final.md
+python scripts/writing/html_converter.py writing/戚本禹/articles/[name]/final.md
 # or
 python scripts/writing/html_converter.py writing/胡适/articles/[name]/final.md
 ```
 
 ## Common Development Tasks
 
-### Write a New Benyu Article
+### Write a New 戚本禹 Article
 
 ```bash
-cd writing/benyu
+cd writing/戚本禹
 mkdir -p articles/my-new-article
 cd articles/my-new-article
 
 /brainstorm [topic]    # shared command, works everywhere
-/outline               # picks up writing/benyu/.claude/commands/outline.md
-/draft                 # picks up writing/benyu/.claude/commands/draft.md
-/review                # picks up writing/benyu/.claude/commands/review.md
+/outline               # picks up writing/戚本禹/.claude/commands/outline.md
+/draft                 # picks up writing/戚本禹/.claude/commands/draft.md
+/review                # picks up writing/戚本禹/.claude/commands/review.md
 /convert               # shared command
 ```
 
@@ -271,7 +272,7 @@ pip install -r requirements.txt
 
 ## Important Notes
 
-- **Style guide is persona-specific**: `writing/benyu/style_guide.md` or `writing/胡适/style_guide.md`
+- **Style guide is persona-specific**: `writing/戚本禹/style_guide.md` or `writing/胡适/style_guide.md`
 - **File output is mandatory**: All slash commands MUST write to files
 - **Article directory context**: Commands assume you're in `writing/{persona}/articles/[name]/`
 - **No emoji policy**: Zero emoji in published articles for both personas
@@ -279,7 +280,7 @@ pip install -r requirements.txt
 
 ## Quick Reference
 
-**Benyu style guide**: `writing/benyu/style_guide.md`
+**戚本禹 style guide**: `writing/戚本禹/style_guide.md`
 **胡适 style guide**: `writing/胡适/style_guide.md`
 **Shared principles**: `writing/templates/article-structures/PRINCIPLES.md`
 

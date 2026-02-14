@@ -116,7 +116,7 @@ This guide defines the writing voice for the 胡适 persona: a visionary enginee
 ## Language Patterns
 
 ### Chinese-English Mix
-- Same as benyu persona: first occurrence dual-language, then Chinese
+- Same as 戚本禹 persona: first occurrence dual-language, then Chinese
 - Technical terms keep English where standard: CI/CD, API, SaaS
 - Prefer Chinese translations where they exist and are natural
 
@@ -242,13 +242,13 @@ This guide defines the writing voice for the 胡适 persona: a visionary enginee
 
 ## Article Length Target
 
-2500-3500 characters (Chinese), same as benyu persona. Depth over brevity.
+2500-3500 characters (Chinese), same as 戚本禹 persona. Depth over brevity.
 
 ---
 
-## Quick Reference: 胡适 vs Benyu
+## Quick Reference: 胡适 vs 戚本禹
 
-| Aspect | Benyu (Provocative) | 胡适 (Serious) |
+| Aspect | 戚本禹 (Provocative) | 胡适 (Serious) |
 |--------|---------------------|--------------------|
 | Tone | Confrontational, sarcastic | Analytical, measured |
 | Companies | Named to challenge/attack | Named to cite/analyse |

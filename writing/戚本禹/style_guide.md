@@ -1,6 +1,8 @@
-# Writing Style Guide
+# Writing Style Guide - 戚本禹
 
 This guide captures the analyzed patterns from 4 published 微信公众号 articles to maintain consistency in writing style and tone.
+
+**Named after**: 戚本禹 (1931-2016)，毛泽东时代政论家，中央文革小组成员，以犀利的政论文章闻名，被编辑黎澍称赞为"能成为新中国的梁启超，笔端常带感情"
 
 **Articles analyzed:**
 1. AI Coding的永动机项目

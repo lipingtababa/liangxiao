@@ -8,7 +8,7 @@ You are reviewing a 微信公众号 article against the established style guide.
 
 1. **Read the principles and style guide**:
    - First, read `writing/templates/article-structures/PRINCIPLES.md` (from repo root) for the 6 core principles
-   - Then read `writing/benyu/style_guide.md` (from repo root) for detailed requirements
+   - Then read `writing/戚本禹/style_guide.md` (from repo root) for detailed requirements
 
 2. **Ask for the article**: Request the article text or file path to review.
 
