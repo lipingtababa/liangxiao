@@ -6,10 +6,9 @@ interface ArticleCardProps {
   id: string
   title: string
   date: string
-  category: string
-  tags?: string[]
-  excerpt: string
-  author?: string
+  category?: string
+  description?: string
+  excerpt?: string
 }
 
 export default function ArticleCard({
@@ -17,39 +16,51 @@ export default function ArticleCard({
   title,
   date,
   category,
-  tags = [],
+  description,
   excerpt,
-  author,
 }: ArticleCardProps) {
+  const displayText = description || excerpt
+
   return (
-    <article className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-      <Link href={`/posts/${id}`} className="block p-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-full">
+    <article className="break-inside-avoid mb-6">
+      <Link
+        href={`/posts/${id}`}
+        className="block bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow duration-200 group"
+      >
+        {category && (
+          <span className="inline-block px-2.5 py-0.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-full mb-3">
             {category}
           </span>
-          <time className="text-sm text-gray-500" dateTime={date}>
-            {format(new Date(date), 'MMM dd, yyyy', { locale: enUS })}
-          </time>
-        </div>
+        )}
 
-        <h2 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+        <h2
+          className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors leading-snug"
+          style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}
+        >
           {title}
         </h2>
 
-        <p className="text-gray-600 mb-4 line-clamp-3">{excerpt}</p>
+        <time
+          className="block text-sm text-gray-400 mb-3"
+          dateTime={date}
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        >
+          {(() => {
+            try {
+              const d = new Date(date)
+              if (isNaN(d.getTime())) return date
+              return format(d, 'MMM d, yyyy', { locale: enUS })
+            } catch {
+              return date
+            }
+          })()}
+        </time>
 
-        <div className="flex items-center justify-between">
-          <div className="flex flex-wrap gap-2">
-            {tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="text-xs px-2 py-1 text-gray-600 bg-gray-100 rounded">
-                #{tag}
-              </span>
-            ))}
-          </div>
-
-          {author && <span className="text-sm text-gray-500">By {author}</span>}
-        </div>
+        {displayText && (
+          <p className="text-sm text-gray-600 leading-relaxed line-clamp-5">
+            {displayText}
+          </p>
+        )}
       </Link>
     </article>
   )

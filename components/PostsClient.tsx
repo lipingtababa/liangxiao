@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
-import { format } from 'date-fns'
+import ArticleCard from '@/components/ArticleCard'
 
-const POSTS_PER_PAGE = 10
+const POSTS_PER_PAGE = 12
 
 interface Post {
   id: string
@@ -106,54 +105,20 @@ export default function PostsClient({ posts }: PostsClientProps) {
         </div>
       </div>
 
-      {/* Article list */}
+      {/* Article grid */}
       {paginatedPosts.length > 0 ? (
         <>
-          <div className="space-y-8">
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
             {paginatedPosts.map((post) => (
-              <article key={post.id} className="pb-8 border-b border-gray-200 last:border-b-0">
-                <Link href={`/posts/${post.id}`} className="block group">
-                  <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
-                    {post.title}
-                  </h2>
-                </Link>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {post.author && (
-                    <>
-                      <span className="font-medium text-gray-900">{post.author}</span>
-                      <span className="text-gray-400">·</span>
-                    </>
-                  )}
-                  <span>
-                    {(() => {
-                      try {
-                        const date = new Date(post.date)
-                        if (isNaN(date.getTime())) {
-                          return post.date
-                        }
-                        return format(date, 'MMM d, yyyy')
-                      } catch {
-                        return post.date
-                      }
-                    })()}
-                  </span>
-                  {post.category && (
-                    <>
-                      <span className="text-gray-400">·</span>
-                      <span>{post.category}</span>
-                    </>
-                  )}
-                </div>
-                {(post.description || post.excerpt) && (
-                  <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{post.description || post.excerpt}</p>
-                )}
-                <Link
-                  href={`/posts/${post.id}`}
-                  className="text-sm font-medium text-gray-500 hover:text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}
-                >
-                  Continue reading →
-                </Link>
-              </article>
+              <ArticleCard
+                key={post.id}
+                id={post.id}
+                title={post.title}
+                date={post.date}
+                category={post.category}
+                description={post.description}
+                excerpt={post.excerpt}
+              />
             ))}
           </div>
 
@@ -171,7 +136,6 @@ export default function PostsClient({ posts }: PostsClientProps) {
 
               <div className="flex space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // Display logic: always show first page, last page, current page and adjacent pages
                   if (
                     page === 1 ||
                     page === totalPages ||
