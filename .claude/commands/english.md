@@ -57,6 +57,16 @@ You are translating a Chinese 微信公众号 article into an English blog post 
   - English readers expect claims to be backed immediately (don't build up to the point as long)
   - Shorter paragraphs
 
+### Images
+- **Keep all images by default** — do NOT silently drop images from the original article
+- For each image found in the source (`![alt](path)`):
+  1. Copy the image file to `public/images/posts/[slug]/` (create directory if needed)
+  2. Update the markdown reference to `/images/posts/[slug]/filename.ext`
+  3. Translate the alt text to English
+- If an image file cannot be found at the referenced path, flag it in Translation Notes and ask the user
+- **Ask the user to confirm** if you think an image should be removed (e.g., a WeChat-specific QR code, a Chinese-only poster that won't make sense to international readers)
+- Never silently remove images — always list image decisions in Translation Notes
+
 ### Technical Terms
 - Chinese translations of English tech terms → revert to original English
 - Keep standard abbreviations: CI/CD, API, SaaS, LLM, SDLC
@@ -105,6 +115,9 @@ After the translated article, add a **separate section** (NOT part of the articl
 
 ### Suggested Changes
 - [specific suggestion with reasoning]
+
+### Images
+- [image filename] → [kept / removed / replaced] (reason, new path if kept)
 
 ### Flagged for Review
 - [anything you're unsure about — cultural references, claims, examples]

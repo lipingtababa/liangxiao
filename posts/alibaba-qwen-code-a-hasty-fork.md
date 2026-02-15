@@ -7,7 +7,7 @@ tags: []
 description: >-
   Alibaba's qwen-code CLI is a fork of Google's Gemini CLI. The licence is
   Apache 2.0, so legally there's nothing wrong with this. But legality aside,
-  the problem...
+  the problem
 excerpt: >
   Alibaba forked Google's Gemini CLI to create qwen-code. Legally fine.
   Strategically questionable.

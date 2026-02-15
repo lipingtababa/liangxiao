@@ -277,6 +277,7 @@ pip install -r requirements.txt
 - **Article directory context**: Commands assume you're in `writing/{persona}/articles/[name]/`
 - **No emoji policy**: Zero emoji in published articles for both personas
 - **Data authenticity overrides everything**: Better to ask user or leave placeholder than fabricate
+- **WeChat links must use Playwright MCP**: WeChat URLs (mp.weixin.qq.com) are behind restrictions — always use the Playwright MCP browser tools (browser_navigate, browser_snapshot, etc.) to access them, never WebFetch or other regular web tools
 
 ## Quick Reference
 
