@@ -90,6 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <nav className="flex items-center space-x-6">
                 <a href="/posts" className="text-gray-600 hover:text-gray-900 text-sm font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>Articles</a>
+                <a href="https://agentmanagementforum.com/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 text-sm font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>Forum</a>
               </nav>
             </div>
           </div>
