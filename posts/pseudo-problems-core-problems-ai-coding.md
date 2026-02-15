@@ -1,11 +1,16 @@
 ---
-title: "Pseudo-Problems and Core Problems in AI Coding"
-date: "2024-07-15"
-author: "MaGong"
-category: "AI Coding"
+title: Pseudo-Problems and Core Problems in AI Coding
+date: '2024-07-15'
+author: MaGong
+category: AI Coding
 tags: []
 description: >
-  As an AI coding enthusiast, I've noticed many smart people spending time on pseudo-problems. Here's what actually matters.
+  As an AI coding enthusiast, I've noticed many smart people spending time on
+  pseudo-problems. Here's what actually matters.
+excerpt: >
+  As an AI coding enthusiast, I've noticed many smart people spending time on
+  pseudo-problems. Here's what actually matters.
+lastModified: '2024-07-15'
 ---
 
 # Pseudo-Problems and Core Problems in AI Coding

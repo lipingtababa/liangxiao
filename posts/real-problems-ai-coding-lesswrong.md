@@ -1,11 +1,18 @@
 ---
-title: "The Core Problems of AI Coding"
-date: "2024-12-15"
-author: "MaGong"
-category: "AI Coding"
+title: The Core Problems of AI Coding
+date: '2024-12-15'
+author: MaGong
+category: AI Coding
 tags: []
-description: >
-  After five months of building production systems with AI coding tools, I've identified three core problems that actually matter. This post focuses on ensuring quality and building effective human/LLM hybrid teams.
+description: >-
+  After five months of building production systems with AI coding tools, I've
+  identified three core problems that actually matter. This post focuses on
+  ensuring q
+excerpt: >
+  After five months of building production systems with AI coding tools, I've
+  identified three core problems that actually matter. This post focuses on
+  ensuring quality and building effective human/LLM hybrid teams.
+lastModified: '2024-12-15'
 ---
 
 # The Core Problems of AI Coding
