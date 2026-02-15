@@ -1,11 +1,19 @@
 ---
-title: "Treat AI Like Humans, Not Software"
-date: "2024-12-22"
-author: "MaGong"
-category: "AI Thinking"
+title: 'Treat AI Like Humans, Not Software'
+date: '2024-12-22'
+author: MaGong
+category: AI Thinking
 tags: []
-description: >
-  When AI fails to meet our expectations, we often blame it for being "buggy" or "unreliable". But perhaps the problem isn't with AI - it's with our mental model. We keep trying to use AI like software, when it behaves much more like a human colleague.
+description: >-
+  When AI fails to meet our expectations, we often blame it for being "buggy" or
+  "unreliable". But perhaps the problem isn't with AI - it's with our mental
+  model.
+excerpt: >
+  When AI fails to meet our expectations, we often blame it for being "buggy" or
+  "unreliable". But perhaps the problem isn't with AI - it's with our mental
+  model. We keep trying to use AI like software, when it behaves much more like
+  a human colleague.
+lastModified: '2024-12-22'
 ---
 
 When AI fails to deliver what we expect, we often blame it for being "buggy" or "unreliable." But perhaps the problem isn't with AI - it's with our mental model. We keep trying to use AI like software, when it behaves much more like a human colleague.
