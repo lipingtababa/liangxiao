@@ -153,6 +153,16 @@ This guide defines the writing voice for the 胡适 persona: a visionary enginee
 - Excessive confidence without evidence
 - Hot takes without reasoning
 - Dismissive tone toward any technology or approach
+- **AI-flavoured sentence patterns** — these are dead giveaways of machine-generated text:
+  - "达成了一些共识——但更重要的是" (the "X——但更重要的是Y" pivot)
+  - "不仅...更..." / "不仅仅是...而是..."
+  - "值得注意的是" as a paragraph opener
+  - "让我们来看看" / "接下来我们来探讨"
+  - "在这个背景下" / "在此基础上"
+  - Any sentence that sounds like a conference summary or press release
+  - Fake-punchy parallel structures designed to sound clever ("X不稀奇，Y才值得写")
+  - Stacking short sentences for rhetorical effect ("三个人。两天。一个结论。")
+  - If a sentence could appear in any article about any topic, it's too generic — rewrite it with specifics
 
 ### What to Embrace
 - Genuine intellectual curiosity
