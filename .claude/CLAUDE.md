@@ -13,6 +13,61 @@ The pipeline: **write (Chinese)** → **translate** → **publish (English)**
 
 The writing system enforces **strict data authenticity** — never fabricate examples, quotes, statistics, or attributions. All data must be real, sourced, and verifiable.
 
+## Directory Structure
+
+```
+liangxiao/                              # repo root
+├── .claude/
+│   ├── CLAUDE.md                       # THIS FILE
+│   └── commands/
+│       ├── brainstorm.md               # shared — material discovery
+│       ├── convert.md                  # shared — HTML conversion
+│       ├── english.md                  # shared — translate Chinese → English
+│       ├── pick-chat.md               # shared — chat topic extraction
+│       └── publish.md                  # shared — publish to magong.se
+│
+├── app/                                # Next.js App Router
+│   ├── page.tsx                        # Home — Pinterest-style article grid
+│   ├── posts/[slug]/page.tsx           # Article page
+│   ├── layout.tsx                      # Root layout
+│   └── globals.css
+├── components/                         # React components
+│   ├── ArticleCard.tsx                 # Card for home grid
+│   ├── MarkdownRenderer.tsx            # Article body renderer
+│   ├── PostsClient.tsx                 # Client-side post list
+│   ├── ImageWithFallback.tsx
+│   └── SocialShare.tsx
+├── lib/
+│   ├── posts.ts                        # Read/sort posts from posts/ directory
+│   └── seo.ts                          # SEO metadata helpers
+├── posts/                              # Published English articles (markdown + frontmatter)
+├── public/images/                      # Article images
+├── __tests__/                          # Jest tests
+│
+├── writing/                            # Article writing system
+│   ├── 戚本禹/                          # PROVOCATIVE persona (20 articles)
+│   │   ├── .claude/commands/           # /outline, /draft, /review
+│   │   ├── style_guide.md
+│   │   ├── brainstorm.md
+│   │   └── articles/
+│   ├── 胡适/                            # SERIOUS persona (3 articles)
+│   │   ├── .claude/commands/           # /outline, /draft, /review
+│   │   ├── style_guide.md
+│   │   └── articles/
+│   ├── templates/                      # Article structure templates
+│   │   ├── article-structures/         # 5 structure types + PRINCIPLES.md
+│   │   ├── wechat_styles.css
+│   │   └── wechat_template.html
+│   └── translation/                    # Translation workspace
+│
+├── scripts/
+│   ├── website/                        # Website scripts (extraction, SEO)
+│   └── writing/                        # Writing scripts (HTML conversion, chat analysis)
+│
+├── aichat -> /Users/machi/aichat       # WeChat chat data (symlink, gitignored)
+└── requirements.txt
+```
+
 ## Two Personas (Writing System)
 
 ### 戚本禹 - Provocative Voice
@@ -32,67 +87,6 @@ The writing system enforces **strict data authenticity** — never fabricate exa
 - **Analogies**: Structural, scientific, from engineering/economics
 - **Conclusions**: Synthesis + open questions, "一起研究" energy
 - **Named after**: 胡适 (1891-1962)，中国新文化运动领袖，提倡白话文、科学方法和实证精神
-
-## Monorepo Architecture
-
-### How Commands Work
-
-Commands are **layered** — Claude Code walks up the directory tree, with nested commands taking precedence over root commands.
-
-**Shared commands** (work from anywhere):
-- `/brainstorm` — Research and material discovery
-- `/convert` — Markdown to WeChat HTML conversion
-- `/pick-chat` — Extract topics from WeChat chat data
-
-**Persona-specific commands** (activated by working directory):
-- `cd writing/戚本禹 && /outline` → 戚本禹's provocative outline command
-- `cd writing/戚本禹 && /draft` → 戚本禹's provocative draft command
-- `cd writing/戚本禹 && /review` → 戚本禹's provocative review checklist
-- `cd writing/胡适 && /outline` → 胡适's analytical outline command
-- `cd writing/胡适 && /draft` → 胡适's analytical draft command
-- `cd writing/胡适 && /review` → 胡适's analytical review checklist
-
-### Directory Structure
-
-```
-liangxiao/                          # repo root
-├── .claude/
-│   ├── CLAUDE.md                   # THIS FILE
-│   └── commands/
-│       ├── brainstorm.md           # shared — material discovery
-│       ├── convert.md              # shared — HTML conversion
-│       └── pick-chat.md            # shared — chat topic extraction
-│
-├── app/                            # Next.js website
-├── components/                     # React components
-├── lib/                            # posts.ts, seo.ts
-├── posts/                          # Published English articles
-├── public/                         # Static assets
-├── __tests__/                      # Jest tests
-│
-├── writing/                        # Article writing system
-│   ├── README.md
-│   ├── 戚本禹/                      # PROVOCATIVE persona
-│   │   ├── .claude/commands/       # /outline, /draft, /review
-│   │   ├── style_guide.md
-│   │   ├── brainstorm.md
-│   │   └── articles/
-│   ├── 胡适/                   # SERIOUS persona
-│   │   ├── .claude/commands/       # /outline, /draft, /review
-│   │   ├── style_guide.md
-│   │   └── articles/
-│   └── templates/                  # Article structure templates
-│       ├── article-structures/     # 5 structure types + PRINCIPLES.md
-│       ├── wechat_styles.css
-│       └── wechat_template.html
-│
-├── scripts/
-│   ├── website/                    # Website scripts (extraction, SEO)
-│   └── writing/                    # Writing scripts (HTML conversion, chat analysis)
-│
-├── aichat -> /Users/machi/aichat   # Symlink (gitignored)
-└── requirements.txt
-```
 
 ## Critical Rules
 
@@ -118,7 +112,37 @@ If data is missing:
 2. Leave clear placeholders: `[需要真实例子: 翻译公司报价]`
 3. **Better NO example than FAKE example**
 
-### 2. Article Writing Workflow
+### 2. No Emoji Policy
+
+Zero emoji in published articles (both personas) and in translated English posts.
+
+## Slash Commands
+
+### Writing Commands
+
+Commands are **layered** — Claude Code walks up the directory tree, with nested commands taking precedence over root commands.
+
+**Shared commands** (work from anywhere):
+- `/brainstorm` — Research and material discovery
+- `/convert` — Markdown to WeChat HTML conversion
+- `/pick-chat` — Extract topics from WeChat chat data
+
+**Persona-specific commands** (activated by working directory):
+- `cd writing/戚本禹 && /outline` → 戚本禹's provocative outline command
+- `cd writing/戚本禹 && /draft` → 戚本禹's provocative draft command
+- `cd writing/戚本禹 && /review` → 戚本禹's provocative review checklist
+- `cd writing/胡适 && /outline` → 胡适's analytical outline command
+- `cd writing/胡适 && /draft` → 胡适's analytical draft command
+- `cd writing/胡适 && /review` → 胡适's analytical review checklist
+
+### Translation & Publishing Commands
+
+- `/english` — Translate a Chinese article (`draft.md`/`final.md`) into an English blog post for `posts/`
+- `/publish` — Publish an English article to magong.se (verify, build, deploy)
+
+## Writing Workflow
+
+### Write a Chinese Article
 
 **Standard sequence** (same for both personas):
 1. `/brainstorm` — Research topic using WebSearch, collect 10+ interesting findings
@@ -133,7 +157,42 @@ If data is missing:
 - `draft.md` or `final.md` — Article content
 - `wechat.html` — HTML for publishing
 
-### 3. Persona-Aware Style Enforcement
+**Example:**
+```bash
+cd writing/戚本禹
+mkdir -p articles/my-new-article && cd articles/my-new-article
+/brainstorm [topic]    # shared command
+/outline               # picks up writing/戚本禹/.claude/commands/outline.md
+/draft                 # picks up writing/戚本禹/.claude/commands/draft.md
+/review                # picks up writing/戚本禹/.claude/commands/review.md
+/convert               # shared command
+```
+
+### Translate and Publish to magong.se
+
+After a Chinese article is written and published on WeChat:
+1. `/english` — Translates the article, writes to `posts/` as markdown with frontmatter
+2. `/publish` — Verifies the post, runs build, deploys
+
+### Article Frontmatter Format
+
+Posts in `posts/` use this frontmatter:
+```yaml
+---
+title: 'Article Title'
+date: '2026-02-07'
+author: MaGong
+category: AI Coding
+tags: []
+description: >-
+  One-paragraph description for SEO and article cards.
+excerpt: >
+  Short excerpt for previews.
+lastModified: '2026-02-07'
+---
+```
+
+### Persona-Aware Style Enforcement
 
 **Determine the active persona from working directory:**
 - Working in `writing/戚本禹/` or `writing/戚本禹/articles/*` → read `writing/戚本禹/style_guide.md`
@@ -150,7 +209,7 @@ If data is missing:
 | 打大公司/权威 | Challenge and attack | Cite and analyse |
 | 读者焦虑 | Poke the wound | Offer honest analysis |
 
-### 4. Article Structure Types
+### Article Structure Types
 
 Choose from 5 patterns in `writing/templates/article-structures/`:
 
@@ -160,7 +219,7 @@ Choose from 5 patterns in `writing/templates/article-structures/`:
 4. **Exploration & Hypothesis (探索与假说)** — Problem → experiment → framework
 5. **Prediction/Trend Analysis (趋势预测)** — Current state → forces → future
 
-### 5. WeChat Conversion Requirements
+### WeChat Conversion Requirements
 
 **Before running `/convert`:**
 1. Extract all markdown links `[text](url)` from article
@@ -174,42 +233,26 @@ python scripts/writing/html_converter.py writing/戚本禹/articles/[name]/final
 python scripts/writing/html_converter.py writing/胡适/articles/[name]/final.md
 ```
 
-## Common Development Tasks
+## Website Development
 
-### Write a New 戚本禹 Article
+### Tech Stack
+- Next.js 14 (App Router), React, TypeScript
+- Tailwind CSS for styling
+- gray-matter + remark for markdown processing
+- Deployed on Vercel at magong.se
 
-```bash
-cd writing/戚本禹
-mkdir -p articles/my-new-article
-cd articles/my-new-article
+### Key Files
+- `lib/posts.ts` — Reads markdown from `posts/`, parses frontmatter, sorts by date
+- `app/page.tsx` — Home page with Pinterest-style waterfall layout
+- `app/posts/[slug]/page.tsx` — Individual article page
+- `components/ArticleCard.tsx` — Card component for the home grid
+- `components/MarkdownRenderer.tsx` — Renders article markdown to HTML
 
-/brainstorm [topic]    # shared command, works everywhere
-/outline               # picks up writing/戚本禹/.claude/commands/outline.md
-/draft                 # picks up writing/戚本禹/.claude/commands/draft.md
-/review                # picks up writing/戚本禹/.claude/commands/review.md
-/convert               # shared command
-```
-
-### Write a New 胡适 Article
-
-```bash
-cd writing/胡适
-mkdir -p articles/my-new-article
-cd articles/my-new-article
-
-/brainstorm [topic]    # shared command, works everywhere
-/outline               # picks up writing/胡适/.claude/commands/outline.md
-/draft                 # picks up writing/胡适/.claude/commands/draft.md
-/review                # picks up writing/胡适/.claude/commands/review.md
-/convert               # shared command
-```
-
-### Extract Topics from WeChat Chats
-
-```bash
-python scripts/writing/prepare_chat.py <chatroom_dir> [date]
-/pick-chat
-```
+### npm Scripts
+- `npm run dev` — Local development server
+- `npm run build` — Production build
+- `npm run check` — Lint + format + typecheck + test (run before committing)
+- `npm test` — Jest tests
 
 ## Key Implementation Patterns
 
@@ -237,7 +280,9 @@ All statistics must be verified with URLs. Flag placeholders for missing data.
 - Collect contradictions and paradoxes
 - Write ALL findings to `brainstorm.md`
 
-## Working with WeChat Chat Data
+## Working with WeChat
+
+### Chat Data
 
 **aichat repo**: `aichat/` is a symlink to a separate repo that syncs WeChat chat data. Structure:
 - `aichat/chats/<id>_<name>/` — each chatroom has a directory with daily JSON files and `_metadata.json`
@@ -248,11 +293,15 @@ All statistics must be verified with URLs. Flag placeholders for missing data.
 
 **CRITICAL**: User's own chat messages are their OWN ideas — NEVER attribute to fictional "朋友说" or "我朋友"
 
+### Accessing WeChat URLs
+
+**WeChat links must use Playwright MCP**: WeChat URLs (mp.weixin.qq.com) are behind restrictions — always use the Playwright MCP browser tools (browser_navigate, browser_snapshot, etc.) to access them, never WebFetch or other regular web tools.
+
 ## Git and Permissions
 
 When making commits:
 - Use British spelling in all written output
-- Follow project commit message conventions (short, concise)
+- Commit messages in English, type prefix: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`
 - Add co-credit in commit messages:
   ```
   <main commit message>
@@ -264,31 +313,28 @@ When making commits:
   Co-Authored-By: Happy <yesreply@happy.engineering>
   ```
 
-## Python Dependencies
+## Code Standards
 
-```bash
-pip install -r requirements.txt
-```
-
-## Important Notes
-
-- **Style guide is persona-specific**: `writing/戚本禹/style_guide.md` or `writing/胡适/style_guide.md`
-- **File output is mandatory**: All slash commands MUST write to files
-- **Article directory context**: Commands assume you're in `writing/{persona}/articles/[name]/`
-- **No emoji policy**: Zero emoji in published articles for both personas
-- **Data authenticity overrides everything**: Better to ask user or leave placeholder than fabricate
-- **WeChat links must use Playwright MCP**: WeChat URLs (mp.weixin.qq.com) are behind restrictions — always use the Playwright MCP browser tools (browser_navigate, browser_snapshot, etc.) to access them, never WebFetch or other regular web tools
+- Python: PEP 8, snake_case
+- JavaScript/TypeScript: ESLint + Prettier, camelCase
+- File naming: kebab-case
 
 ## Quick Reference
 
-**戚本禹 style guide**: `writing/戚本禹/style_guide.md`
-**胡适 style guide**: `writing/胡适/style_guide.md`
-**Shared principles**: `writing/templates/article-structures/PRINCIPLES.md`
+| What | Where |
+|------|-------|
+| 戚本禹 style guide | `writing/戚本禹/style_guide.md` |
+| 胡适 style guide | `writing/胡适/style_guide.md` |
+| Shared principles | `writing/templates/article-structures/PRINCIPLES.md` |
+| Published articles | `posts/` |
+| Article images | `public/images/` |
 
-**Standard workflow**: `/brainstorm` → `/outline` → `/draft` → `/review` → `/convert`
+**Writing workflow**: `/brainstorm` → `/outline` → `/draft` → `/review` → `/convert`
+
+**Publishing workflow**: `/english` → `/publish`
 
 **Article length target**: 2500-3500 characters (Chinese) for both personas
 
 **Conversion**: `python scripts/writing/html_converter.py writing/{persona}/articles/[name]/final.md`
 
-**Publishing**: Open `wechat.html` in browser → Select all → Copy → Paste into WeChat editor
+**WeChat publishing**: Open `wechat.html` in browser → Select all → Copy → Paste into WeChat editor
