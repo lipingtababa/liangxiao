@@ -4,26 +4,20 @@ import ArticleCard from '@/components/ArticleCard'
 describe('ArticleCard', () => {
   const mockPost = {
     id: 'test-post',
-    title: '测试文章标题',
+    title: 'Test Article Title',
     date: '2024-01-15',
-    category: '科技',
-    tags: ['测试', '开发', '前端'],
-    excerpt: '这是一篇测试文章的摘要内容，用于展示文章卡片组件的功能。',
-    author: '测试作者',
+    category: 'Tech',
+    description: 'This is a test article description for the card component.',
   }
 
   it('渲染文章卡片的所有内容', () => {
     render(<ArticleCard {...mockPost} />)
 
-    expect(screen.getByText('测试文章标题')).toBeInTheDocument()
-    expect(screen.getByText('科技')).toBeInTheDocument()
+    expect(screen.getByText('Test Article Title')).toBeInTheDocument()
+    expect(screen.getByText('Tech')).toBeInTheDocument()
     expect(
-      screen.getByText('这是一篇测试文章的摘要内容，用于展示文章卡片组件的功能。')
+      screen.getByText('This is a test article description for the card component.')
     ).toBeInTheDocument()
-    expect(screen.getByText('作者：测试作者')).toBeInTheDocument()
-    expect(screen.getByText('#测试')).toBeInTheDocument()
-    expect(screen.getByText('#开发')).toBeInTheDocument()
-    expect(screen.getByText('#前端')).toBeInTheDocument()
   })
 
   it('正确生成文章链接', () => {
@@ -33,31 +27,31 @@ describe('ArticleCard', () => {
     expect(link).toHaveAttribute('href', '/posts/test-post')
   })
 
-  it('没有作者时不显示作者信息', () => {
-    const postWithoutAuthor = { ...mockPost, author: undefined }
-    render(<ArticleCard {...postWithoutAuthor} />)
+  it('没有分类时不显示分类', () => {
+    const postWithoutCategory = { ...mockPost, category: undefined }
+    render(<ArticleCard {...postWithoutCategory} />)
 
-    expect(screen.queryByText(/作者：/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Tech')).not.toBeInTheDocument()
   })
 
-  it('没有标签时不显示标签', () => {
-    const postWithoutTags = { ...mockPost, tags: undefined }
-    render(<ArticleCard {...postWithoutTags} />)
+  it('没有描述时不显示描述', () => {
+    const postWithoutDescription = { ...mockPost, description: undefined }
+    render(<ArticleCard {...postWithoutDescription} />)
 
-    expect(screen.queryByText(/#/)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('This is a test article description for the card component.')
+    ).not.toBeInTheDocument()
   })
 
-  it('最多显示3个标签', () => {
-    const postWithManyTags = {
+  it('description 优先于 excerpt 显示', () => {
+    const postWithBoth = {
       ...mockPost,
-      tags: ['标签1', '标签2', '标签3', '标签4', '标签5'],
+      description: 'Description text',
+      excerpt: 'Excerpt text',
     }
-    render(<ArticleCard {...postWithManyTags} />)
+    render(<ArticleCard {...postWithBoth} />)
 
-    expect(screen.getByText('#标签1')).toBeInTheDocument()
-    expect(screen.getByText('#标签2')).toBeInTheDocument()
-    expect(screen.getByText('#标签3')).toBeInTheDocument()
-    expect(screen.queryByText('#标签4')).not.toBeInTheDocument()
-    expect(screen.queryByText('#标签5')).not.toBeInTheDocument()
+    expect(screen.getByText('Description text')).toBeInTheDocument()
+    expect(screen.queryByText('Excerpt text')).not.toBeInTheDocument()
   })
 })

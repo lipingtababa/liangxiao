@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import RootLayout from '../../app/layout'
 
-// Mock Next.js font loading
-jest.mock('next/font/google', () => ({
-  Inter: () => ({
-    className: 'inter-font-class',
-  }),
+// Mock Next.js Script component
+jest.mock('next/script', () => ({
+  __esModule: true,
+  default: ({ id }: { id: string }) => <script id={id} />,
 }))
 
 describe('Root Layout', () => {
@@ -16,7 +15,7 @@ describe('Root Layout', () => {
       </RootLayout>
     )
 
-    const navTitle = screen.getByText('瑞典马工')
+    const navTitle = screen.getByText('MaGong')
     expect(navTitle).toBeInTheDocument()
   })
 
@@ -27,7 +26,7 @@ describe('Root Layout', () => {
       </RootLayout>
     )
 
-    const footer = screen.getByText(/© 2024 瑞典马工/)
+    const footer = screen.getByText(/© 2024 MaGong/)
     expect(footer).toBeInTheDocument()
   })
 
@@ -51,17 +50,17 @@ describe('Root Layout', () => {
     )
 
     const htmlElement = container.querySelector('html')
-    expect(htmlElement).toHaveAttribute('lang', 'zh')
+    expect(htmlElement).toHaveAttribute('lang', 'en')
   })
 
-  it('应该应用字体类名', () => {
-    const { container } = render(
+  it('应该渲染导航链接', () => {
+    render(
       <RootLayout>
         <div>测试</div>
       </RootLayout>
     )
 
-    const bodyElement = container.querySelector('body')
-    expect(bodyElement).toHaveClass('inter-font-class')
+    const articlesLink = screen.getByText('Articles')
+    expect(articlesLink).toBeInTheDocument()
   })
 })
