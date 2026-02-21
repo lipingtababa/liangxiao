@@ -29,23 +29,26 @@ liangxiao/                              # repo root
 │       ├── pick-chat.md               # shared — chat topic extraction
 │       └── publish.md                  # shared — publish to WeChat, XHS, Zhihu, magong.se
 │
-├── app/                                # Next.js App Router
-│   ├── page.tsx                        # Home — Pinterest-style article grid
-│   ├── posts/[slug]/page.tsx           # Article page
-│   ├── layout.tsx                      # Root layout
-│   └── globals.css
-├── components/                         # React components
-│   ├── ArticleCard.tsx                 # Card for home grid
-│   ├── MarkdownRenderer.tsx            # Article body renderer
-│   ├── PostsClient.tsx                 # Client-side post list
-│   ├── ImageWithFallback.tsx
-│   └── SocialShare.tsx
-├── lib/
-│   ├── posts.ts                        # Read/sort posts from posts/ directory
-│   └── seo.ts                          # SEO metadata helpers
-├── posts/                              # Published English articles (markdown + frontmatter)
-├── public/images/                      # Article images
-├── __tests__/                          # Jest tests
+├── magong/                             # Next.js website (magong.se — Vercel root dir)
+│   ├── app/                            # Next.js App Router
+│   │   ├── page.tsx                    # Home — Pinterest-style article grid
+│   │   ├── posts/[slug]/page.tsx       # Article page
+│   │   ├── layout.tsx                  # Root layout
+│   │   └── globals.css
+│   ├── components/                     # React components
+│   │   ├── ArticleCard.tsx             # Card for home grid
+│   │   ├── MarkdownRenderer.tsx        # Article body renderer
+│   │   ├── PostsClient.tsx             # Client-side post list
+│   │   └── SocialShare.tsx
+│   ├── lib/
+│   │   ├── posts.ts                    # Read/sort posts from posts/ directory
+│   │   └── seo.ts                      # SEO metadata helpers
+│   ├── posts/                          # Published English articles (markdown + frontmatter)
+│   ├── public/images/                  # Article images
+│   ├── __tests__/                      # Jest tests
+│   ├── package.json                    # npm scripts, dependencies
+│   ├── next.config.js, tsconfig.json, tailwind.config.js, etc.
+│   └── vercel.json                     # Vercel config
 │
 ├── benyu/                              # PROVOCATIVE persona (戚本禹)
 │   ├── .persona                        # contains: "benyu" — persona detection for shared commands
@@ -265,13 +268,13 @@ python scripts/writing/html_converter.py hushi/articles/[name]/final.md
 - Deployed on Vercel at magong.se
 
 ### Key Files
-- `lib/posts.ts` — Reads markdown from `posts/`, parses frontmatter, sorts by date
-- `app/page.tsx` — Home page with Pinterest-style waterfall layout
-- `app/posts/[slug]/page.tsx` — Individual article page
-- `components/ArticleCard.tsx` — Card component for the home grid
-- `components/MarkdownRenderer.tsx` — Renders article markdown to HTML
+- `magong/lib/posts.ts` — Reads markdown from `magong/posts/`, parses frontmatter, sorts by date
+- `magong/app/page.tsx` — Home page with Pinterest-style waterfall layout
+- `magong/app/posts/[slug]/page.tsx` — Individual article page
+- `magong/components/ArticleCard.tsx` — Card component for the home grid
+- `magong/components/MarkdownRenderer.tsx` — Renders article markdown to HTML
 
-### npm Scripts
+### npm Scripts (run from `magong/`)
 - `npm run dev` — Local development server
 - `npm run build` — Production build
 - `npm run check` — Lint + format + typecheck + test (run before committing)
@@ -349,8 +352,9 @@ When making commits:
 | benyu style guide | `benyu/style_guide.md` |
 | hushi style guide | `hushi/style_guide.md` |
 | Shared principles | `writing/templates/article-structures/PRINCIPLES.md` |
-| Published articles | `posts/` |
-| Article images | `public/images/` |
+| Published articles | `magong/posts/` |
+| Article images | `magong/public/images/` |
+| Website dev | `cd magong && npm run dev` |
 
 **Writing workflow**: `/brainstorm` → `/outline` → `/draft` → `/review` → `/convert`
 

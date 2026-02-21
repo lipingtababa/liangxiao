@@ -8,7 +8,7 @@ You are translating a Chinese 微信公众号 article into an English blog post 
 
 1. **Get the source article**: Ask the user for the file path to the Chinese article (`draft.md` or `final.md`). Read it fully.
 
-2. **Read existing English posts for tone reference**: Read 2-3 posts from `posts/` (from repo root) to match the established English voice — direct, opinionated, conversational, no corporate jargon.
+2. **Read existing English posts for tone reference**: Read 2-3 posts from `magong/posts/` (from repo root) to match the established English voice — direct, opinionated, conversational, no corporate jargon.
 
 3. **Translate and adapt** following these rules:
 
@@ -50,8 +50,8 @@ You are translating a Chinese 微信公众号 article into an English blog post 
 
 ### Tone
 - Match the persona tone of the original:
-  - **戚本禹 articles**: Keep the edge, the provocative stance, the challenge to authority
-  - **胡适 articles**: Keep the analytical rigour, the measured reasoning, the honest uncertainty
+  - **benyu articles**: Keep the edge, the provocative stance, the challenge to authority
+  - **hushi articles**: Keep the analytical rigour, the measured reasoning, the honest uncertainty
 - But adapt for English-speaking engineering audience:
   - Less rhetorical flourish, more directness
   - English readers expect claims to be backed immediately (don't build up to the point as long)
@@ -60,7 +60,7 @@ You are translating a Chinese 微信公众号 article into an English blog post 
 ### Images
 - **Keep all images by default** — do NOT silently drop images from the original article
 - For each image found in the source (`![alt](path)`):
-  1. Copy the image file to `public/images/posts/[slug]/` (create directory if needed)
+  1. Copy the image file to `magong/public/images/posts/[slug]/` (create directory if needed)
   2. Update the markdown reference to `/images/posts/[slug]/filename.ext`
   3. Translate the alt text to English
 - If an image file cannot be found at the referenced path, flag it in Translation Notes and ask the user
@@ -123,7 +123,7 @@ After the translated article, add a **separate section** (NOT part of the articl
 - [anything you're unsure about — cultural references, claims, examples]
 ```
 
-4. **Write the output** to `posts/[slug].md` where slug is a kebab-case English title.
+4. **Write the output** to `magong/posts/[slug].md` where slug is a kebab-case English title.
 
 5. **Show the user** the Translation Notes section and ask for approval before finalising.
 
@@ -134,4 +134,4 @@ After the translated article, add a **separate section** (NOT part of the articl
 - The English version should feel NATIVE, not translated
 - When in doubt about cutting vs keeping content, CUT — English readers prefer concise
 - Always preserve the author's core argument and unique insights
-- **CRITICAL**: Write the translated article to a file in `posts/`
+- **CRITICAL**: Write the translated article to a file in `magong/posts/`

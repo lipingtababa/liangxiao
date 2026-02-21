@@ -1,76 +1,151 @@
 ---
-description: Publish an English article to magong.se
+description: Publish article to all platforms (WeChat, XHS, Zhihu, magong.se)
 ---
 
-You are publishing an English article to magong.se. This is the final step after `/english` has produced a translated post in `posts/`.
+You are publishing a converted article to one or more platforms.
+
+**Prerequisite**: `/convert` must have been run first. The article directory should contain:
+`weixin.html`, `xhs.md`, `zhihu.md`, `english.md`, `images/`
 
 # Instructions
 
-1. **Identify the post to publish**: Ask the user which post in `posts/` to publish, or accept a file path. Read the post fully.
+## Step 1 — Locate the article
 
-2. **Pre-publish checklist** — verify each item, fix issues inline:
+Find the article directory (same as /convert — detect from current working directory or ask).
+Verify all required files exist. If any are missing, tell the user to run `/convert` first.
 
-### Front Matter Validation
-- [ ] `title` exists and is concise (under 80 chars)
-- [ ] `date` exists and is valid YYYY-MM-DD format
-- [ ] `author` is "MaGong"
-- [ ] `category` exists and matches existing categories (check other posts in `posts/`)
-- [ ] `description` exists and is a compelling one-sentence summary (100-160 chars for SEO)
-- [ ] `tags` array exists (can be empty)
+## Step 2 — Ask which platforms
 
-### Content Quality
-- [ ] No WeChat links (`mp.weixin.qq.com`) — these are inaccessible outside China
-- [ ] No broken markdown (unclosed links, malformed headers)
-- [ ] No emoji
-- [ ] No placeholder text (`[需要`, `TODO`, `TBD`)
-- [ ] Ends with `---` followed by `*Originally written in Chinese. Translated by the author.*`
-- [ ] No "Translation Notes" section left in (that's for author review only)
-- [ ] Article has at least 3 `##` subheadings
-- [ ] No duplicate `#` title (front matter `title` is enough, remove `# Title` if duplicated)
+Ask: "Publish to which platforms? (default: all)"
+Options: **All** / WeChat / Xiaohongshu / Zhihu / magong.se
 
-### File Naming
-- [ ] Filename is kebab-case: `my-article-title.md`
-- [ ] No Chinese characters in filename
-- [ ] No spaces in filename
+If the user says "all" or doesn't specify, publish to all four.
 
-3. **Fix any issues found** — edit the file directly. Report what you fixed.
+## Step 3 — Publish to each platform
 
-4. **Enhance SEO metadata** — run:
+Run all applicable platforms. For each one, report success or failure clearly.
+
+---
+
+### magong.se (English blog)
+
+1. Copy `english.md` → `magong/posts/[slug].md`
+   - Slug: kebab-case version of the English title from frontmatter
+   - e.g. `english.md` → `magong/posts/why-ai-coding-fails-without-constraints.md`
+
+2. Copy generated images to `magong/public/images/posts/[slug]/`:
+   ```bash
+   mkdir -p magong/public/images/posts/[slug]
+   cp <article_dir>/images/cover-weixin.jpg magong/public/images/posts/[slug]/cover.jpg
+   ```
+   Update any image references in the post if needed.
+
+3. Run pre-publish checks (from `.claude/commands/publish.md` original):
+   - frontmatter: title, date, author=MaGong, category, description, tags
+   - No WeChat links, no emoji, no placeholders
+   - No "Translation Notes" section left in
+   - At least 3 `##` subheadings
+
+4. Enhance SEO metadata (run from `magong/`):
+   ```bash
+   cd magong && npm run seo:enhance
+   ```
+
+5. Build verification (run from `magong/`):
+   ```bash
+   cd magong && npm run build
+   ```
+   Fix any errors before proceeding.
+
+6. Commit and push:
+   ```bash
+   git add magong/posts/[slug].md magong/public/images/posts/[slug]/
+   git commit -m "feat: publish [article title in English]
+
+   Generated with [Claude Code](https://claude.ai/code)
+   via [Happy](https://happy.engineering)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   Co-Authored-By: Happy <yesreply@happy.engineering>"
+   git push
+   ```
+
+7. Report: `✓ magong.se — live at https://magong.se/posts/[slug] (Vercel deploying, ~2 min)`
+
+---
+
+### WeChat (微信公众号)
+
+Open the WeChat MP new article editor in Edge:
+
 ```bash
-node scripts/website/enhance-seo-metadata.js
+open -a "Microsoft Edge" "https://mp.weixin.qq.com/cgi-bin/appmsgEdit?action=edit&isNew=1&type=10"
 ```
 
-5. **Build verification** — run:
-```bash
-npm run build
-```
-If build fails, diagnose and fix. Common issues:
-- Front matter parsing errors
-- Image references to missing files
-- Markdown syntax errors
+Then tell the user:
+"WeChat editor is open in Edge. The article content is in `weixin.html` — open it in a browser, select all, copy, and paste into the editor. Cover image: `images/cover-weixin.jpg`. Click 发布 when done."
 
-6. **Local preview** (optional, if user wants):
-```bash
-npm run dev
-```
-Then tell the user to check `http://localhost:3000` and the specific post URL.
+Report: `✓ WeChat — editor opened, ready for manual paste and publish`
 
-7. **Commit and push** — when the user confirms:
-```bash
-git add posts/[filename].md
-git commit -m "feat: publish [article title]"
-git push
-```
-Vercel auto-deploys from the GitHub push. No manual deployment needed.
+---
 
-8. **Post-publish verification**:
-- Tell the user the expected URL: `https://magong.se/posts/[slug]`
-- Remind them to check the live site after Vercel deploys (usually 1-2 minutes)
+### Xiaohongshu (小红书)
+
+Open the XHS publish page in Edge:
+
+```bash
+open -a "Microsoft Edge" "https://www.xiaohongshu.com/publish/publish"
+```
+
+Read `xhs.md` and display the full content to the user clearly — title on one line, body below.
+
+Also tell the user which images to upload (in order):
+1. `images/cover-xhs.jpg` (cover)
+2. `images/section-1.jpg`
+3. `images/section-2.jpg`
+4. `images/section-3.jpg` (if exists)
+
+Tell the user: "XHS publish page is open in Edge. Copy the title and body above, upload the images in order, paste content, add hashtags, and publish."
+
+Report: `✓ Xiaohongshu — editor opened, ready for manual publish`
+
+---
+
+### Zhihu (知乎)
+
+Open Zhihu write page in the default browser:
+```bash
+open "https://zhuanlan.zhihu.com/write"
+```
+
+Read `zhihu.md` content. Display it to the user and say:
+"Zhihu editor is open. The article content is shown above — please paste it (Cmd+V after clicking into the editor) and click 发布."
+
+Then wait for user confirmation.
+
+Report: `✓ Zhihu — ready for manual publish`
+
+---
+
+## Step 4 — Final report
+
+After all platforms:
+
+```
+✓ Publishing complete: [article title]
+
+Platform results:
+  magong.se      ✓  https://magong.se/posts/[slug]
+  WeChat         ✓  Draft published
+  Xiaohongshu    ✓  Published
+  Zhihu          ✓  Manually published
+
+```
 
 # Important
 
-- This skill assumes `/english` has already been run and a post exists in `posts/`
-- Do NOT modify the article's content/argument — only fix formatting, metadata, and technical issues
-- If you find content problems (fabricated data, missing sources), flag them but don't silently fix
-- The post filename (without `.md`) becomes the URL slug: `posts/my-article.md` → `magong.se/posts/my-article`
-- Always verify the build passes before committing
+- Always run magong.se build check before git push — never push a broken build
+- WeChat: do NOT auto-click publish — always leave final publish action to the user
+- Zhihu: browser automation is too risky (account ban) — always manual paste
+- If XHS login fails, tell the user to run `xhs-mcp login` and try again
+- If any platform fails, report it clearly and continue with the others
