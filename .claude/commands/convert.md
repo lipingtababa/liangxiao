@@ -1,88 +1,104 @@
 ---
-description: Convert markdown article to WeChat-compatible HTML
+description: Convert article to all platform formats + generate images
 ---
 
-You are helping convert a markdown article to WeChat-compatible HTML format.
+You are converting a finished Chinese article into all publishing formats.
+
+# What this command produces
+
+```
+articles/[name]/
+├── weixin.html        ← WeChat HTML (script-generated)
+├── zhihu.md           ← Zhihu article (script-generated)
+├── xhs.md             ← Xiaohongshu note (LLM-generated)
+├── english.md         ← English translation (LLM-generated)
+└── images/
+    ├── cover-xhs.jpg     3:4  portrait  (Imagen 4)
+    ├── cover-weixin.jpg  16:9 landscape (Imagen 4)
+    ├── section-1.jpg     1:1  square    (Imagen 4)
+    ├── section-2.jpg     1:1  square    (Imagen 4)
+    ├── section-3.jpg     1:1  square    (Imagen 4)
+    └── manifest.json
+```
 
 # Instructions
 
-1. **Ask for the markdown file**: Request the path to the markdown file (or the article can be in `articles/[name]/final.md`)
+## Step 1 — Locate the article
 
-2. **Verify the file exists**: Check that the markdown file is readable
+Detect article directory from current working directory or ask the user.
+Detect persona — try in this order:
+1. Walk up the directory tree looking for a `.persona` file; read its first line
+2. Path contains `benyu` → persona = `benyu`; path contains `hushi` → persona = `hushi`
+3. Ask the user
 
-3. **Run the conversion**:
-   ```bash
-   python scripts/writing/html_converter.py <path/to/article.md>
-   ```
+Verify `draft.md` (or `final.md`) exists. Read it fully — you'll need it for the LLM steps.
 
-4. **Explain the output**:
-   - The HTML file will be created in the same directory as the markdown file
-   - Default name: `wechat.html`
-   - The HTML includes:
-     - Inline CSS styles (WeChat doesn't support external CSS)
-     - Proper font families (PingFang SC, etc.)
-     - Styled headers, blockquotes, code, lists
-     - Mobile-friendly viewport settings
+## Step 2 — Run all scripts (do this first, in parallel where possible)
 
-5. **Next steps for the user**:
-   ```
-   1. Open the generated wechat.html file in a web browser
-   2. Select all content (Cmd+A or Ctrl+A)
-   3. Copy (Cmd+C or Ctrl+C)
-   4. Paste into 微信公众号 editor
-   5. Preview and publish
-   ```
-
-6. **Troubleshooting**: If conversion fails:
-   - Check if markdown file exists
-   - Verify dependencies are installed: `pip install -r requirements.txt`
-   - Check if writing/templates/wechat_styles.css exists
-   - Look for markdown syntax errors
-
-# Example Usage
-
-For an article at `writing/戚本禹/articles/my-article/final.md` or `writing/胡适/articles/my-article/final.md`:
-
+### 2a — Images
 ```bash
-python scripts/writing/html_converter.py writing/戚本禹/articles/my-article/final.md
-# or
-python scripts/writing/html_converter.py writing/胡适/articles/my-article/final.md
+python scripts/writing/image_generator.py <article_dir> --persona <persona>
 ```
+Generates 5 images into `<article_dir>/images/`. Runs independently.
 
-This creates `wechat.html` in the same directory as the markdown file.
-
-# Optional: Custom Output Path
-
-You can specify a custom output path:
-
+### 2b — WeChat HTML
 ```bash
-python scripts/writing/html_converter.py writing/戚本禹/articles/my-article/final.md writing/戚本禹/articles/my-article/custom.html
+python scripts/writing/article_converter.py weixin <article_dir>
+```
+Extracts links → reference list, runs html_converter, writes `weixin.html`.
+
+### 2c — Zhihu markdown
+```bash
+python scripts/writing/article_converter.py zhihu <article_dir>
+```
+Cleans markdown, adds footer, writes `zhihu.md`.
+
+Run 2a, 2b, 2c. Report any errors before continuing.
+
+## Step 3 — XHS condensation (LLM)
+
+Read `writing/templates/platform-adapters/xhs-adapter.md` for full rules.
+
+Condense the article into an XHS note:
+- **Title**: ≤20 chars — sharpest hook from the article
+- **Body**: 300-600 chars — 3-5 punchy paragraphs, no links, no headings, first-person "分享" energy
+- **Hashtags**: 5-8 tags at end (2-3 topic, 2-3 niche, 1-2 emotion/behaviour)
+
+Write to `<article_dir>/xhs.md`.
+
+## Step 4 — English translation (LLM)
+
+Follow all rules in `.claude/commands/english.md`.
+
+Key rules:
+- Aggressive cutting — English version noticeably shorter
+- Replace WeChat links with English sources
+- Adapt Chinese-specific examples for international readers
+- Proper frontmatter (title, date, author: MaGong, category, description)
+- End with: `---\n\n*Originally written in Chinese. Translated by the author.*`
+
+Write to `<article_dir>/english.md` (NOT to `posts/` — `/publish` copies it over).
+
+## Step 5 — Report
+
+```
+✓ Conversion complete: [article title]
+
+Scripts ran:
+  weixin.html    — WeChat HTML, [N] links moved to references
+  zhihu.md       — [N] chars
+  images/        — [N] images generated (cover-xhs 3:4, cover-weixin 16:9, section-N 1:1)
+
+LLM outputs:
+  xhs.md         — [N] chars, [N] hashtags
+  english.md     — [N] words, [N] WeChat links replaced
+
+Run /publish to distribute.
 ```
 
 # Important
 
-- Ensure the markdown is finalized before conversion
-- The conversion applies WeChat-specific styling automatically
-- Images in markdown will be included (but verify paths)
-- The HTML is optimized for copying into WeChat editor, not for direct web hosting
-
-# Link Extraction (REQUIRED)
-
-**WeChat doesn't support hyperlinks in article body.** Before conversion:
-
-1. **Extract all markdown links** from the article: `[text](url)`
-2. **Collect them into a 引用来源 section** at the end of the article
-3. **Replace inline links with plain text** (keep the link text, remove the URL)
-4. **Format the 引用来源 section** as a numbered list with full URLs:
-
-```markdown
----
-
-**引用来源**
-
-1. Article Title: https://example.com/article
-2. Book Name: https://goodreads.com/book/xxx
-3. GitHub Repo: https://github.com/org/repo
-```
-
-This ensures readers can still access the references even though WeChat doesn't render clickable links.
+- Scripts must run successfully before LLM steps — if a script fails, diagnose and fix
+- NEVER fabricate data in any adapted version
+- `english.md` goes to the article directory, not `posts/`
+- If `images/` generation fails on some images, note it but continue — partial image sets are fine

@@ -7,9 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **combined monorepo** with two systems:
 
 1. **magong.se website** — Next.js English blog translating WeChat articles for international readers
-2. **Writing system** — Dual-persona WeChat article factory (戚本禹 provocative + 胡适 analytical)
+2. **Writing system** — Dual-persona WeChat article factory (benyu provocative + hushi analytical)
 
-The pipeline: **write (Chinese)** → **translate** → **publish (English)**
+The pipeline: **write (Chinese)** → **convert (all formats + images)** → **publish (WeChat + XHS + Zhihu + magong.se)**
 
 The writing system enforces **strict data authenticity** — never fabricate examples, quotes, statistics, or attributions. All data must be real, sourced, and verifiable.
 
@@ -21,10 +21,13 @@ liangxiao/                              # repo root
 │   ├── CLAUDE.md                       # THIS FILE
 │   └── commands/
 │       ├── brainstorm.md               # shared — material discovery
-│       ├── convert.md                  # shared — HTML conversion
-│       ├── english.md                  # shared — translate Chinese → English
+│       ├── outline.md                  # shared — persona-aware outline (reads .persona file)
+│       ├── draft.md                    # shared — persona-aware draft (reads .persona file)
+│       ├── review.md                   # shared — persona-aware review (reads .persona file)
+│       ├── convert.md                  # shared — all 4 formats + Imagen 4 images
+│       ├── english.md                  # shared — translate Chinese → English (used by /convert)
 │       ├── pick-chat.md               # shared — chat topic extraction
-│       └── publish.md                  # shared — publish to magong.se
+│       └── publish.md                  # shared — publish to WeChat, XHS, Zhihu, magong.se
 │
 ├── app/                                # Next.js App Router
 │   ├── page.tsx                        # Home — Pinterest-style article grid
@@ -44,16 +47,20 @@ liangxiao/                              # repo root
 ├── public/images/                      # Article images
 ├── __tests__/                          # Jest tests
 │
-├── writing/                            # Article writing system
-│   ├── 戚本禹/                          # PROVOCATIVE persona (20 articles)
-│   │   ├── .claude/commands/           # /outline, /draft, /review
-│   │   ├── style_guide.md
-│   │   ├── brainstorm.md
-│   │   └── articles/
-│   ├── 胡适/                            # SERIOUS persona (3 articles)
-│   │   ├── .claude/commands/           # /outline, /draft, /review
-│   │   ├── style_guide.md
-│   │   └── articles/
+├── benyu/                              # PROVOCATIVE persona (戚本禹)
+│   ├── .persona                        # contains: "benyu" — persona detection for shared commands
+│   ├── style_guide.md
+│   ├── brainstorm.md
+│   └── articles/
+├── hushi/                              # ANALYTICAL persona (胡适)
+│   ├── .persona                        # contains: "hushi" — persona detection for shared commands
+│   ├── style_guide.md
+│   └── articles/
+├── reading/                            # Book reading → article output
+│   ├── .claude/commands/read.md        # /read command
+│   └── books/                          # One subdir per book, notes.md inside
+│
+├── writing/                            # Shared writing resources
 │   ├── templates/                      # Article structure templates
 │   │   ├── article-structures/         # 5 structure types + PRINCIPLES.md
 │   │   ├── wechat_styles.css
@@ -70,18 +77,18 @@ liangxiao/                              # repo root
 
 ## Two Personas (Writing System)
 
-### 戚本禹 - Provocative Voice
-- **Directory**: `writing/戚本禹/`
-- **Style guide**: `writing/戚本禹/style_guide.md`
+### benyu - Provocative Voice
+- **Directory**: `benyu/`
+- **Style guide**: `benyu/style_guide.md`
 - **Tone**: Confrontational, sarcastic, opinionated, challenges authority
 - **Companies**: Named to challenge and attack
 - **Analogies**: Vivid, everyday, mocking (永动机, 农贸市场卖豆腐)
 - **Conclusions**: Provocative reversal, "来骂我吧" energy
 - **Named after**: 戚本禹 (1931-2016)，毛泽东时代政论家，中央文革小组成员，以犀利的政论文章闻名，被编辑黎澍称赞为"能成为新中国的梁启超，笔端常带感情"
 
-### 胡适 - Serious/Analytical Voice
-- **Directory**: `writing/胡适/`
-- **Style guide**: `writing/胡适/style_guide.md`
+### hushi - Serious/Analytical Voice
+- **Directory**: `hushi/`
+- **Style guide**: `hushi/style_guide.md`
 - **Tone**: Analytical, measured, evidence-first, forward-looking
 - **Companies**: Named to cite and analyse (not attack)
 - **Analogies**: Structural, scientific, from engineering/economics
@@ -122,18 +129,19 @@ Zero emoji in published articles (both personas) and in translated English posts
 
 Commands are **layered** — Claude Code walks up the directory tree, with nested commands taking precedence over root commands.
 
-**Shared commands** (work from anywhere):
+**Shared commands** (work from anywhere, persona-aware via `.persona` file):
 - `/brainstorm` — Research and material discovery
-- `/convert` — Markdown to WeChat HTML conversion
+- `/outline` — Persona-aware outline (reads `.persona` file, applies benyu or hushi framing)
+- `/draft` — Persona-aware draft (reads `.persona` file + `{persona}/style_guide.md`)
+- `/review` — Persona-aware review (reads `.persona` file + `{persona}/style_guide.md`)
+- `/convert` — Markdown to WeChat HTML conversion (also persona-aware via `.persona` file)
 - `/pick-chat` — Extract topics from WeChat chat data
+- `/read` — Read a book, extract article-worthy insights → `reading/books/[slug]/notes.md`
 
-**Persona-specific commands** (activated by working directory):
-- `cd writing/戚本禹 && /outline` → 戚本禹's provocative outline command
-- `cd writing/戚本禹 && /draft` → 戚本禹's provocative draft command
-- `cd writing/戚本禹 && /review` → 戚本禹's provocative review checklist
-- `cd writing/胡适 && /outline` → 胡适's analytical outline command
-- `cd writing/胡适 && /draft` → 胡适's analytical draft command
-- `cd writing/胡适 && /review` → 胡适's analytical review checklist
+**Persona detection order** (for `/outline`, `/draft`, `/review`, `/convert`):
+1. Walk up directory tree for `.persona` file → read first line
+2. Path contains `benyu` or `hushi` → fallback
+3. Ask the user → last resort
 
 ### Translation & Publishing Commands
 
@@ -149,30 +157,45 @@ Commands are **layered** — Claude Code walks up the directory tree, with neste
 2. `/outline` — Select article structure, generate detailed framework
 3. `/draft` — Write following the active persona's style_guide.md
 4. `/review` — Check against the active persona's checklist
-5. `/convert` — Generate WeChat-compatible HTML
 
 **All commands MUST write output to files:**
 - `brainstorm.md` — Research findings
 - `outline.md` — Article structure
-- `draft.md` or `final.md` — Article content
-- `wechat.html` — HTML for publishing
+- `draft.md` — Article content
 
 **Example:**
 ```bash
-cd writing/戚本禹
+cd benyu
 mkdir -p articles/my-new-article && cd articles/my-new-article
 /brainstorm [topic]    # shared command
-/outline               # picks up writing/戚本禹/.claude/commands/outline.md
-/draft                 # picks up writing/戚本禹/.claude/commands/draft.md
-/review                # picks up writing/戚本禹/.claude/commands/review.md
-/convert               # shared command
+/outline               # shared — detects benyu via .persona file
+/draft                 # shared — detects benyu, reads benyu/style_guide.md
+/review                # shared — detects benyu, reads benyu/style_guide.md
 ```
 
-### Translate and Publish to magong.se
+### Convert and Publish to All Platforms
 
-After a Chinese article is written and published on WeChat:
-1. `/english` — Translates the article, writes to `posts/` as markdown with frontmatter
-2. `/publish` — Verifies the post, runs build, deploys
+After the article is reviewed:
+1. `/convert` — Generate all formats simultaneously:
+   - `weixin.html` — WeChat-compatible HTML
+   - `xhs.md` — Xiaohongshu note (≤600 chars + hashtags)
+   - `zhihu.md` — Zhihu article (full markdown)
+   - `english.md` — English translation for magong.se
+   - `images/` — Imagen 4 generated cover + section images (3:4, 16:9, 1:1) with "AI生成" badge
+
+2. `/publish` — Distribute to all platforms:
+   - **magong.se** — git push → Vercel auto-deploys (fully automated)
+   - **WeChat** — Playwright creates draft, you review and click 发布
+   - **Xiaohongshu** — xhs-mcp publishes automatically (login once via QR)
+   - **Zhihu** — browser opens editor, you paste and publish
+
+### Platform Publishing Infrastructure
+
+- **WeChat session**: `~/.credentials/wechat-session.json` (Playwright cookies, persistent)
+- **XHS session**: managed by xhs-mcp (login once: `xhs-mcp login`)
+- **Image generator**: `scripts/writing/image_generator.py` (Google Imagen 4, key at `~/.credentials/google.ai.txt`)
+- **WeChat publisher**: `scripts/writing/wechat_publisher.py` (Playwright)
+- **Platform adapters**: `writing/templates/platform-adapters/` (xhs-adapter.md, zhihu-adapter.md)
 
 ### Article Frontmatter Format
 
@@ -195,12 +218,12 @@ lastModified: '2026-02-07'
 ### Persona-Aware Style Enforcement
 
 **Determine the active persona from working directory:**
-- Working in `writing/戚本禹/` or `writing/戚本禹/articles/*` → read `writing/戚本禹/style_guide.md`
-- Working in `writing/胡适/` or `writing/胡适/articles/*` → read `writing/胡适/style_guide.md`
+- Working in `benyu/` or `benyu/articles/*` → read `benyu/style_guide.md`
+- Working in `hushi/` or `hushi/articles/*` → read `hushi/style_guide.md`
 
 **Six universal principles** (from `writing/templates/article-structures/PRINCIPLES.md`) apply to BOTH personas, but interpreted differently:
 
-| Principle | 戚本禹 | 胡适 |
+| Principle | benyu | hushi |
 |-----------|-------|----------|
 | 标题即半篇文章 | Provocative, makes you want to argue | Precise, states the thesis |
 | 首段必须抓人 | Conflict, tension | Paradox, surprising observation |
@@ -228,9 +251,9 @@ Choose from 5 patterns in `writing/templates/article-structures/`:
 
 **Conversion process:**
 ```bash
-python scripts/writing/html_converter.py writing/戚本禹/articles/[name]/final.md
+python scripts/writing/html_converter.py benyu/articles/[name]/final.md
 # or
-python scripts/writing/html_converter.py writing/胡适/articles/[name]/final.md
+python scripts/writing/html_converter.py hushi/articles/[name]/final.md
 ```
 
 ## Website Development
@@ -323,8 +346,8 @@ When making commits:
 
 | What | Where |
 |------|-------|
-| 戚本禹 style guide | `writing/戚本禹/style_guide.md` |
-| 胡适 style guide | `writing/胡适/style_guide.md` |
+| benyu style guide | `benyu/style_guide.md` |
+| hushi style guide | `hushi/style_guide.md` |
 | Shared principles | `writing/templates/article-structures/PRINCIPLES.md` |
 | Published articles | `posts/` |
 | Article images | `public/images/` |
