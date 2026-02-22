@@ -16,14 +16,27 @@ Verify all required files exist. If any are missing, tell the user to run `/conv
 
 ## Step 2 — Ask which platforms
 
-Ask: "Publish to which platforms? (default: all)"
-Options: **All** / WeChat / Xiaohongshu / Zhihu / magong.se
+Ask: "Publish to which platforms?"
+Options: **All** / WeChat / Xiaohongshu / Zhihu / magong.se (multi-select allowed)
 
-If the user says "all" or doesn't specify, publish to all four.
+If the user says "all" or doesn't specify, use all four.
 
-## Step 3 — Publish to each platform
+## Step 3 — Publish to each platform (one by one)
 
-Run all applicable platforms. For each one, report success or failure clearly.
+**CRITICAL**: Publish platforms sequentially (one at a time), not in parallel.
+
+For each selected platform:
+1. Complete the full publishing workflow for that platform
+2. Get user confirmation or completion signal before moving to the next
+3. Report success or failure clearly before proceeding
+
+**Sequential order** (if all selected):
+1. magong.se (automated, quickest)
+2. WeChat (manual paste + publish)
+3. Xiaohongshu (manual upload + publish)
+4. Zhihu (manual paste + publish)
+
+This allows the user to work through each platform methodically and pause if needed.
 
 ---
 
@@ -129,7 +142,7 @@ Report: `✓ Zhihu — ready for manual publish`
 
 ## Step 4 — Final report
 
-After all platforms:
+After each platform, confirm before moving to the next. After all selected platforms are complete:
 
 ```
 ✓ Publishing complete: [article title]
@@ -142,10 +155,15 @@ Platform results:
 
 ```
 
+If the user opted for selective publishing (not all platforms), report only the platforms that were published.
+
 # Important
 
+- **Sequential publishing**: Complete one platform fully before moving to the next
+- **User confirmation**: After each platform, confirm success before proceeding to the next
+- **Selective publishing**: It's OK to publish to only some platforms (e.g., just magong.se, or WeChat + Zhihu)
 - Always run magong.se build check before git push — never push a broken build
 - WeChat: do NOT auto-click publish — always leave final publish action to the user
 - Zhihu: browser automation is too risky (account ban) — always manual paste
 - If XHS login fails, tell the user to run `xhs-mcp login` and try again
-- If any platform fails, report it clearly and continue with the others
+- If any platform fails, report it clearly and ask whether to continue with the remaining platforms

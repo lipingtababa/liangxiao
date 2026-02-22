@@ -1,0 +1,27 @@
+[
+  {
+    "name": "cover-xhs",
+    "path": "benyu/articles/configuration-management/images/cover-xhs.jpg",
+    "aspect_ratio": "3:4"
+  },
+  {
+    "name": "cover-weixin",
+    "path": "benyu/articles/configuration-management/images/cover-weixin.jpg",
+    "aspect_ratio": "16:9"
+  },
+  {
+    "name": "section-1",
+    "path": "benyu/articles/configuration-management/images/section-1.jpg",
+    "aspect_ratio": "1:1"
+  },
+  {
+    "name": "section-2",
+    "path": "benyu/articles/configuration-management/images/section-2.jpg",
+    "aspect_ratio": "1:1"
+  },
+  {
+    "name": "section-3",
+    "path": "benyu/articles/configuration-management/images/section-3.jpg",
+    "aspect_ratio": "1:1"
+  }
+]

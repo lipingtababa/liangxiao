@@ -1,0 +1,22 @@
+[
+  {
+    "name": "cover-xhs",
+    "path": "benyu/articles/technologies-in-war/images/cover-xhs.jpg",
+    "aspect_ratio": "3:4"
+  },
+  {
+    "name": "cover-weixin",
+    "path": "benyu/articles/technologies-in-war/images/cover-weixin.jpg",
+    "aspect_ratio": "16:9"
+  },
+  {
+    "name": "section-2",
+    "path": "benyu/articles/technologies-in-war/images/section-2.jpg",
+    "aspect_ratio": "1:1"
+  },
+  {
+    "name": "section-3",
+    "path": "benyu/articles/technologies-in-war/images/section-3.jpg",
+    "aspect_ratio": "1:1"
+  }
+]

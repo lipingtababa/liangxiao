@@ -6,7 +6,7 @@ magong.se 的 monorepo — 英文博客 + 微信公众号写作系统。
 
 两个系统，一条流水线：
 
-1. **写作系统** (`writing/`) — 用 Claude Code 的 slash commands 写微信公众号文章，双人格：戚本禹（犀利）和胡适（分析）
+1. **写作系统** (`writing/`) — 用 Claude Code 的 slash commands 写微信公众号文章，双人格：benyu（犀利）和hushi（分析）
 2. **magong.se 网站** — Next.js 英文博客，翻译已发布的中文文章给国际读者
 
 流水线：**写作（中文）→ 翻译 → 发布（英文）**
@@ -23,8 +23,8 @@ liangxiao/
 ├── __tests__/              # Jest 测试
 │
 ├── writing/                # 微信文章写作系统
-│   ├── 戚本禹/             # 犀利人格（20篇文章）
-│   ├── 胡适/               # 分析人格（3篇文章）
+│   ├── benyu/             # 犀利人格（20篇文章）
+│   ├── hushi/               # 分析人格（3篇文章）
 │   ├── templates/          # 文章结构模板 + WeChat CSS
 │   └── translation/        # 翻译工作区
 │
@@ -65,13 +65,13 @@ npm run check         # lint + format + typecheck + test
 用 Claude Code 的 slash commands，在对应人格目录下工作：
 
 ```bash
-# 戚本禹风格（犀利挑衅）
-cd writing/戚本禹/articles/
+# benyu风格（犀利挑衅）
+cd benyu/articles/
 mkdir my-topic && cd my-topic
 # /brainstorm → /outline → /draft → /review → /convert
 
-# 胡适风格（分析严谨）
-cd writing/胡适/articles/
+# hushi风格（分析严谨）
+cd hushi/articles/
 mkdir my-topic && cd my-topic
 # /brainstorm → /outline → /draft → /review → /convert
 ```
@@ -97,10 +97,10 @@ mkdir my-topic && cd my-topic
 
 ## 写作人格
 
-| | 戚本禹 | 胡适 |
+| | benyu | hushi |
 |---|---|---|
 | 风格 | 犀利、讽刺、挑战权威 | 分析、严谨、证据导向 |
 | 公司 | 点名批评 | 点名分析 |
 | 类比 | 生活化、嘲讽（永动机、卖豆腐） | 结构化、科学（工程、经济学） |
 | 结论 | 挑衅反转，"来骂我吧" | 综合 + 开放问题，"一起研究" |
-| 命名 | 戚本禹（1931-2016），犀利政论家 | 胡适（1891-1962），新文化运动领袖 |
+| 命名 | benyu（1931-2016），犀利政论家 | hushi（1891-1962），新文化运动领袖 |

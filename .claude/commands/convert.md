@@ -55,14 +55,17 @@ Cleans markdown, adds footer, writes `zhihu.md`.
 
 Run 2a, 2b, 2c. Report any errors before continuing.
 
-## Step 3 — XHS condensation (LLM)
+## Step 3 — XHS adaptation (LLM)
 
 Read `writing/templates/platform-adapters/xhs-adapter.md` for full rules.
 
-Condense the article into an XHS note:
-- **Title**: ≤20 chars — sharpest hook from the article
-- **Body**: 300-600 chars — 3-5 punchy paragraphs, no links, no headings, first-person "分享" energy
+Adapt the article for XHS (小红书):
+- **Short format** (≤600 chars): Title ≤20 chars, body 300-600 chars, 3-5 punchy paragraphs
+- **Long format** (600+ chars): Full article format allowed, with hashtags at end
+- **Both formats**: No inline links, no headings, no emoji, first-person "分享" energy
 - **Hashtags**: 5-8 tags at end (2-3 topic, 2-3 niche, 1-2 emotion/behaviour)
+
+Choose the format that best fits the content. XHS supports both short and long articles.
 
 Write to `<article_dir>/xhs.md`.
 
