@@ -344,6 +344,14 @@ All statistics must be verified with URLs. Flag placeholders for missing data.
 
 **CRITICAL**: User's own chat messages are their OWN ideas — NEVER attribute to fictional "朋友说" or "我朋友"
 
+### Chat Data Security (HIGHEST PRIORITY)
+
+This is the user's main WeChat account. Three non-negotiable security rules:
+
+1. **仅群聊，禁止私聊** — aichat repo 只能包含群聊（`@chatroom`）数据，绝不能有一对一私聊记录。如果在 aichat 中发现任何非群聊数据，立即告知用户。
+2. **白名单制** — 群聊同步采用白名单制（`CHATROOMS_EXPLICIT` + `CHATROOMS_APPROVED`）。通过动态过滤器发现的新聊天室会记录到 `pending_chatrooms.json`，必须向用户确认后才能加入白名单。绝不自动接入。
+3. **提交前审查** — 向 aichat repo 提交任何数据前，检查是否有私人信息泄露风险。如果发现疑似私聊数据（发送者极少）、敏感内容等异常，暂停提交并向用户确认。
+
 ### Accessing WeChat URLs
 
 **WeChat links must use Playwright MCP**: WeChat URLs (mp.weixin.qq.com) are behind restrictions — always use the Playwright MCP browser tools (browser_navigate, browser_snapshot, etc.) to access them, never WebFetch or other regular web tools.
